@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Solvers and backends – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../user_guide/architecture_transmission.html" rel="next">
+<link href="../user_guide/architecture_execution.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../user_guide.html" aria-current="page"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide/architecture_index.html">Architecture</a></li><li class="breadcrumb-item"><a href="../user_guide/architecture_solvers.html">Solvers and backends</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>User guide</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Introduction</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_starsim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What is Starsim?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Starsim models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conceptual overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Building models</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_stratification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stratification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_outcomes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plotting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Custom modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Populations and data</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People and agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Population data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_geography.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Geography</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Interventions and analyzers</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Connectors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_costs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Costs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Running models</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running sims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_solvers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solvers and backends</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_branching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Branching and rescaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_debugging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Profiling and debugging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_deploy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Deployment</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Calibration</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting a model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fit diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_identification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parameter identification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Model library</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_landscape.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modeling landscape</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Library</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Maternal-child health</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-9-label">Conversion</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Import/export</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/starsim3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Starsim v3</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/atomica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Atomica</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/camdl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">camdl</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/emulsion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EMULSION</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epimodel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EpiModel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epipack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epipack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epydemix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epydemix</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epymorph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epymorph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/flepimop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">flepiMoP</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/laser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LASER</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/memilio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MEmilio</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/numpy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NumPy</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/odin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">odin</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/siminf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SimInf</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/summer2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">summer2</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-10-label">Mechanics</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_indexing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Array indexing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random numbers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_nonstandard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Nonstandard usage</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide/architecture_index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-11-label">Architecture</span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true" aria-label="Toggle section: Architecture">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_declaration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model declaration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model execution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_solvers.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Solvers and backends</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_transmission.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transmission</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_randomness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Randomness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#how-solverauto-chooses" id="toc-how-solverauto-chooses" class="nav-link active" data-scroll-target="#how-solverauto-chooses">How <code>solver='auto'</code> chooses</a></li>
+  <li><a href="#the-solvers" id="toc-the-solvers" class="nav-link" data-scroll-target="#the-solvers">The solvers</a></li>
+  <li><a href="#approximations-are-announced" id="toc-approximations-are-announced" class="nav-link" data-scroll-target="#approximations-are-announced">Approximations are announced</a></li>
+  <li><a href="#the-engines" id="toc-the-engines" class="nav-link" data-scroll-target="#the-engines">The engines</a></li>
+  <li><a href="#the-kernels" id="toc-the-kernels" class="nav-link" data-scroll-target="#the-kernels">The kernels</a></li>
+  <li><a href="#what-decides-which-engine-runs-a-model" id="toc-what-decides-which-engine-runs-a-model" class="nav-link" data-scroll-target="#what-decides-which-engine-runs-a-model">What decides which engine runs a model</a></li>
+  <li><a href="#execution-paths-and-the-tests-that-pin-them" id="toc-execution-paths-and-the-tests-that-pin-them" class="nav-link" data-scroll-target="#execution-paths-and-the-tests-that-pin-them">Execution paths and the tests that pin them</a></li>
+  <li><a href="#limits" id="toc-limits" class="nav-link" data-scroll-target="#limits">Limits</a></li>
+  <li><a href="#in-the-design-record" id="toc-in-the-design-record" class="nav-link" data-scroll-target="#in-the-design-record">In the design record</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide/architecture_index.html">Architecture</a></li><li class="breadcrumb-item"><a href="../user_guide/architecture_solvers.html">Solvers and backends</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Solvers and backends</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Written by AI from the Claude draft of the architecture page on solvers, checked against the current code">🧠0% 🤖100%</div>
+<p>The same declared model can be run five ways: as a deterministic ODE (<code>'ode'</code>), as three kinds of stochastic compartmental model (<code>'binomial'</code>, <code>'gillespie'</code>, <code>'tau'</code>), or as agents (<code>'abm'</code>). This page explains how Starsim chooses between them, the engines that do the work, the backends and kernel sets that make them fast, how approximations are announced, and which tests keep each path honest. For how to choose a solver as a modeler, and how the solvers’ results differ, see <a href="../user_guide/running_solvers.html">Solvers and backends</a> in Running models.</p>
+<section id="how-solverauto-chooses" class="level2">
+<h2 class="anchored" data-anchor-id="how-solverauto-chooses">How <code>solver='auto'</code> chooses</h2>
+<p>The default, <code>solver='auto'</code>, picks the simplest, fastest representation that runs the model without changing what it means: an ODE if every part of the model has a compartmental form, and agents otherwise. The line the sim prints when it is initialized says which it chose, and <code>sim.solver_reason</code> (and <code>describe()</code>) says why:</p>
+<div id="0b4f08ad" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_sir(dur<span class="op">=</span>ss.days(<span class="dv">10</span>)):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ss.Disease(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.perday(<span class="fl">0.3</span>) <span class="op">*</span> I,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        recovery  <span class="op">=</span> ss.Transition(I, R, dur<span class="op">=</span>dur),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        init_prev <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>kw <span class="op">=</span> <span class="bu">dict</span>(unit<span class="op">=</span><span class="st">'day'</span>, stop<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(make_sir(), <span class="op">**</span>kw).init()                                       <span class="co"># Homogeneous mixing</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(make_sir(), networks<span class="op">=</span>ss.RandomNet(n_contacts<span class="op">=</span><span class="dv">10</span>), <span class="op">**</span>kw).init() <span class="co"># A network of individuals</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(make_sir(ss.lognorm_ex(mean<span class="op">=</span>ss.days(<span class="dv">10</span>), std<span class="op">=</span>ss.days(<span class="dv">4</span>))), <span class="op">**</span>kw).init() <span class="co"># A lognormal dwell time</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: sir, 10,000 people, as an ODE, days 0 to 100
+  sir: R0 = 3, with 100 infectious at the start
+
+Sim: sir, as 10,000 agents, days 0 to 100
+  Running as agents: RandomNet is an individual-level network
+  Note: consider a shorter step (e.g. dt=ss.days(0.25)): each step is 1 day, and infection transmits at up to 0.3 per day (per infectious contact), 26% in a step. Taking whole steps, agents may differ from the ODE by an amount of that order; sim.check_dt() shows how much it matters
+
+Sim: sir, 10,000 people, as an ODE, days 0 to 100
+  sir: R0 = 3, with 100 infectious at the start
+  Note: recovery has a lognorm_ex dwell time (nearly fixed, not exponential), approximated by 6 Erlang stages (mean 10 days kept; std 4.08 days, against 4 days given)</code></pre>
+</div>
+</div>
+<p>The rule behind this is that <code>'auto'</code> never approximates the mixing and never drops anything individual-level. A model runs as agents if it has any of these:</p>
+<ul>
+<li>an individual-level network (<a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a>, <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>), or <code>n_agents=</code>;</li>
+<li>a function that takes <code>uids</code>, or a per-agent attribute that isn’t a stratification (viral load);</li>
+<li>a module written as code that keeps a value for each person (<code>define_states()</code>), or that says <code>compartmental = False</code>; being written as code isn’t a reason by itself, so a module that keeps nothing per person (an ODE of its own, an analyzer) runs beside the compartments, and a sim of such modules has no agents at all;</li>
+<li>anything that needs individual histories: contact tracing, the infection log, time in a state, or each person’s mother or children.</li>
+</ul>
+<p>Everything else, including contact matrices, stratifications, fixed delays, and interventions that target strata, has a compartmental form.</p>
+<p>The one thing <code>'auto'</code> approximates unasked is a dwell time that isn’t exponential, Erlang or fixed, as in the third example. Sending a simple model to agents over one lognormal would be the bigger surprise, so it uses Erlang stages that keep the mean exactly, and prints the standard deviation they give. A dwell time too variable for stages (a coefficient of variation above 3) makes <code>'auto'</code> choose agents.</p>
+<p><code>sim.describe()</code> lists each ingredient that matters for the choice and whether it runs as compartments: <code>yes</code>, <code>approx</code> (and how), or <code>no</code> (and why). Code is never analyzed in advance: a function is called with what the solver has (one value per agent, or one per group), and if it asks for something only agents have, the run stops with an <code>ss.CapabilityError</code> that names it.</p>
+</section>
+<section id="the-solvers" class="level2">
+<h2 class="anchored" data-anchor-id="the-solvers">The solvers</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Solver</th>
+<th>Time</th>
+<th>State</th>
+<th>Good for</th>
+<th>Loses accuracy when</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ode</code></td>
+<td>continuous</td>
+<td>real numbers</td>
+<td>large populations, fast fitting, gradients</td>
+<td>counts are small or extinction matters</td>
+</tr>
+<tr class="even">
+<td><code>ide</code></td>
+<td>continuous, dwell times by whole steps</td>
+<td>real numbers</td>
+<td>dwell times far from exponential, renewal-equation models</td>
+<td>the step is long against a dwell time</td>
+</tr>
+<tr class="odd">
+<td><code>binomial</code></td>
+<td>discrete</td>
+<td>whole people</td>
+<td>simple stochastic models on a fixed step</td>
+<td><code>rate × dt</code> is large</td>
+</tr>
+<tr class="even">
+<td><code>gillespie</code></td>
+<td>continuous</td>
+<td>whole people</td>
+<td>exact stochastic dynamics</td>
+<td>values vary quickly within a step</td>
+</tr>
+<tr class="odd">
+<td><code>tau</code></td>
+<td>continuous</td>
+<td>whole people</td>
+<td>large stochastic runs, close to exact</td>
+<td>rates change quickly within a leap</td>
+</tr>
+<tr class="even">
+<td><code>abm</code></td>
+<td>discrete</td>
+<td>individuals</td>
+<td>networks, heterogeneity, histories</td>
+<td><code>rate × dt</code> is large; cost grows with <code>n_agents</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>'auto'</code> only ever chooses <code>ode</code> or <code>abm</code>; a stochastic compartmental solver, or <code>ide</code>, is used only when it is asked for by name. <code>ide</code> runs as the ODE, with each dwell time that is not exponential as a conveyor of whole steps, leaving each slot at the distribution’s own chance rather than through Erlang stages. Any solver can also run the model as a branching process (<code>branching=True</code>): infection takes no one from the uninfected and gives no one back, and as agents, agents are made only for the infected (see <a href="../user_guide/running_branching.html">Branching and rescaling</a>). A sim is one run whatever the solver, and many runs are an <a href="../api/run.html#starsim.run.MultiSim" title="0"><code>ss.MultiSim</code></a> (<code>ss.parallel(sim, n_runs=100)</code>).</p>
+<p>Some of the conditions in the last column are reported as notes, and <code>sim.check_dt()</code> measures how much a smaller step would change the results.</p>
+</section>
+<section id="approximations-are-announced" class="level2">
+<h2 class="anchored" data-anchor-id="approximations-are-announced">Approximations are announced</h2>
+<p>When a solver is asked for that the model doesn’t natively fit, Starsim uses the standard approximation where one exists, and says so in one line. It stops only when there is no sensible approximation. For example, a random network run as an ODE becomes homogeneous mixing at the network’s mean number of contacts:</p>
+<pre class="text"><code>&gt;&gt;&gt; ss.Sim(sir, networks=ss.RandomNet(n_contacts=10), solver='ode', unit='day', stop=100).init()
+Sim: sir, 10,000 people, as an ODE, days 0 to 100
+  sir: R0 = 30, with 100 infectious at the start
+  Note: RandomNet approximated by homogeneous mixing with 10 contacts per day (its mean number of contacts)</code></pre>
+<p>A network model run as an ODE is a coarser model, not an invalid one, and someone who typed <code>solver='ode'</code> asked for it. Each ingredient has one standard approximation (lasting partnerships use a partner-change model; a distribution on <code>beta</code> uses its mean). Things with no compartmental form, such as contact tracing, stop with an <code>ss.CapabilityError</code> before the run, saying what to do instead.</p>
+<p>By default each approximation prints a note; <code>approx=True</code> keeps the notes without printing them, and <code>approx=False</code> makes any approximation an error (under <code>'auto'</code>, that sends a lognormal dwell time to agents). Either way the notes are kept in <code>sim.notes</code>, so they survive into saved output.</p>
+</section>
+<section id="the-engines" class="level2">
+<h2 class="anchored" data-anchor-id="the-engines">The engines</h2>
+<p>Each declared module gets one engine when the sim is initialized. A module written as code, with no declared states or transitions, gets an empty engine and runs its own <code>step()</code>. Beside the engines, <code>solvers/deliveries.py</code> is what an intervention does differently as compartments (it reaches a share of each group, not a list of agents), and <code>solvers/particles.py</code> steps many runs of one program together for the particle filter.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Engine</th>
+<th>Files</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Compartmental</td>
+<td><code>solvers/compartmental.py</code>, <code>solvers/mixing.py</code>, <code>solvers/backends/kernels.py</code></td>
+<td>Expands states into compartments (one per group, branch and Erlang stage) and transitions into a flat list of flows, the <em>program</em>. The kernels (small functions in <code>solvers/backends/kernels.py</code>, compiled with Numba, or their Rust copies) step that program for all four compartmental solvers. <code>mixing.py</code> turns networks and mixing pools into contact rates between groups.</td>
+</tr>
+<tr class="even">
+<td>Agents</td>
+<td><code>solvers/agents.py</code>, <code>solvers/agents_*.py</code>, <code>solvers/backends/passes.py</code></td>
+<td>Each state is a boolean array over agents. A dwell time is drawn on entry and the exit scheduled; competing rates out of a state are resolved in one draw; transmission is drawn over each network’s edges. The moves of a step are taken in rounds (below), each a few NumPy passes over the agents who move. The heavy passes over agents and edges are compiled.</td>
+</tr>
+<tr class="odd">
+<td>Crossing</td>
+<td><code>solvers/crossing.py</code></td>
+<td>Diseases tracked jointly, when a condition in one refers to a state of another (<code>ss.modify(hiv.rel_trans, multiply=3, where=syph.I)</code>). Their compartments are crossed and run as one program, up to a budget (<code>ss.options.max_joint</code>); above it, <code>'auto'</code> uses agents.</td>
+</tr>
+</tbody>
+</table>
+<p>Three details of the compartmental engine explain most of its behavior:</p>
+<ul>
+<li><strong>A whole run in one call.</strong> If nothing needs Python between steps (no module written as code with a step of its own, such as an intervention, analyzer, or connector, and no modifier with <code>where=</code>, <code>when=</code>, or a function as its amount), the kernels run the whole simulation in one call; otherwise they are called once per step. Values that vary in time (<code>ss.timeseries</code>, <code>ss.seasonal</code>, and <code>ss.by</code> of them, by place or age) are tabulated for every step before the run, and so are deliveries on a schedule to people chosen by state and group (<a href="../api/interventions.html#starsim.interventions.Delivery.tabulated" title="0"><code>ss.Delivery.tabulated</code></a>), including a move between states such as a seed (<code>ss.Delivery(move=S &gt;&gt; I, at=...)</code>), so none of these makes a run stepped. The results are the same, and <code>sim.kernel_reason()</code> says why a run is stepped.</li>
+<li><strong>Rust, Numba, or plain.</strong> The kernels run in Rust, compiled by Numba, or as plain Python, with the same results (see <a href="#the-kernels">the kernels</a>, below).</li>
+<li><strong>JAX for long ODE runs and gradients.</strong> <code>internals/gradients.py</code> (<a href="../api/internals.gradients.html#starsim.internals.gradients" title="0"><code>ss.gradients</code></a>) runs the same program with the same RK4 steps in JAX, so results can be differentiated (<code>sim.gradient()</code>) and many parameter sets run at once. <code>ss.solvers.choose_engine()</code> uses JAX for an ODE when the kernels would take more than about half a second (about what JAX takes to start), as estimated from the size of the model alone, so the same model always gets the same engine (and the same results with a seed); <code>sim.engine_reason</code> says which ran, once the sim has been run.</li>
+</ul>
+<p>The agent engine takes a step as one sweep over the disease’s transitions, in an order worked out once from the graph (<code>Agents.sweep()</code>): each transition after those that bring people into its source, a trigger (<code>on=</code>) after the event it waits for, and the triggers out of a state ahead of its scheduled exits; a loop of states is broken at the transition declared first. At each transition in turn, those it moves now leave (by its trigger, or because their exit by it is due, including people who arrived in its source earlier in the sweep with a wait that rounds to no steps), and everyone who left by it is sent to their destinations (a transition with several destinations takes one draw for each, and <code>ss.stay</code> puts people back); each arrival is dated, and has its branch, dwell time and exit drawn if its state schedules them. Someone who reaches a transition the sweep has already passed is taken by another sweep, until nobody moves, so the moves with no wait happen in the step that caused them, as in the ODE, and in the order a modeler writing the code by hand would take them (<code>Agents.finish_moves()</code>). The step’s infections are dated at its end, and start a cascade of their own. Every way in from code (an intervention’s move, <a href="../api/transitions.html#starsim.transitions.move" title="0"><code>ss.move()</code></a>, <code>disease.infect()</code>) is a round of its own.</p>
+<p>Each of the engine’s draws is keyed by its stream, the step, and the <em>round</em> (<code>Agents.draw()</code>, <code>Agents.new_round()</code>): each transition of the sweep is a round, as is each way in from code. A draw is not keyed by how many times the stream has been called, so it does not depend on how the work of a round is batched; an agent moves at most once in a round, so each agent’s draws from a stream are its own (<code>STARSIM_CHECK_DRAWS=1</code> checks it).</p>
+<p>The random draws are shared too: <code>solvers/backends/draws.py</code> has exact draws from counter-based uniforms, so a stream doesn’t depend on how work is split across threads. Users’ own code can be compiled with <code>@ss.jit</code> (<code>solvers/backends/jit.py</code>), with the same results as when run as Python.</p>
+</section>
+<section id="the-kernels" class="level2">
+<h2 class="anchored" data-anchor-id="the-kernels">The kernels</h2>
+<p>The same kernels exist as several sets, which give the same numbers (but see plain Python’s in the table, for the chain binomial): Rust’s (<code>solvers/rust/</code>, swapped in by <code>solvers/backends/rust.py</code>), Numba’s (<code>solvers/backends/kernels.py</code>, <code>passes.py</code>, <code>draws.py</code>), and plain Python’s (the compartmental kernels in Numba’s code, run without compiling it; for the ODE, the same steps vectorized in NumPy, <code>solvers/backends/ode.py</code>). <code>ss.options.kernels</code> chooses between them; by default (<code>'auto'</code>) it is chosen at run time, as the table says. JAX is not one of these: it is an engine for a whole run of the ODE, chosen by the run (<code>sim.jax</code>).</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Kernels</th>
+<th>Used by <code>'auto'</code></th>
+<th>First run</th>
+<th>Speed</th>
+<th>Works with</th>
+<th>Doesn’t work with</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rust (<code>'rust'</code>)</td>
+<td>Always, where it is installed (in the wheels; from a clone, <code>cd starsim/solvers/rust &amp;&amp; ./build</code>)</td>
+<td>No compiling</td>
+<td>As fast as Numba or faster: compartmental runs 1.05–7×, agents 1.0–1.1× (on one thread; 0.97–0.99× on four), the chain binomial’s draws in JAX 1.1–5×</td>
+<td>Everything in Starsim</td>
+<td><code>ss.jit</code> (users’ own code, which Numba compiles); not yet in <code>pip install starsim</code> (it has to be built)</td>
+</tr>
+<tr class="even">
+<td>Numba (<code>'numba'</code>)</td>
+<td>Without Rust: the agents always, and compartmental runs once compiled (or long enough to be worth compiling)</td>
+<td>Compiles once per install, and keeps it on disk: about 2 minutes for the compartmental kernels, 20 s for agents, 20 s for the chain binomial’s draws in JAX; <code>ss.compile()</code> does it ahead of time</td>
+<td>The reference</td>
+<td>Everything, including <code>ss.jit</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Plain Python (<code>'python'</code>)</td>
+<td>Without Rust, for compartmental runs too short to be worth compiling first (estimated from the size of the model, with a note)</td>
+<td>Nothing to compile</td>
+<td>15–300× slower than compiled</td>
+<td>The compartmental kernels</td>
+<td>The passes over agents (always compiled); the chain binomial in JAX (whose draws are compiled), so those runs are taken by the kernels, and a long seeded run gives other numbers than with the other sets</td>
+</tr>
+<tr class="even">
+<td>JAX (by <code>sim.jax</code>, not <code>ss.options.kernels</code>)</td>
+<td>For an ODE run the kernels would take more than about half a second over, many ODE runs with different values, or a gradient</td>
+<td>About 0.5 s to start in a session</td>
+<td>2–10× faster than Numba’s kernels for long runs and many groups (less against Rust’s)</td>
+<td>The ODE (equal to the kernels up to rounding), gradients (<code>sim.gradient()</code>)</td>
+<td>The stochastic solvers, agents, and modules written as code (see <code>ss.solvers.why_not()</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Numba’s kernels are the reference: a change is made there first, then in Rust’s (<code>solvers/rust/README.md</code> says how), and <code>test_kernel_sets.py</code> checks that every set still gives the same numbers.</p>
+</section>
+<section id="what-decides-which-engine-runs-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="what-decides-which-engine-runs-a-model">What decides which engine runs a model</h2>
+<p>One ordered list of rules decides it, in <code>solvers/choose.py</code>, read for <code>solver='auto'</code>, for the <code>CapabilityError</code> of a solver that was asked for, and for <code>sim.kernel_reason()</code>. Each rule says what it looks for, the engines that can run a model with it, and the message; a module adds its own reasons with <code>agent_reasons()</code>, as the built-in ones do. In the table, <code>compartments</code> is one step at a time, <code>kernels</code> is the whole run in one call, and <code>jax</code> and <code>chain</code> are the ODE and the chain binomial (or tau-leaping) in JAX.</p>
+<div id="3de2466a" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ss.solvers.solver_table()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">what</th>
+<th data-quarto-table-cell-role="th">agents</th>
+<th data-quarto-table-cell-role="th">compartments</th>
+<th data-quarto-table-cell-role="th">kernels</th>
+<th data-quarto-table-cell-role="th">jax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>n_agents was given</td>
+<td>yes</td>
+<td>if asked</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>people were given</td>
+<td>yes</td>
+<td>if asked</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>How often or how long ago an event happened, w...</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>A step triggered by a product delivered by sev...</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>What a module says it needs agents for: see `a...</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">56</th>
+<td>solver="..." is stochastic (gradients are for ...</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">57</th>
+<td>Whatever stops the kernels taking the whole run</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">58</th>
+<td>"..." has a movement register</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">59</th>
+<td>A probability of 1 over a period at the start,...</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">60</th>
+<td>the rate of the transfer "..." of "..." change...</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+
+<p>61 rows × 5 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="execution-paths-and-the-tests-that-pin-them" class="level2">
+<h2 class="anchored" data-anchor-id="execution-paths-and-the-tests-that-pin-them">Execution paths and the tests that pin them</h2>
+<p>Each path below is checked against a reference where one exists: the ODE against SciPy and known answers, and the other paths against the ODE or against a path already checked. Files in <code>tests/</code> are the core tests, run on every change; those marked <code>devtests/</code> are the slower developer tests in <code>tests/devtests/</code>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Path</th>
+<th>When it is used</th>
+<th>Pinned by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ODE in the kernels</td>
+<td><code>ode</code>, or <code>'auto'</code> choosing it</td>
+<td><code>test_transitions.py::test_solvers</code> (within 1e-4 of SciPy, and the analytic final size); <code>test_kernels.py::test_ode</code> (whole run equals stepped run to 1e-9)</td>
+</tr>
+<tr class="even">
+<td>Kernels as plain Python, and in Rust</td>
+<td>before Numba’s are compiled; Rust’s when built</td>
+<td><code>test_kernel_sets.py</code> (equal to Numba’s, bit for bit, every solver); <code>devtests/test_kernels.py::test_numpy_ode</code> (the ODE in NumPy)</td>
+</tr>
+<tr class="odd">
+<td>ODE in JAX</td>
+<td>long runs, gradients, many parameter sets</td>
+<td><code>devtests/test_gradients.py::test_jax_run</code> (equals the kernels to 1e-9); <code>test_gradient</code> (against finite differences)</td>
+</tr>
+<tr class="even">
+<td><code>binomial</code>, <code>gillespie</code> in the kernels</td>
+<td>asked for by name</td>
+<td><code>devtests/test_contracts.py::test_solvers_agree</code> (means within 5% of the ODE), <code>test_exit_order</code>, <code>test_conservation</code>; <code>devtests/test_kernels.py::test_stochastic</code> (whole and stepped runs identical)</td>
+</tr>
+<tr class="odd">
+<td><code>tau</code> in the kernels</td>
+<td>asked for by name</td>
+<td><code>devtests/test_contracts.py::test_exit_order</code>; <code>test_kernels.py::test_stages</code>; <code>devtests/test_contracts_inference.py::test_particle_filter</code> (against the ODE at a large population)</td>
+</tr>
+<tr class="even">
+<td><code>binomial</code>, <code>tau</code> in JAX</td>
+<td>long stochastic runs</td>
+<td><code>devtests/test_gradients.py::test_jax_binomial</code> (same distribution as the kernels), <code>test_jax_engine</code></td>
+</tr>
+<tr class="odd">
+<td>Diseases tracked jointly</td>
+<td>one refers to another’s states</td>
+<td><code>devtests/test_contracts.py::test_crossing_conservation</code>, <code>test_joint_population</code>; <code>devtests/test_gradients.py::test_crossing</code></td>
+</tr>
+<tr class="even">
+<td>A declared model as agents</td>
+<td><code>abm</code>, or <code>'auto'</code> choosing it</td>
+<td><code>devtests/test_contracts.py::test_solvers_agree</code>, <code>test_agents_match_ode</code> (within 3% of the ODE), <code>test_dwell_forms</code></td>
+</tr>
+<tr class="odd">
+<td>Built-in modules as agents</td>
+<td><a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>, <a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a>, births and deaths</td>
+<td><code>test_baselines.py::test_baseline</code> (results identical to the recorded baseline)</td>
+</tr>
+<tr class="even">
+<td>Modules written as code</td>
+<td>their own <code>step()</code>, alone or beside a declared model</td>
+<td><code>test_composition.py</code>; <code>devtests/test_contracts.py::test_coded_beside</code> (code beside a declared model leaves its results unchanged)</td>
+</tr>
+<tr class="odd">
+<td>Particle filter</td>
+<td><a href="../api/fit.html#starsim.fit.ParticleFilter" title="0"><code>ss.fit.ParticleFilter</code></a></td>
+<td><code>devtests/test_contracts_inference.py::test_particle_filter</code> (against direct runs)</td>
+</tr>
+<tr class="even">
+<td><code>@ss.jit</code></td>
+<td>users’ compiled code</td>
+<td><code>test_jit.py</code> (same results compiled as run as Python)</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../contributing/developer.html#testing">developer guide</a> explains the suites these come from, and which to run after a change.</p>
+</section>
+<section id="limits" class="level2">
+<h2 class="anchored" data-anchor-id="limits">Limits</h2>
+<ul>
+<li>Solvers that take whole steps differ from the ODE by an amount of order <code>dt</code>, which is why the agreement tests use a quarter-day step. With whole weekly steps (<code>substeps=1</code>) on an SIR with daily rates, the chain binomial’s peak is about a third higher than the ODE’s; by default it takes enough substeps to stay within a few percent. A compartment holds about x/2 too many people, for x its total rate out times the substep, so <code>Compartmental.binomial_substeps()</code> keeps x to 5%, and near the epidemic threshold (where a small bias in R moves prevalence a lot) to a tenth of |R0 − 1|.</li>
+<li>Agreement is tested on simple models. For complex ones (a sexual network as an ODE), solvers are expected to differ; the guarantee is that Starsim says what it approximated.</li>
+<li>Gillespie is exact but takes events one at a time; for millions of events in groups that mix, <code>'tau'</code> is the practical choice.</li>
+<li>Gradients exist only for <code>solver='ode'</code> and for rates written as expressions. One model can’t yet mix solvers (an ODE with rare importations as discrete events).</li>
+</ul>
+</section>
+<section id="in-the-design-record" class="level2">
+<h2 class="anchored" data-anchor-id="in-the-design-record">In the design record</h2>
+<ul>
+<li><a href="https://github.com/starsimhub/lingua_franca_design/blob/main/docs/design/12-backends.md">12-backends.md</a>: the solvers, the approximations, and how a model is built for each</li>
+<li><a href="https://github.com/starsimhub/lingua_franca_design/blob/main/docs/design/10-execution.md">10-execution.md</a>: the loop the engines are called from</li>
+<li><a href="https://github.com/starsimhub/lingua_franca_design/blob/main/docs/design/18-conformance.md">18-conformance.md</a>: the agreement contracts between solvers</li>
+</ul>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://mrc-ide.github.io/dust2/">dust2: Introduction</a>: the engine behind odin2, which runs one compiled model deterministically or as many stochastic particles, as Starsim’s compartmental engine does</li>
+<li><a href="https://stochss.github.io/GillesPy2/">GillesPy2</a>: exact (Gillespie) and tau-leaping solvers for stochastic compartmental models, with several compiled backends</li>
+<li><a href="https://numba.readthedocs.io/en/stable/user/5minguide.html">Numba: A 5-minute guide</a>: the compiler behind Starsim’s reference kernels and <code>ss.jit</code></li>
+<li><a href="https://docs.jax.dev/en/latest/quickstart.html">JAX: Quickstart</a>: the library Starsim uses to differentiate a run and to run many at once</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../user_guide/architecture_execution.html" class="pagination-link" aria-label="Model execution">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Model execution</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../user_guide/architecture_transmission.html" class="pagination-link" aria-label="Transmission">
+        <span class="nav-page-text">Transmission</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

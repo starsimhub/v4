@@ -1,0 +1,3643 @@
+{
+  "version": "4.0.0",
+  "description": "A fast, flexible disease modeling framework, from compartments to agents",
+  "notes": [
+    "Starsim is a framework for modeling the spread of disease, as compartments (deterministic or stochastic, in one place or many) or as agents on dynamic transmission networks, including co-transmission of multiple diseases and the effect of interventions. A sim with `solver=\"auto\"` (the default) runs as compartments if it can, and as agents if it needs them.",
+    "Everything in the core package is available from the top level: `import starsim as ss`, then e.g. `ss.Sim()`. Do not import submodules directly.",
+    "Example and reference modules (e.g. `ssl.Cholera`) are in the library: `import starsim.library as ssl`. They are illustrative rather than validated.",
+    "Signatures are as introspected from the current version; summaries are the first paragraph of each docstring.",
+    "Module arguments default to `None` in the signature; the actual defaults are listed as \"Default pars\", and can be overridden by keyword or via `pars=dict(...)`.",
+    "Aliases are alternative names for the same object; the canonical name is the one listed, and is the one to prefer when writing new code.",
+    "Methods are listed under the class that defines them (e.g. `ss.Result.select()` under `ss.Result`), not under each subclass that inherits them, and only those that the documentation uses; the others are internal.",
+    "Any model that is not in the library (an SIRS, an SEIRS, a model with more states) is written as a declared disease: `S, I, R = ss.states(3)`, then `ss.Disease(S >> I @ beta * I, I >> R @ ss.days(7), R >> S @ ss.days(90))`. There a duration alone (`ss.days(7)`) is the mean of an exponential.",
+    "The library `ss.SIR`, `ss.SIS`, and `ss.SEIR` are the textbook models: a duration is the mean of an exponential, and nobody dies of the infection unless `p_death` is given. Starsim 3's versions (lognormal `dur_inf`, `p_death=0.01`) are `ssl.AgentSIR`, `ssl.AgentSIS`, and `ssl.AgentSEIR`.",
+    "`init_prev=` seeds the state a new infection enters (`E` in an SEIR, so nobody starts infectious); `init_n=dict(I=10)` starts people in a named state.",
+    "The population of a sim is `total_pop=`, under every solver. `n_agents=` is the number of agents: giving it makes `solver=\"auto\"` run as agents, and a compartmental run uses it as `total_pop` if that is not given.",
+    "Many runs (`sim.run(n_runs=10)` or `ss.parallel(sim, n_runs=10)`) give an `ss.MultiSim`, whose results have a run axis first: `msim.results.sir.infection.values` has one row per run, and `.median()` and `.quantiles()` summarize over the runs. `msim.sims` has the sim of each run."
+  ],
+  "links": [
+    {
+      "title": "Documentation",
+      "url": "https://starsim.org/v4",
+      "description": "tutorials, user guide, and API reference"
+    },
+    {
+      "title": "Source",
+      "url": "https://github.com/starsimhub/starsim",
+      "description": "the Starsim repository"
+    },
+    {
+      "title": "Style guide",
+      "url": "https://github.com/starsimhub/styleguide",
+      "description": "the Starsim style guide"
+    },
+    {
+      "title": "Sciris",
+      "url": "https://docs.sciris.org/llms.txt",
+      "description": "the equivalent index for Sciris (`sc`), which Starsim uses extensively"
+    }
+  ],
+  "n_entries": 228,
+  "aliases": {},
+  "entries": [
+    {
+      "name": "ss.AgeGroup",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(low, high, do_cache=True)",
+      "summary": "A simple age-based filter that returns uids of agents that match the criteria",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.AlreadyRunError",
+      "kind": "class",
+      "module": "other",
+      "signature": "(*args)",
+      "summary": "A sim that has already run (or been finalized) is stepped, finalized, or added to again; `sim.run()` runs it again from the start",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Analyzer",
+      "kind": "class",
+      "module": "analyzers",
+      "signature": "(name=None, label=None, **kwargs)",
+      "summary": "Base class for Analyzers. Analyzers are used to provide more detailed information about a simulation than is available by default -- for example, pulling states out of sim.people on a particular timestep before they get updated on the next step.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Arr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, dtype=None, default=None, nan=None, label=None, raw=None, skip_init=False, people=None, mock=None, columns=None, shared=False)",
+      "summary": "Store a state of the agents (e.g. age, infection status, etc.) as an array.",
+      "pars": {},
+      "methods": {
+        "isin()": "Return a `BoolArr` that is True wherever the array's value is in `values`",
+        "auids": "Link to the indices of active agents -- sim.people.auids",
+        "count()": "Count the number of nonzero (truthy) values among active agents (for 2D arrays, use [\u2026]",
+        "values": "Return the values of the active agents",
+        "set()": "Set the values for the specified UIDs",
+        "notnan": "Return BoolArr for non-NaN values",
+        "convert()": "Check if an object is an array-like, and convert it to this array's type if so",
+        "astype()": "Convert the Arr type, e.g. `arr.astype(ss.IntArr)`; other types (e.g. `int`) return a [\u2026]",
+        "true()": "Efficiently convert truthy values to UIDs",
+        "false()": "Reverse of true(); return UIDs of falsy values",
+        "col()": "Return column `v` of a 2D array as a 1D `Arr`, e.g. `(imm.col(2) > 0.5).uids` or [\u2026]",
+        "to_json()": "Export to JSON"
+      },
+      "example": "# Create a standalone Arr for quick testing\nage = ss.Arr('age', default=0, mock=5) # 5 = length if not supplying a real People object\nage[:] = [20, 30, 40, 50, 60]\nage.mean()  # Returns 40.0\n\n# Use within a simulation\nsim = ss.Sim(n_agents=100).init()\nsim.people.age.mean()  # Mean age of active agents\n\n# Create a 2D array, e.g. immunity to each of 3 variants\nimm = ss.FloatArr('imm', default=0, columns=3, mock=5)\nimm[ss.uids([0, 1]), 2] = 0.8 # Set immunity to variant 2 for agents 0 and 1\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.attr",
+      "kind": "class",
+      "module": "other",
+      "signature": "(value, on=None, combine='last', init=None, name=None, label=None)",
+      "summary": "A value for each person: drawn at an event, recorded at an event, drawn once when the person is made (a trait), or derived",
+      "pars": {},
+      "methods": {},
+      "example": "cd4_latent = ss.attr(ss.normal(500, 50), on=infection)                  # Drawn\ncd4_preart = ss.attr('cd4', on=start_art)                               # Recorded, just before starting\nrel_sev    = ss.attr(ss.normal(1, 0.2))                                 # A trait\ncd4        = ss.attr({latent: cd4_latent, falling: cd4_latent*(1 - falling.progress)}) # Derived\ndose       = ss.attr({contact: dose_hi, environment: cfu.n/N*share})        # Recorded, a value for each event\nnab        = ss.attr(ss.uniform(0.5, 0.95), on=clearance, combine='max', init=0)\nn_inf      = ss.attr(1, on=I.enter, combine='sum', init=ss.poisson(lam=ss.ppl.age/20)) # Past infections at the start",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Base",
+      "kind": "class",
+      "module": "modules",
+      "signature": "()",
+      "summary": "The parent class for Sim and Module objects",
+      "pars": {},
+      "methods": {
+        "dt": "Get the current module timestep",
+        "ti": "Get the current module timestep",
+        "now": "Shortcut to self.t.now()",
+        "timevec": "Shortcut to self.t.timevec",
+        "copy()": "Perform a deep copy of the module/sim"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.bernoulli",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(p=0.5, **kwargs)",
+      "summary": "Bernoulli distribution: return True or False with the specified probability (which can be an array)",
+      "pars": {},
+      "methods": {
+        "filter()": "Return UIDs that correspond to True, or optionally return both True and False",
+        "split()": "Alias to filter(uids, both=True)"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.beta_dist",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(a=1.0, b=1.0, **kwargs)",
+      "summary": "Beta distribution",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.beta_mean",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(mean=0.5, var=0.05, force=False, **kwargs)",
+      "summary": "Beta distribution paramterized by the mean",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.binom",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(n=1, p=0.5, **kwargs)",
+      "summary": "Binomial distribution: the number of successes in n trials; as a likelihood (see `sim.fit()`), the model's value is the probability, e.g. the positives among n tested",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's above a mean of 30 [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.birth",
+      "kind": "function",
+      "module": "other",
+      "signature": "(state=None, rate=None, per=None, n=1, sex=None, name=None, label=None)",
+      "summary": "An inflow of people: at a crude (per-person) birth rate, e.g. `ss.birth(S, rate=ss.peryear(0.02))`; or driven by a flow, e.g. `ss.birth(NP, per=preg.delivery, n=2)`, `n` children for each person who goes through the transition",
+      "pars": {},
+      "methods": {},
+      "example": "ss.Sim(sir, demographics=[ss.birth(rate=ss.peryear(0.02)), ss.death(rate=ss.peryear(0.01))])\nss.Sim(sir, demographics=[ss.birth(rate=20), ss.death(rate=10)]) # The same: per 1,000 people per year",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Births",
+      "kind": "class",
+      "module": "demographics",
+      "signature": "(pars=None, birth_rate=None, rel_birth=None, min_age=None, max_age=None, rate_units=None, metadata=None, **kwargs)",
+      "summary": "Create births based on rates, rather than based on pregnancy.",
+      "pars": {
+        "birth_rate": "ss.peryear(20)",
+        "rel_birth": "1",
+        "min_age": "15",
+        "max_age": "50",
+        "rate_units": "0.001"
+      },
+      "methods": {
+        "init_pre()": "Note if the birth rates are far apart in time",
+        "update_results()": "Calculate new births and crude birth rate"
+      },
+      "example": "ss.Births(birth_rate=35) # 35 per 1,000 people per year\nss.Births(birth_rate=0.035) # The same, per person\nss.Births(birth_rate=0.5, rate_units=1000) # 0.5 per 1,000, which needs rate_units to say so",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.BoolArr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, **kwargs)",
+      "summary": "Subclass of `ss.Arr` with defaults for booleans.",
+      "pars": {},
+      "methods": {
+        "notnan": "Always True for BoolArr (booleans cannot be NaN)",
+        "uids": "Alias to Arr.true",
+        "split()": "Return UIDs of values that are true and false as separate arrays"
+      },
+      "example": "# Create a standalone BoolArr\ninfected = ss.BoolArr('infected', mock=5)\ninfected[ss.uids([0, 2, 4])] = True\ninfected.count()  # Returns 3\ninfected.uids     # Returns ss.uids([0, 2, 4])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.BoolState",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, **kwargs)",
+      "summary": "A boolean array being used as a state.",
+      "pars": {},
+      "methods": {
+        "n": "The number of people in the state: its agents, each counted by its weight [\u2026]",
+        "time": "For a state of a declared disease run as agents: the time each person in it (or leaving [\u2026]",
+        "stays": "For a state of a declared disease run as agents: how long each person who has been [\u2026]",
+        "set()": "Set the values for the specified UIDs, telling whatever keeps count of the state (see [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.box",
+      "kind": "class",
+      "module": "products",
+      "signature": "(dur, decay=None, stages=10)",
+      "summary": "Protection that is full for a time, then lost at once, or (with `decay=`) fading exponentially: the `waning=` of a product",
+      "pars": {},
+      "methods": {},
+      "example": "rtss = ss.Vaccine(efficacy=0.8, waning=ss.box(dur=ss.days(180), decay=ss.days(730)))\nnet = ss.Vaccine(efficacy=0.9, waning=ss.box(dur=ss.years(3))) # Full for three years, then none",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.BreastfeedingNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, **kwargs)",
+      "summary": "Network for breastfeeding transmission",
+      "pars": {
+        "memory": "None",
+        "dur": "None"
+      },
+      "methods": {
+        "init_pre()": "Find the sim's ss.Pregnancy, which pairs each newborn with a mother who breastfeeds (see [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.by",
+      "kind": "class",
+      "module": "parameters",
+      "signature": "(table=None, dims=None, **kwargs)",
+      "summary": "A value for each level of one or more stratifications, or of people's own properties",
+      "pars": {},
+      "methods": {
+        "to_json()": "The value as plain data, for `sim.to_json()`",
+        "map()": "A new ss.by with a function applied to each value, e.g. `1/by` (with several dimensions [\u2026]",
+        "items": "Every value it holds",
+        "values": "The values, if there is one dimension",
+        "keys()": "How the values along one dimension are given: ('edges', array) for a table's column of [\u2026]",
+        "check()": "Check the values against the sim's dimensions, and that a property of people that is not [\u2026]"
+      },
+      "example": "beta = ss.by(age=[0.08, 0.05, 0.03])\nbeta = ss.by(age=[0.08, 0.05, 0.03], sex=[1.0, 0.8]) # One per age group and sex: the product\ninit = ss.by(pd.DataFrame(age=['child', 'adult'], patch=['north', 'north'], value=[10, 5])) # Every other combination is 0\npop = ss.by([[3000, 1000], [5000, 2000]], dims=['age', 'patch']) # Ages by row, places by column\nbeta = ss.by(age=[ss.timeseries({2020: 0.08, 2021: 0.04}), 0.05, 0.03]) # Children's value changes in 2021\nmu = ss.by(sex=dict(female=0.008, male=0.011)) # From people.female, with or without a dimension by sex\np = ss.by(dict(age=range(15, 50), value=vals)) # By single year of age (bins with these lower edges)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.CapabilityError",
+      "kind": "class",
+      "module": "other",
+      "signature": "(...)",
+      "summary": "The requested solver cannot run part of the model. Three cases: there is no sensible approximation (contact tracing, transmission trees, agent-only custom code); a function or condition asked for something that exists only per agent in a compartmental run; or an approximation would be needed and [\u2026]",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.choice",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(a=2, p=None, replace=True, **kwargs)",
+      "summary": "Random choice between discrete options",
+      "pars": {},
+      "methods": {
+        "ppf()": "Map uniform values to choices via the inverse CDF (one draw per slot)"
+      },
+      "example": "# Simulate 10 die rolls\nss.choice(6, strict=False)(10) + 1\n\n# Choose between specified options each with a specified probability (must sum to 1)\nss.choice(a=[30, 70], p=[0.3, 0.7], strict=False)(10)\n\n# A row of probabilities per agent: here by age group, from a table of age groups \u00d7 choices\ntable = np.array([[0.7, 0.2, 0.1], [0.3, 0.4, 0.3]])\ndef p_by_age(self, sim, uids):\n    return table[(sim.people.age[uids] >= 18).astype(int)]\nmethod = ss.choice(a=['none', 'pill', 'iud'], p=p_by_age) # In a module's __init__()\nchosen = self.method.rvs(uids) # In its step()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.choose_n",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(n=1, weights=None, die=False, **kwargs)",
+      "summary": "Choose exactly n agents (without replacement) from a set of candidate UIDs",
+      "pars": {},
+      "methods": {
+        "rvs()": "Return a boolean array of whether each agent is chosen (n can be UIDs or a size), so [\u2026]",
+        "filter()": "Return the chosen UIDs (sorted), i.e. min(n, len(uids)) of them; if both=True, also [\u2026]",
+        "split()": "Alias to filter(uids, both=True)"
+      },
+      "example": "# Seed exactly 20 infections of a disease written as code\nsir = ssl.AgentSIR(init_prev=ss.choose_n(20))\n\n# Choose 5 agents, weighted by age\nchooser = ss.choose_n(5, weights=lambda self, sim, uids: sim.people.age[uids])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.compile",
+      "kind": "function",
+      "module": "other",
+      "signature": "(verbose=True)",
+      "summary": "Compile the kernels now (those of the compartmental solvers, the passes over the agents and the rest of what sims with agents use), so that no run waits for them: e.g. after installing Starsim (as `starsim compile` does), in a Docker image, in CI, or before a calibration",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.compile_status",
+      "kind": "function",
+      "module": "other",
+      "signature": "()",
+      "summary": "Whether Starsim's numerical code is compiled, without compiling anything (it takes a few milliseconds)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Connector",
+      "kind": "class",
+      "module": "connectors",
+      "signature": "(name=None, label=None, **kwargs)",
+      "summary": "Base class for Connectors, which mediate interactions between disease (or other) modules",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.constant",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(v=0.0, **kwargs)",
+      "summary": "Constant (delta) distribution: equivalent to np.full()",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.contacts",
+      "kind": "function",
+      "module": "networks",
+      "signature": "(matrix=None, ages=None, dims=None, name=None, source=None, layer='all', unit=None)",
+      "summary": "Mixing between groups from a contact matrix; returns `ss.MixingPools`",
+      "pars": {},
+      "methods": {},
+      "example": "S, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.05*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\nmixing = ss.contacts([[10, 3], [3, 5]], ages=[0, 18])\nsim = ss.Sim(sir, networks=mixing, unit='day', stop=100).run()\n\nsir.stratify(risk=['low', 'high'])\nmixing = ss.contacts([[2, 1], [1, 8]], dims='risk')\n\nhome, school = ss.contacts('Kenya', layer=['home', 'school']) # Contacts a day, by 5-year age group\nsim = ss.Sim(sir, networks=[home, school], stratify=dict(age=[0, 5, 18, 65]), unit='day', stop=100)\n\n# A product: by age, then 90% of contacts within one's own area\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.age",
+      "kind": "function",
+      "module": "data",
+      "signature": "(place='world', year=None)",
+      "summary": "The ages of a place's people, as the `age_data` of `ss.People`: counts by 5-year age group",
+      "pars": {},
+      "methods": {},
+      "example": "ppl = ss.People(10_000, age_data=ss.data.age('Kenya', year=2020))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.age_edges",
+      "kind": "function",
+      "module": "data",
+      "signature": "(labels)",
+      "summary": "The lower edge of each age group from its label ('0-4', '75+', or '3'), as floats: the inverse of `age_labels()`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.age_labels",
+      "kind": "function",
+      "module": "data",
+      "signature": "(edges)",
+      "summary": "The label of each age group from its lower edge, as a stratification by age labels them, e.g. '0-4', '5-9', and '75+' (a single year is '3')",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.age_split",
+      "kind": "function",
+      "module": "data",
+      "signature": "(edges, ages, counts)",
+      "summary": "The share of people in each age group, from counts by 5-year age group, with ages uniform within each",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.contacts",
+      "kind": "function",
+      "module": "data",
+      "signature": "(place, source=None, layer='all')",
+      "summary": "A contact matrix by age for a named place, for `ss.contacts('Kenya')`",
+      "pars": {},
+      "methods": {},
+      "example": "school = ss.data.contacts('Kenya', layer='school')\nschool.loc['10-14', '10-14'] # Contacts a day of a child aged 10-14 at school with children aged 10-14\nmixing = ss.contacts(school) # The same as ss.contacts('Kenya', layer='school')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.geography",
+      "kind": "function",
+      "module": "data",
+      "signature": "(place, level=1, year=None, places=None)",
+      "summary": "The administrative units of a place, for `ss.geo.geography('Kenya', level=1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.population",
+      "kind": "function",
+      "module": "data",
+      "signature": "(place, year=None, revision=None)",
+      "summary": "The population of a named place by age and sex, for `ss.people('Kenya', year=2024)`",
+      "pars": {},
+      "methods": {},
+      "example": "pop = ss.data.population('Kenya', year=2024)\npop.loc['0-4'].sum() # Children under 5\npop.attrs['ref']['study'] # The source",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.provider",
+      "kind": "function",
+      "module": "data",
+      "signature": "()",
+      "summary": "The data provider, `starsim_data`, imported when it is first used",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.data.rates",
+      "kind": "function",
+      "module": "data",
+      "signature": "(place, which, revision=None)",
+      "summary": "The UN World Population Prospects birth, death, or fertility rates of a named place, for `ss.Births(birth_rate='Kenya')`, `ss.Deaths(death_rate='Kenya')`, and `ss.Pregnancy(fertility_rate='Kenya')`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.date",
+      "kind": "class",
+      "module": "dates",
+      "signature": "(*args, day_round=True, allow_zero=None, **kwargs)",
+      "summary": "Define a point in time, based on `pd.Timestamp`",
+      "pars": {},
+      "methods": {
+        "years": "Return the date as a number of years",
+        "round()": "Round to a given interval (by default a day)",
+        "arange()": "Construct an array of dates",
+        "to_json()": "Returns a JSON representation of the date"
+      },
+      "example": "ss.date(2020) # Returns <2020-01-01>\nss.date(year=2020) # Returns <2020-01-01>\nss.date(year=2024.75) # Returns <2024-10-01>\nss.date('2024-04-04') # Returns <2024-04-04>\nss.date(year=2024, month=4, day=4) # Returns <2024-04-04>",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.DateArray",
+      "kind": "class",
+      "module": "dates",
+      "signature": "(arr=None, unit=None)",
+      "summary": "Lightweight wrapper for an array of dates",
+      "pars": {},
+      "methods": {
+        "years": "Represent the dates as floating point years"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.datedur",
+      "kind": "class",
+      "module": "dates",
+      "signature": "(value=None, **kwargs)",
+      "summary": "A calendar duration, e.g. `ss.datedur(months=1)`: a thin wrapper of `pd.DateOffset`",
+      "pars": {},
+      "methods": {
+        "to()": "As a plain duration in a unit (e.g. 'year' or ss.years), approximately, as other [\u2026]",
+        "years": "The approximate number of years, e.g. ss.datedur(months=6).years is 0.5",
+        "months": "The approximate number of months",
+        "weeks": "The approximate number of weeks",
+        "days": "The approximate number of days"
+      },
+      "example": "ss.date('2020-01-31') + ss.datedur(months=1) # 2020-02-29\nss.datedur(years=1)/ss.datedur(months=1) # 12",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.days",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, base=None, **kwargs)",
+      "summary": "A duration in days, e.g. `ss.days(6)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.death",
+      "kind": "function",
+      "module": "other",
+      "signature": "(state=None, rate=None, dur=None, lifetable=None, name=None, label=None, **kwargs)",
+      "summary": "An outflow of people, e.g. `ss.death(I, rate=ss.peryear(0.1))`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Deaths",
+      "kind": "class",
+      "module": "demographics",
+      "signature": "(pars=None, rel_death=None, death_rate=None, rate_units=None, metadata=None, lifetable=None, **kwargs)",
+      "summary": "Configure disease-independent \"background\" deaths.",
+      "pars": {
+        "rel_death": "1",
+        "death_rate": "ss.peryear(10)",
+        "rate_units": "0.001"
+      },
+      "methods": {
+        "init_pre()": "Note if the death rates are far apart in time",
+        "step()": "Select people to die"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.DegreeNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, n_contacts=None, dur=None, concurrency=None, max_contacts=None, match=None, acts=None, where=None, between=None, **kwargs)",
+      "summary": "Partnerships that form and dissolve, with a target number of partners at a time",
+      "pars": {
+        "memory": "None",
+        "between": "None",
+        "n_contacts": "1.0",
+        "dur": "10",
+        "concurrency": "None",
+        "max_contacts": "None",
+        "match": "None",
+        "acts": "None",
+        "where": "None"
+      },
+      "methods": {
+        "active()": "Return boolean array of agents who can have partners: alive, and with `where=`, those it [\u2026]",
+        "degrees()": "The number of partners each person has",
+        "init_post()": "Start at the target: give each person a number of partners, and pair them at random (with [\u2026]",
+        "add_pairs()": "Pair the people looking for a partner: those who look on this step, given how many [\u2026]",
+        "check()": "Run the sim again, and compare the network it makes with the network's targets"
+      },
+      "example": "# EpiModel's introductory network: 175 partnerships among 500 people, 110 people with two or more partners, nobody with four or more, and partnerships lasting 50 steps\nnet = ss.DegreeNet(n_contacts=0.7, concurrency=0.22, max_contacts=3, dur=50)\n\n# Most partnerships within a risk group, and over half within a region\nnet = ss.DegreeNet(n_contacts=0.7, dur=50, match=dict(risk=0.8, region=0.6))\n\n# And four times as many partners in the high-risk group (with sim.stratify(risk=['low', 'high']))\nnet = ss.DegreeNet(n_contacts=ss.by(risk=[0.4, 1.6]), dur=50, match=dict(risk=0.8))\n\n# Needle sharing among people who inject drugs (a boolean property of people), with 20 injections a month in each partnership\nneedles = ss.DegreeNet(name='needles', where=ss.ppl.pwid, n_contacts=2, dur=ss.months(6), acts=ss.freqpermonth(20))\n\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Delivery",
+      "kind": "class",
+      "module": "interventions",
+      "signature": "(what=None, who=None, move=None, increment=None, start=None, stop=None, at=None, interval=None, where=None, coverage=None, capacity=None, when=None, deliver=None, trace=None, priority=None, queue=None, delay=None, disease=None, at_age=None, strain=None, name=None, label=None, **kwargs)",
+      "summary": "Deliver a product, or move people along a stratification; see `ss.vaccinate()`, `ss.screen()`, and `ss.treat()`",
+      "pars": {},
+      "methods": {
+        "cost": "The cost of each delivery: its product's",
+        "routine": "Whether each person is offered the product once, at the first step on which they are [\u2026]",
+        "init_pre()": "Find the disease and the product, check them against the sim, and set up what is delivered",
+        "convert()": "Convert a typed quantity to a plain number in the sim's unit",
+        "people()": "The number of people selected, whatever the results count in",
+        "step()": "Deliver the product to whoever it is due to in this step (at its time point, as for all [\u2026]",
+        "tabulated": "Whether the kernels can take this delivery in a whole run (see [\u2026]",
+        "take()": "Choose `n` people (a number of people, not agents) from the candidates, in the order of [\u2026]",
+        "report()": "Count the results, from the least severe (see `ss.Diagnostic.result_names`), and record [\u2026]",
+        "update_results()": "The coverage of what was delivered in the step",
+        "describe()": "A line saying what is delivered and how"
+      },
+      "example": "# Seeding: three people, chosen from everyone susceptible, infected every 30 days for ten years\nseeds = ss.Delivery(move=S >> I, capacity=3, start=ss.days(30), interval=ss.days(30), stop=ss.years(10))\n\n# A move along a stratification for 70% of people in two rounds, e.g. a campaign that leaves a mark\nrollout = ss.Delivery(move=dict(vaccinated=True), coverage=0.7, at=[5, 30], who=~sir.vaccinated)\n\n# Each round of a campaign adds a dose (with sim.stratify(doses=[0, 1, 2, 3]))\ncampaign = ss.Delivery(increment='doses', coverage=0.6, at=[2025, 2026, 2027])\n\n# A test, and a treatment of those who test positive, as two steps\nscreening = ss.screen(sensitivity=0.9, specificity=0.95, who=ss.ppl.age > 30, coverage=0.4, interval=7)\ntreatment = ss.treat(cure=0.95, who=screening.positive, coverage=0.8)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.demo",
+      "kind": "function",
+      "module": "sim",
+      "signature": "(run=True, plot=True, summary=True, show=None, **kwargs)",
+      "summary": "Create a simple demo simulation for Starsim",
+      "pars": {},
+      "methods": {},
+      "example": "ss.demo() # Run, plot, and show results\nss.demo(diseases='hiv', networks='sexual') # Run with different defaults",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Demographics",
+      "kind": "class",
+      "module": "demographics",
+      "signature": "(name=None, label=None, **kwargs)",
+      "summary": "Base class for demographic modules.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Diagnostic",
+      "kind": "class",
+      "module": "products",
+      "signature": "(sensitivity=1.0, specificity=1.0, results=None, delay=None, detects=None, cost=None, name=None, label=None, **kwargs)",
+      "summary": "A diagnostic test: what `ss.screen()` delivers",
+      "pars": {},
+      "methods": {
+        "tabulated": "A test has no step of its own (its deliveries give it), so it does not stop a whole run [\u2026]",
+        "diseases": "The names of the diseases whose states it is keyed by"
+      },
+      "example": "pcr = ss.Diagnostic(sensitivity=0.9, specificity=0.98, cost=4.00, delay=ss.days(2))\nxpert = ss.Diagnostic(sensitivity=dict(symptomatic=0.91, asymptomatic=ss.by(age=[0.73, 0.78]))) # By state, and by age group within a state\nhpv_dna = ss.Diagnostic(sensitivity={hpv16.I: 0.9, hpv16.CIN: 0.95, hpv18.I: 0.9}, specificity=0.97) # Across diseases\ncytology = ss.Diagnostic(results=dict(high_grade=dict(cin=0.9, cancer=1.0), ascus={'cin': 0.1, None: 0.1}, normal=None)) # ASCUS for 10% of people with neither CIN nor cancer",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Disease",
+      "kind": "class",
+      "module": "diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "A disease: states people are in and the transitions between them (declared), code, or both",
+      "pars": {},
+      "methods": {
+        "define_states()": "Define its states: declared states (`ss.State`), or for a disease written as code, arrays [\u2026]",
+        "define_transitions()": "Define its transitions, in its `__init__()`, after its states",
+        "define_results()": "Define results: for a declared disease, sums and ratios of states by name (e.g. [\u2026]",
+        "define_pars()": "Create or merge parameters; see `ss.Module.define_pars()`",
+        "stratify()": "Stratify the disease by a property of the people in it (age, risk, place, ...), in place, [\u2026]",
+        "transitions": "The table of declared transitions; printing it also shows the matrix of sources by [\u2026]",
+        "states": "Its declared states (`ss.State`) by name, e.g. `'second_line' in tb.states` or `[s for s [\u2026]",
+        "count()": "The number of people now for whom a condition holds, under every solver (as agents, each [\u2026]",
+        "describe()": "Print the resolved model, with every guessed default marked",
+        "equations()": "Print the ODE system of the declared transitions, with symbolic parameter names",
+        "diagram()": "The state-transition diagram, as a Mermaid flowchart (https://mermaid.js.org), which a [\u2026]",
+        "R0()": "The basic reproduction number, from the next-generation matrix at the disease-free state",
+        "init_pre()": "Link the disease to the sim, create its engine and objects, initialize results, and start [\u2026]",
+        "init_post()": "Initialize the values of the states, and set the initial conditions of the declared states",
+        "step_state()": "State changes at the start of the step, before the networks and interventions, by a [\u2026]",
+        "step_die()": "Carry out state changes upon death: the agents who died leave every declared state (as [\u2026]",
+        "set_prognoses()": "Set prognoses upon acquisition, for a disease written as code: by default, add the agents [\u2026]",
+        "current_value()": "`rel_sus` or `rel_trans` (`key`) of each agent with the modifiers and products active on [\u2026]",
+        "move()": "Move people between this disease's states from code, the same way under every solver: [\u2026]",
+        "infect()": "Infect some agents now, from code (e.g. a strain introduced on a date): those in the [\u2026]",
+        "make_naive()": "Put agents back in the first state, as if they had never had the disease; for dynamic [\u2026]",
+        "step()": "Take the declared transitions of the step, those that are not contact-mediated and then [\u2026]",
+        "update_results()": "The counts of the states and the flows; for a disease written as code, the count of each [\u2026]"
+      },
+      "example": "# Operator form: declare the states, then the transitions\nS, I, R   = ss.states(3)\ninfection = S >> I @ 0.3 * I\nrecovery  = I >> R @ ss.days(10)\nsir = ss.Disease(infection, recovery, init_prev=0.01)\nss.Sim(sir, stop=100).run().plot()\n\n# Class form: for when there is behavior that is not a transition\nclass SIR(ss.Disease):\n    S, I, R   = ss.states(3)\n    infection = S >> I @ 0.3 * I\n    recovery  = I >> R @ ss.days(10)\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Dist",
+      "kind": "class",
+      "module": "dists",
+      "signature": "(dist=None, distname=None, name=None, unit=None, round=False, seed=None, offset=None, strict=True, sim=None, module=None, mock=False, **kwargs)",
+      "summary": "Base class for tracking one random number generator associated with one distribution, i.e. one decision per timestep.",
+      "pars": {},
+      "methods": {
+        "set()": "Set (change) the distribution type, or one or more parameters of the distribution",
+        "state": "Get the current state",
+        "init()": "Calculate the starting seed and create the RNG",
+        "rand()": "Simple way to get simple random numbers",
+        "ppf()": "Return default random numbers for array parameters; not for the user",
+        "rvs()": "Get random variates -- use this!",
+        "to_json()": "Return a dictionary representation of the Dist",
+        "shrink()": "Shrink the size of the distribution for saving to disk; NB, also clears per-agent [\u2026]",
+        "plot_hist()": "Plot the current state of the RNG as a histogram (from a copy initialized on its own, if [\u2026]"
+      },
+      "example": "# Create a Bernoulli distribution\np_death = ss.bernoulli(p=0.1).init(force=True)\np_death.rvs(50) # Create 50 draws\n\n# Create a normal distribution that's also a timepar\ndur_infection = ss.normal(loc=12, scale=2, unit='years')\ndur_infection = ss.normal(loc=ss.years(12), scale=2) # Same as above\ndur_infection = ss.normal(loc=ss.years(12), scale=ss.months(24)) # Same as above, perform time unit conversion internally\ndur_infection.init(force=True).plot_hist() # Show results\n\n# Create a duration that is rounded to the nearest whole number of days\ndur_latent = ss.lognorm_ex(mean=ss.days(4.5), std=ss.days(1.5), round='nearest')\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.dur",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, base=None, **kwargs)",
+      "summary": "Base class for durations",
+      "pars": {},
+      "methods": {
+        "to_dt()": "Convert this duration to a number of timesteps; see `TimePar.to_dt()`",
+        "arange()": "Construct an array of dur instances"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.DynamicNetwork",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, edges=None, memory=None, **kwargs)",
+      "summary": "A network where partnerships update dynamically",
+      "pars": {
+        "memory": "None"
+      },
+      "methods": {
+        "step()": "Remove expired partnerships and add new ones",
+        "find_contacts()": "Find all contacts of the specified people (see `ss.Network.find_contacts()`), including, [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.emigration",
+      "kind": "function",
+      "module": "other",
+      "signature": "(state=None, rate=None, dur=None, name=None, label=None)",
+      "summary": "People leaving the population, e.g. `ss.emigration(rate=ss.peryear(0.01))`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.erlang",
+      "kind": "function",
+      "module": "distributions",
+      "signature": "(k=1, mean=1.0, **kwargs)",
+      "summary": "Erlang distribution: the sum of `k` exponential stages, given by its number of stages and its mean",
+      "pars": {},
+      "methods": {},
+      "example": "ss.erlang(k=3, mean=ss.days(10))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.expon",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(scale=1.0, **kwargs)",
+      "summary": "Exponential distribution",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's for unusual [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.export_to",
+      "kind": "function",
+      "module": "other",
+      "signature": "(sim, format, filename=None, verbose=None)",
+      "summary": "Write a sim in another format (`sim.save()` and `ss.save()` write Starsim's own, a gzipped pickle that `ss.load()` reads)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.abc_smc",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(distance, logprior, z0, particles=200, generations=8, quantile=0.5, tolerance=None, min_acceptance=0.02, seed=None, verbose=True)",
+      "summary": "Approximate Bayesian computation by sequential Monte Carlo (Beaumont et al. 2009): a posterior without a likelihood",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.compare_models",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sims, data=None, holdout=0.25, folds=None, **kwargs)",
+      "summary": "Compare models by how well they predict data they were not fitted to",
+      "pars": {},
+      "methods": {},
+      "example": "comp = ss.fit.compare_models([sim_sir, sim_seir], data=df)\ncomp.summarize()\ncomp.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.diagnose",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(draws)",
+      "summary": "The R-hat (near 1 if the chains agree) and the effective sample size of each value, from draws (chains \u00d7 draws \u00d7 values)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.Fit",
+      "kind": "class",
+      "module": "fit",
+      "signature": "(sim, before, pars, table, trials, method, mismatch, mismatch_before, measure, samples, diagnostics, converged, why, scores, study=None)",
+      "summary": "The result of fitting a sim to its data; see `sim.fit()`",
+      "pars": {},
+      "methods": {
+        "project()": "Run the fitted model forward under each scenario, with the uncertainty in the fitted [\u2026]",
+        "summarize()": "Print the goodness of fit before and after, and return the estimates (a dataframe), which [\u2026]",
+        "to_df()": "Every evaluation: the parameter values tried, and the objective at each",
+        "plot()": "Plot the results that have data against it, before and after fitting; a flow with data at [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_abc_smc",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, particles=None, generations=8, quantile=0.5, tolerance=None)",
+      "summary": "A posterior without a likelihood, by approximate Bayesian computation (see `abc_smc()`): the runs within a shrinking distance of the data",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60, solver='binomial')\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nfit = ss.Sim(sir, data=data, **pars).fit(method='abc-smc', particles=100, generations=6)\nprint(fit.table, fit.samples.head())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_if2",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, particles=1000, iterations=50, cooling=0.5, sd=0.05, chains=4)",
+      "summary": "Maximum likelihood by iterated filtering (IF2; Ionides et al. 2015): passes of a particle filter in which each particle's values are perturbed by a shrinking random walk, and selected with it (see `Swarm`)",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60, solver='binomial')\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nsim = ss.Sim(sir, data=data, **pars)\nfit = sim.fit(method='if2', likelihood=dict(cases=ss.poisson()), particles=300, iterations=50)\nprint(fit.pars, fit.converged)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_nuts",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, draws=500, warmup=500, chains=4, scan=None)",
+      "summary": "The No-U-Turn sampler, each chain from an optimum found from one of the best points of a scan that are apart: the best, and others nearly as good (so that chains caught in different modes disagree, and none starts in a mode far below the best), on the log-density as one function in JAX if the model [\u2026]",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60)\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nsim = ss.Sim(sir, data=data, **pars)\nfit = sim.fit(method='nuts', likelihood=dict(cases=ss.poisson()), draws=200, warmup=200, chains=2)\nprint(fit.table, fit.samples.head())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_optuna",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, n_trials=100, n_workers=None, storage=None, **kwargs)",
+      "summary": "Optuna's tree-structured Parzen estimator, from the initial values: a best fit, with the spread of the best trials, and Optuna's study (`fit.study`)",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60, solver='binomial')\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nfit = ss.Sim(sir, data=data, **pars).fit(method='optuna', n_trials=50, n_runs=4)\nprint(fit.pars, fit.converged)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_pmcmc",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, scan=None, particles=None, draws=1000, warmup=1000, chains=4, parallel=True)",
+      "summary": "Particle MCMC: a random walk, on a likelihood estimated by a particle filter (see `pmmh()`), from the best of the initial values and a spread of points",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60, solver='binomial')\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nsim = ss.Sim(sir, data=data, **pars)\nfit = sim.fit(method='pmcmc', likelihood=dict(cases=ss.poisson()), draws=200, warmup=200, chains=2, particles=100)\nprint(fit.table, fit.samples.head())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_scipy",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(problem, method='nelder-mead', scan=None, restarts=None, **options)",
+      "summary": "A method of `scipy.optimize.minimize` (one of `scipy_methods`), from each of the best few points of a scan that are apart (`restarts`), with gradients from JAX for the methods that use them; it has converged if the best two searches end at the same value. By default 3 searches, or 1 for a single [\u2026]",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), ss.outcome(0.5*infection, name='cases'), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60)\ndata = ss.Sim(sir, pars=dict(beta=0.5), rand_seed=2, **pars).run().to_data('cases', resample='week')\nfit = ss.Sim(sir, data=data, **pars).fit(method='nelder-mead', scan=5, restarts=2, maxiter=200)\nprint(fit.pars, fit.converged)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.fit_stages",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, stages, verbose=None, **kwargs)",
+      "summary": "Staged fitting: run each method in turn, each starting from the best fit of the one before; see `sim.fit()` with `method=` a list",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\n\nbeta = ss.par(0.3, bounds=[0.1, 1])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta*I\nsir = ss.Disease(infection, I >> R @ ss.days(8), init=dict(I=0.01), name='sir')\npars = dict(total_pop=10_000, unit='day', stop=60)\ndata = ss.Sim(sir, pars=dict(beta=0.5), **pars).run().to_data('I')\nfit = ss.Sim(sir, data=data, **pars).fit(method=['optuna', dict(method='nelder-mead', maxiter=100)], n_trials=30) # A search, then a polish\nprint(fit.pars)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.loglik",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, df=None, likelihood=None, weights=None, by_series=False)",
+      "summary": "The log-likelihood of a sim's data (larger is better): the sum over the series, which are treated as independent",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.mismatch",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, df=None, weights=None, gof=None)",
+      "summary": "The goodness of fit between a sim and its data (smaller is better)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.ModelComparison",
+      "kind": "class",
+      "module": "fit",
+      "signature": "(fits, table, holdout, measure, splits, clear=True)",
+      "summary": "The result of comparing models by how well they predict held-out data; see `ss.fit.compare_models()`",
+      "pars": {},
+      "methods": {
+        "summarize()": "Print what was held out, and return the table, which is printed too in a script (see [\u2026]",
+        "to_df()": "The table, as a dataframe",
+        "plot()": "Plot each model's fit and prediction against the data, with the held-out data hollow; [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.nuts",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(logdensity, z0, draws=500, warmup=500, chains=4, traced=False, forward=True, seed=None, verbose=True)",
+      "summary": "Sample from a posterior with the No-U-Turn sampler (NUTS, from BlackJAX), with Stan's warm-up of the step size and the mass matrix",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.Optimization",
+      "kind": "class",
+      "module": "fit",
+      "signature": "(**kwargs)",
+      "summary": "The result of allocating spending to maximize (or minimize) a result; see `ss.fit.optimize()`",
+      "pars": {},
+      "methods": {
+        "summarize()": "Print the result before and after, and return the allocation before and after (a [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.optimize",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, total=None, maximize=None, minimize=None, at=None, start=None, spend=None, bounds=None, target=None, maxiter=50, verbose=None)",
+      "summary": "Allocate spending between programs to maximize (or minimize) a result, keeping the total fixed; or find the least total that reaches a target",
+      "pars": {},
+      "methods": {},
+      "example": "sim = ss.import_from('hiv_framework.xlsx', format='atomica', databook='hiv_databook.xlsx', progbook='hiv_progbook.xlsx', programs_start=2020)\nbest = ss.fit.optimize(sim, start=2020, maximize='all_vs', at=2030)\nbest.summarize()\nleast = ss.fit.optimize(sim, start=2020, maximize='all_vs', at=2030, target=1.1*best.value) # The least money that reaches it",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.ParticleFilter",
+      "kind": "class",
+      "module": "fit",
+      "signature": "(sim, likelihood=None, weights=None)",
+      "summary": "An estimate of the likelihood of a stochastic sim's data, from a bootstrap particle filter (see `sim.fit()` with `method='pmcmc'`)",
+      "pars": {},
+      "methods": {
+        "filter()": "The estimate of the log-likelihood of the data of one disease (or of the diseases of a [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.pmmh",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(logpost, z0, draws=1000, warmup=1000, chains=4, particles=None, seed=None, parallel=True, verbose=True)",
+      "summary": "Sample from a posterior by particle marginal Metropolis-Hastings: a random-walk Metropolis sampler on a log-density that is estimated by a particle filter",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.prior_draws",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, n, seed=None)",
+      "summary": "Values of the model's parameters drawn from their priors (`ss.par(prior=...)`, or uniform over the bounds of one with bounds and no prior), for `ss.parallel(sim, priors=True)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.profile",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, par, values=None, level=0.95, **kwargs)",
+      "summary": "The profile likelihood of one parameter: at each of its values, the others refitted by maximum likelihood (`sim.fit(pars=...)`), and the confidence interval it gives",
+      "pars": {},
+      "methods": {},
+      "example": "prof = ss.fit.profile(sim, 'beta', likelihood=dict(cases=ss.poisson()))\nprof.interval # The 95% confidence interval of beta\nprof.table.plot('beta', 'nll')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.sensitivity",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(sim, pars=None, results=None, n=100, rand_seed=None, verbose=None)",
+      "summary": "Which parameters matter: Latin hypercube samples over the bounds of the parameters, with the partial rank correlation of each with a summary of each result",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.split_data",
+      "kind": "function",
+      "module": "fit",
+      "signature": "(df, holdout=0.25, folds=None)",
+      "summary": "Split data into the part to fit to and the part to predict, for each fold",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.fit.Swarm",
+      "kind": "class",
+      "module": "fit",
+      "signature": "(sim, fitted, set_pars, to_x, z0, sd=0.05, cooling=0.5, n_points=1)",
+      "summary": "The parameter values of each particle of IF2, iterated filtering, and the rates of the run that they give (see `sim.fit()` with method='if2')",
+      "pars": {},
+      "methods": {
+        "convert()": "A fitted value as the engine uses it: in the sim's unit, as [\u2026]",
+        "resample()": "The values of the particles drawn again"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.FloatArr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, **kwargs)",
+      "summary": "Subclass of `ss.Arr` with defaults for floats and ints.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.freq",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "Class for the number of events (rather than probability) in a specified period",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.freqperday",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "A number of events per day, e.g. `ss.freqperday(2)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.freqpermonth",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "A number of events per month, e.g. `ss.freqpermonth(2)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.freqperweek",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "A number of events per week, e.g. `ss.freqperweek(2)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.freqperyear",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "A number of events per year, e.g. `ss.freqperyear(2)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.gamma",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(a=None, scale=None, *, loc=0.0, mean=None, std=None, **kwargs)",
+      "summary": "Gamma distribution (specifically, scipy.stats.gamma)",
+      "pars": {},
+      "methods": {},
+      "example": "ss.gamma(a=2, scale=ss.days(5)) # A mean of 10 days\nss.gamma(mean=ss.days(10), std=ss.days(7)) # About the same\nss.par(1800, prior=ss.gamma(mean=1800, std=400))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.geo.geography",
+      "kind": "class",
+      "module": "geo",
+      "signature": "(data=None, names=None, pop=None, x=None, y=None, lat=None, lon=None, distances=None, adjacency=None, level=1, year=None, places=None)",
+      "summary": "A geography: named places with populations and positions, used as the levels of a spatial stratification",
+      "pars": {},
+      "methods": {},
+      "example": "kenya = ss.geo.geography('Kenya', level=1) # Its 47 counties\ntowns = ss.geo.geography(names=['north', 'south', 'east'], pop=[50_000, 30_000, 20_000], x=[0, 0, 40], y=[0, 30, 0])\ndistricts = ss.geo.geography('districts.shp') # Your own shapes, with columns name and population\nS, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.3*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\nsir.stratify(patch=towns, mobility=ss.geo.gravity(k=0.01))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.geo.gravity",
+      "kind": "class",
+      "module": "geo",
+      "signature": "(away=None, k=None, a=1.0, b=1.0, c=2.0)",
+      "summary": "The gravity model of movement: the share of their time that a person from place `i` spends in place `j` (or, for migration, the rate at which they move there) is `k \u00d7 pop[i]^(a\u22121) \u00d7 pop[j]^b / distance[i,j]^c`",
+      "pars": {},
+      "methods": {},
+      "example": "sir.stratify(patch=towns, mobility=ss.geo.gravity(away=0.1, a=1.0, b=1.0, c=2.0))\nsir.stratify(patch=towns, mobility=ss.geo.gravity(k=2e-4)) # A calibrated amount",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.geo.Mobility",
+      "kind": "class",
+      "module": "geo",
+      "signature": "(model=None, matrix=None, kind=None, away=None, data=None)",
+      "summary": "Movement between the levels of a spatial stratification",
+      "pars": {},
+      "methods": {
+        "load()": "Read a movement register, with a blank `from` or `to` (or a blank `states`) as None"
+      },
+      "example": "sir.stratify(patch=towns, mobility=ss.geo.Mobility(ss.geo.gravity(), kind='commute', away=0.4))\nsir.stratify(patch=['a', 'b'], mobility=ss.geo.Mobility(matrix=[[0, 0.1], [0.2, 0]]))\nsir.stratify(herd=herds, mobility=ss.geo.Mobility(data='movements.csv'))\n\n# LASER's coupling, with the force of infection moving: M[i,k] is the share of i's force that goes to k\nsir.stratify(patch=places, mobility=ss.geo.Mobility(matrix=M, kind='force'))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.geo.radiation",
+      "kind": "class",
+      "module": "geo",
+      "signature": "(away=None, k=None)",
+      "summary": "The radiation model of movement (Simini et al. 2012), which has no parameters to fit: of the people from place `i` who travel, the share who go to place `j` is `pop[i] \u00d7 pop[j] / ((pop[i] + s) \u00d7 (pop[i] + pop[j] + s))`, where `s` is the population of the other places nearer to `i` than `j` is",
+      "pars": {},
+      "methods": {},
+      "example": "sir.stratify(patch=towns, mobility=ss.geo.radiation(away=0.1))\nsir.stratify(patch=towns, mobility=ss.geo.Mobility(ss.geo.radiation(k=2e-5), kind='migrate')) # 2e-5 moves per person per unit of time",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.histogram",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(values=None, bins=None, density=False, data=None, **kwargs)",
+      "summary": "Sample from a histogram with defined bins",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse of the CDF, which is piecewise linear"
+      },
+      "example": "# Sample from an age distribution\nage_bins = [0,    10,  20,  40,  65, 100]\nage_vals = [0.1, 0.1, 0.3, 0.3, 0.2]\nh1 = ss.histogram(values=age_vals, bins=age_bins, strict=False)\nh1.plot_hist()\n\n# Create a histogram from data\ndata = np.random.randn(10_000)*2+5\nh2 = ss.histogram(data=data, strict=False)\nh2.plot_hist(bins=100)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.immigration",
+      "kind": "function",
+      "module": "other",
+      "signature": "(state=None, rate=None, name=None, label=None)",
+      "summary": "People arriving from outside the population, e.g. `ss.immigration(S, rate=ss.peryear(100))`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.immunity",
+      "kind": "class",
+      "module": "other",
+      "signature": "(*args, due_to=None, rel_sus=None, combine='max')",
+      "summary": "Protection between strains: what having (or having had) one strain does against each strain",
+      "pars": {},
+      "methods": {
+        "source": "What protects, in words: the names of the states",
+        "names": "The names of the states that protect, from what due_to= was given: states, their names, [\u2026]"
+      },
+      "example": "strains = ss.Strains(['DS', 'RIF'], max_strains=2, immunity=ss.immunity(due_to=L, rel_sus=0.79)) # Latent infection protects in part against another strain",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.import_from",
+      "kind": "function",
+      "module": "other",
+      "signature": "(source, format=None, **kwargs)",
+      "summary": "Read another framework's model into a sim, e.g. `ss.import_from('workbook.xlsx')`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.IndexArr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, label=None, shared=False)",
+      "summary": "A special class of Arr used for UIDs and RNG IDs; not to be used as a general integer array (for that, use IntArr)",
+      "pars": {},
+      "methods": {
+        "raw": "The stored values; while they are those of `people.uid` (see `shared` in `ss.Arr`), the [\u2026]",
+        "values": "The values of the active agents, as UIDs",
+        "uids": "Alias to self.values, to allow Arr.uids like BoolArr"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Infection",
+      "kind": "class",
+      "module": "diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "A disease with transmission written as code",
+      "pars": {
+        "init_prev": "None"
+      },
+      "methods": {
+        "update_pars()": "As `ss.Module.update_pars()`, and `strains=` for `define_strains()`, so a subclass that [\u2026]",
+        "init_pre()": "Link the disease to the sim and initialize results; see `ss.Module.init_pre()`",
+        "init_post()": "Set initial values for states: by default, infect `init_prev` of the people [\u2026]",
+        "init_results()": "Initialize results",
+        "make_naive()": "Reset agents to the state of never having had the disease; for dynamic rescaling (see [\u2026]",
+        "set_prognoses()": "Set prognoses upon infection: make the agents non-susceptible, and record the new [\u2026]",
+        "infect()": "Infect some agents now, from code (e.g. a strain introduced on a date): those susceptible [\u2026]",
+        "step()": "Take any declared transitions, then the transmission (`transmit()`), and set the outcomes [\u2026]",
+        "update_results()": "Update prevalence; the result infection is recorded by set_prognoses() as infections [\u2026]",
+        "finalize_results()": "Check that the infections of the run were counted"
+      },
+      "example": "class SIRS(ss.Infection):\n    def __init__(self, **kwargs):\n        super().__init__()\n        self.define_pars(beta=ss.perday(0.05), init_prev=ss.bernoulli(0.01), dur_inf=10)\n        self.define_states(ss.BoolState('recovered'), ss.TimeArr('ti_recovered'))\n        self.update_pars(**kwargs)\n\n    def step_state(self):\n        done = (self.infected & self.ti_recovered.due()).uids\n        self.infected[done] = False\n        self.recovered[done] = True\n        self.susceptible[done] = True # Protected only by the immunity of their strain, if any\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.infection_log",
+      "kind": "class",
+      "module": "analyzers",
+      "signature": "(**kwargs)",
+      "summary": "Log infections -- see `ss.diseases.InfectionLog` for detail",
+      "pars": {},
+      "methods": {
+        "step()": "Handled by ss.diseases.InfectionLog()",
+        "finalize_results()": "Collect the infection logs from each of the diseases",
+        "log": "The infection log, if there is only one disease",
+        "to_df()": "Convert the infection log to a dataframe, if there is only one disease",
+        "plot()": "Plot all of the infection logs",
+        "animate()": "Animate the infection log -- mostly for amusement!"
+      },
+      "example": "import starsim as ss\nsim = ss.Sim(n_agents=1000, dt=0.2, dur=15, diseases='sir', networks='random', analyzers='infection_log')\nsim.run()\nsim.analyzers[0].plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.IntArr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, **kwargs)",
+      "summary": "Subclass of `ss.Arr` with defaults for ints.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Intervention",
+      "kind": "class",
+      "module": "interventions",
+      "signature": "(*args, eligibility=None, **kwargs)",
+      "summary": "Base class for interventions.",
+      "pars": {},
+      "methods": {
+        "init_pre()": "Initialize the module, and its product if it has one"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.jit",
+      "kind": "function",
+      "module": "other",
+      "signature": "(func=None, *, nopython=True)",
+      "summary": "Make a function fast, by compiling it with Numba or JAX, with no change in what it does",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.lifetable",
+      "kind": "class",
+      "module": "other",
+      "signature": "(ages, deaths)",
+      "summary": "A life table: how many die at each age, from which each person's age at death is drawn, given their age (see `ss.death(lifetable=)`)",
+      "pars": {},
+      "methods": {
+        "draw()": "The age at death of people of some ages, from uniform random numbers: a cohort's survival [\u2026]"
+      },
+      "example": "table = ss.lifetable(ages=np.arange(101), deaths=dx) # dx from a national life table\ndeaths = ss.death(lifetable=table)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.load",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(filename, **kwargs)",
+      "summary": "Alias to Sciris `sc.loadany()`, for Starsim's own objects",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.lognorm_ex",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(mean=1.0, std=1.0, **kwargs)",
+      "summary": "Lognormal distribution, parameterized in terms of the \"explicit\" (lognormal) distribution, with mean=mean and std=std for this distribution (see lognorm_im for comparison). Note that a mean \u2264 0.0 is impossible, since this is the parameter of the distribution after the log transform.",
+      "pars": {},
+      "methods": {},
+      "example": "ss.lognorm_ex(mean=2, std=1, strict=False).rvs(1000).mean() # Should be close to 2",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.lognorm_im",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(mean=0.0, sigma=1.0, **kwargs)",
+      "summary": "Lognormal distribution, parameterized in terms of the \"implicit\" (normal) distribution, with mean=loc and std=scale (see lognorm_ex for comparison).",
+      "pars": {},
+      "methods": {},
+      "example": "ss.lognorm_im(mean=2, sigma=1, strict=False).rvs(1000).mean() # Should be roughly 10",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Loop",
+      "kind": "class",
+      "module": "loop",
+      "signature": "(sim)",
+      "summary": "Define the integration loop",
+      "pars": {},
+      "methods": {
+        "init()": "Parse the sim into the integration plan",
+        "collect_funcs()": "Collect all the callable functions (methods) that comprise the step",
+        "run_one_step()": "Take a single step, i.e. call a single function; only used for debugging purposes",
+        "run()": "Actually run the integration loop; usually called by sim.run()",
+        "insert()": "Insert a function into the loop plan at the specified location",
+        "to_df()": "Return a user-friendly version of the plan, omitting object columns",
+        "shrink()": "Shrink the size of the loop for saving to disk",
+        "plot()": "Plot a diagram of all the events",
+        "plot_cpu()": "Plot the CPU time spent on each event; visualization of Loop.cpu_df"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.MaternalNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, edges=None, **kwargs)",
+      "summary": "Mother-to-child network, for when prenatal and postnatal transmission need not be told apart",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.MixingPool",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, diseases=None, src=None, dst=None, beta=None, n_contacts=None, **kwargs)",
+      "summary": "Define a single mixing pool; can be used as a drop-in replacement for a network.",
+      "pars": {
+        "diseases": "[]",
+        "src": "None",
+        "dst": "None",
+        "beta": "1.0",
+        "n_contacts": "ss.constant(v=10)"
+      },
+      "methods": {
+        "shrink()": "Shrink the size of the mixing pool for saving to disk",
+        "init_pre()": "A number of contacts given as a rate (e.g. `ss.perday(10)`) is a number per unit of the [\u2026]",
+        "step()": "Update source and target UIDs"
+      },
+      "example": "import starsim as ss\n\n# Set the parameters\nmp_pars = dict(\n    src = lambda sim: sim.people.male, # only males are infectious\n    dst = None, # all agents are susceptible\n    beta = 0.2,\n    n_contacts = ss.poisson(lam=4),\n)\n\n# Seed 5% of the male population\ndef p_init(self, sim, uids):\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.MixingPools",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, diseases=None, src=None, dst=None, beta=None, n_contacts=None, **kwargs)",
+      "summary": "A container for creating a rectangular array of MixingPool instances",
+      "pars": {},
+      "methods": {
+        "init_pre()": "Create a mixing pool for each pair of groups, unless the contacts between groups can be [\u2026]",
+        "init_post()": "Initialize each mixing pool, and find the diseases that use them",
+        "step()": "Update each mixing pool, or the people in each group",
+        "shrink()": "Shrink the size of the mixing pools for saving to disk"
+      },
+      "example": "import starsim as ss\nmps = ss.MixingPools(\n    diseases = 'sis',\n    beta = 0.1,\n    src = {'0-15': ss.AgeGroup(0, 15), '15+': ss.AgeGroup(15, None)},\n    dst = {'0-15': ss.AgeGroup(0, 15), '15+': ss.AgeGroup(15, None)},\n    n_contacts = [[2.4, 0.49], [0.91, 0.16]],  # Illustrative contact matrix\n)\nsim = ss.Sim(diseases='sis', networks=mps).run()\nsim.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.modify",
+      "kind": "class",
+      "module": "connectors",
+      "signature": "(target, multiply=None, add=None, set=None, efficacy=None, share=None, route=None, where=None, start=None, stop=None, when=None, hold=None, name=None, **kwargs)",
+      "summary": "Change a named quantity while a condition holds: scale it, shift it, or set it",
+      "pars": {},
+      "methods": {
+        "init_pre()": "Find the quantity this modifies, by name if it was given as a string, and register the [\u2026]",
+        "init_post()": "A parameter of a module written as code with no engine of its own (an `ss.Module` or [\u2026]",
+        "finalize_results()": "Parameters are back to their base values after the run",
+        "tabulated": "Whether the engines can work out the modifier for every step before a run (see [\u2026]",
+        "active": "Whether the modifier applies on the current step",
+        "describe()": "One line saying what the modifier does"
+      },
+      "example": "S, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.3*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\nmasks = ss.modify(sir.pars.beta, multiply=0.6, start=30)\nsim = ss.Sim(sir, interventions=masks, stop=100).run()\n\n# Changes at given times, each holding until the next; before the first, the quantity has its own value\nlockdown = ss.modify(sir.pars.beta, multiply=ss.timeseries({30: 0.5, 60: 1.0}), start=30)\n\n# Each place on its own: contacts cut by 40% for at least 14 days once a week's cases pass 200 per 100,000\nnpi = ss.modify(sir.pars.beta, multiply=0.6, where=sir.infection.incidence(over=ss.days(7), by='patch') > 200e-5, hold=ss.days(14))\n\n# Condoms, 90% effective against gonorrhea, used in a share of acts that grows over time, on one network\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Module",
+      "kind": "class",
+      "module": "modules",
+      "signature": "(name=None, label=None, **kwargs)",
+      "summary": "The main base class for all Starsim modules: diseases, networks, interventions, etc.",
+      "pars": {},
+      "methods": {
+        "check_method_calls()": "Check if any required methods were not called",
+        "from_func()": "Create a module from a function",
+        "define_pars()": "Create or merge Pars objects",
+        "update_pars()": "Pull out recognized parameters and update them; raises on unrecognized keys",
+        "define_states()": "Define states of the module with the same attribute name as the state",
+        "define_aliases()": "Define aliases for states, e.g. `self.define_aliases(infectious='infected')`",
+        "define_results()": "Add results to the module; in `__init__()`, they are kept, and added once the sim's [\u2026]",
+        "init_pre()": "Perform initialization steps",
+        "init_results()": "Initialize results output; called during `init_pre()`",
+        "init_post()": "Initialize the values of the states; the last step of initialization",
+        "step()": "Define how the module updates over time -- the key part of Starsim!!",
+        "update_results()": "Update results; by default, compute counts of each state at each point in time",
+        "finalize_results()": "Finalize results",
+        "to_json()": "The module as a reference by its type and name, for `sc.jsonify()`: e.g. a module among [\u2026]",
+        "shrink()": "Shrink the size of the module for saving to disk",
+        "plot()": "Plot the module's results"
+      },
+      "example": "class SIR(ss.Module):\n    def __init__(self, pars=_, beta=_, init_prev=_, p_death=_, **kwargs):\n        super().__init__() # Call this first with no arguments\n        self.define_pars( # Then define the parameters, including their default value\n            beta = ss.peryear(0.1),\n            init_prev = ss.bernoulli(p=0.01),\n            p_death = ss.bernoulli(p=0.3),\n        )\n        self.update_pars(pars, **kwargs) # Update with any user-supplied parameters, and raise an exception if trying to set a parameter that wasn't defined in define_pars()\n        return",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.months",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, base=None, **kwargs)",
+      "summary": "A duration in months, e.g. `ss.months(6)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.mother",
+      "kind": "class",
+      "module": "other",
+      "signature": "(x, born=False)",
+      "summary": "A condition or expression evaluated on each unborn agent's mother (1/0 for a condition, or its value), and 0 for anyone born, unless born=True",
+      "pars": {},
+      "methods": {},
+      "example": "mtct = S >> C @ beta_m2c * ss.mother(Pv | Ph | S2 | EL | LL)\nfetal_eff = 0.98 - 0.23*(ss.mother(preg.P.time) > ss.weeks(27)) # 0.75 after 27 weeks; a comparison is 1 or 0\nnewborn = ss.screen(test, who=preg.birth & ss.mother(anc.positive.since <= ss.years(1), born=True))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.move",
+      "kind": "function",
+      "module": "other",
+      "signature": "(*args, p=None, n=None, uids=None, where=None)",
+      "summary": "Move people between states of a declared disease from code, the same way under every solver",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.multi_random",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(names, *args, crn=None, **kwargs)",
+      "summary": "A class for holding two or more ss.random() distributions, and generating random numbers linked to each of them. Useful for e.g. pairwise transmission probabilities.",
+      "pars": {},
+      "methods": {
+        "init()": "Not usually needed since each dist will handle this automatically; for completeness only",
+        "rvs()": "Get random variates from each of the underlying distributions and combine them efficiently"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.MultiSim",
+      "kind": "class",
+      "module": "run",
+      "signature": "(sims=None, base_sim=None, label=None, n_runs=None, pars=None, priors=False, initialize=False, inplace=True, debug=False, **kwargs)",
+      "summary": "The runs of one or more sims: every result of the sims with a run axis first, and the sims that were run",
+      "pars": {},
+      "methods": {
+        "sims": "The sim of each run, by position (`msim.sims[0]`) or by scenario (`msim.sims['Vaccine']`: [\u2026]",
+        "branching": "For the runs of a branching process (`ss.Sim(branching=True)`): what came of them [\u2026]",
+        "run()": "Run the sims, each `n_runs` times with its own seed and with each set of values of [\u2026]",
+        "copy()": "Perform a deep copy of the MultiSim (including sims contained within)",
+        "shrink()": "Shrink each sim in the msim (the results across runs are kept); see sim.shrink() for more [\u2026]",
+        "combine()": "Combine the sims into a single sim, whose results are those of one population made of all [\u2026]",
+        "summarize()": "A table of each result over the whole of each run, across the runs: the median, an [\u2026]",
+        "compare()": "Create a dataframe comparing the runs, with one column per run and one row per result",
+        "diff()": "The difference of each scenario from a baseline, for every result they share, run by run",
+        "to_df()": "Every result across the runs; see `ss.run.MultiResults.to_df()` for the arguments",
+        "plot()": "Plot the results across the runs: the median and a 95% interval of each scenario, or [\u2026]",
+        "merge()": "Merge several MultiSims into one, with the runs of each, one after the other; [\u2026]",
+        "split()": "Split one MultiSim into several, each with some of its runs; the reverse of [\u2026]"
+      },
+      "example": "import starsim as ss\n\ns1 = ss.Sim(networks='random', diseases=ss.SIS(beta=0.02), label='Low transmission')\ns2 = ss.Sim(networks='random', diseases=ss.SIS(beta=0.05), label='High transmission')\nmsim = ss.parallel(s1, s2, n_runs=5)\nmsim.plot() # The median and a 95% interval of each scenario\nmsim.results.sis.prevalence.select(scenario='Low transmission').median()\n\nclass NoisyMultiSim(ss.MultiSim): # Each run with its own beta, drawn around 0.05\n    run_options = ss.MultiSim.run_options + ['noise']\n\n    def make_run(self, sim, values, seed, noise=0.1):\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.nbinom",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(n=1, p=0.5, **kwargs)",
+      "summary": "Negative binomial distribution",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's above a mean of 30, [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.ndict",
+      "kind": "class",
+      "module": "utils",
+      "signature": "(*args, type=None, **kwargs)",
+      "summary": "A dictionary-like class that provides additional functionalities for handling named items.",
+      "pars": {},
+      "methods": {
+        "append": "Return an attribute of instance, which is of type owner",
+        "get": "Return an attribute of instance, which is of type owner",
+        "merge": "Return an attribute of instance, which is of type owner",
+        "copy": "Return an attribute of instance, which is of type owner"
+      },
+      "example": "networks = ss.ndict(ss.SexualNet(), ss.PrenatalNet())\nnetworks = ss.ndict([ss.SexualNet(), ss.PrenatalNet()])\nnetworks = ss.ndict({'sexual':ss.SexualNet(), 'prenatal':ss.PrenatalNet()})",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Network",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, edges=None, **kwargs)",
+      "summary": "A class holding a single network of contact edges (connections) between people as well as methods for updating these. Networks mediate disease transmission between agents in `ss.People`; see `ss.Disease` for how transmission uses network edges, and `ss.RandomNet`, `ss.SexualNet`, `ss.PrenatalNet` [\u2026]",
+      "pars": {},
+      "methods": {
+        "p1": "The first half of a network edge (person 1)",
+        "p2": "The second half of a network edge (person 2)",
+        "beta": "Relative transmission on each network edge",
+        "init_results()": "Store network length by default",
+        "init_pre()": "Initialize with the sim, initialize the edges, and validate p1 and p2",
+        "init_post()": "Add the first edges",
+        "eligible()": "Return the agents who can form edges: alive, born, and (optionally) within an age range",
+        "remove_edges()": "Remove the specified edges from the network",
+        "append()": "Append edges to the current network",
+        "update_results()": "Store the number of edges in the network",
+        "to_graph()": "Convert to a networkx DiGraph",
+        "to_df()": "Convert to dataframe",
+        "from_df()": "Set the edges from a dataframe or a dict of arrays",
+        "shrink()": "Shrink the size of the network for saving to disk",
+        "plot()": "Plot the network using NetworkX",
+        "find_contacts()": "Find all contacts of the specified people",
+        "add_pairs()": "Define how pairs of people are formed"
+      },
+      "example": "# Generate an average of 10 contacts for 1000 people\nn_contacts_pp = 10\nn_people = 1000\nn = n_contacts_pp * n_people\np1 = np.random.randint(n_people, size=n)\np2 = np.random.randint(n_people, size=n)\nbeta = np.ones(n)\nnetwork = ss.Network(p1=p1, p2=p2, beta=beta, label='rand')\nnetwork = ss.Network(edges=dict(p1=p1, p2=p2, beta=beta), label='rand') # Alternate method\n\n# Convert one network to another with extra columns\nindex = np.arange(n)\n# [...]",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.normal",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(loc=0.0, scale=1.0, **kwargs)",
+      "summary": "Normal distribution",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF: the same arithmetic as SciPy's, without its checking of the arguments, [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.note",
+      "kind": "function",
+      "module": "other",
+      "signature": "(msg, sim=None, verbose=None)",
+      "summary": "Say something that was assumed or approximated, in one line",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.on",
+      "kind": "class",
+      "module": "other",
+      "signature": "(x)",
+      "summary": "A trigger, as the driver of a transition: people move as soon as a condition holds, or when an event happens to them",
+      "pars": {},
+      "methods": {
+        "event": "Whether it is an event (edge-triggered) rather than a condition (level-triggered)",
+        "outcome": "Whether it is an outcome of a delivery or a product (e.g. `drug.failed`), which moves the [\u2026]"
+      },
+      "example": "debut = U >> CST1 @ ss.on(ss.ppl.female & (ss.ppl.age >= 15))\ncanceled = (S + P + C) >> Z @ ss.on(ss.state('hpv18.X') | ss.state('hpv31.X'))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.options",
+      "kind": "function",
+      "module": "settings",
+      "signature": "(*args, **kwargs)",
+      "summary": "Set options for Starsim.",
+      "pars": {},
+      "methods": {},
+      "example": "ss.options(verbose=True) # Set more verbosity\nss.options(warnings='error') # Be more strict about warnings",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.outcome",
+      "kind": "class",
+      "module": "other",
+      "signature": "(source, delay=None, duration=None, likelihood=None, name=None, label=None)",
+      "summary": "A reported quantity: a flow worked out from other flows, which moves nobody",
+      "pars": {},
+      "methods": {},
+      "example": "cases = ss.outcome(0.5 * infection, delay=ss.days(5))\nhosp  = ss.outcome(0.05 * infection, delay=ss.days(7), duration=ss.days(10))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.par",
+      "kind": "class",
+      "module": "other",
+      "signature": "(value=None, bounds=None, prior=None, source=None, doc=None, name=None, label=None, literal=False)",
+      "summary": "A named parameter with bounds, a prior, and provenance",
+      "pars": {},
+      "methods": {
+        "raw": "The current value (the module holds this parameter itself, so a value set there is this [\u2026]",
+        "merge()": "Take what another parameter gives (its value, bounds, prior, and description), keeping [\u2026]"
+      },
+      "example": "beta = ss.par(0.05, bounds=[0.01, 0.5])\nS, I, R = ss.states(3)\ninfection = S >> I @ beta * I",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.parallel",
+      "kind": "function",
+      "module": "run",
+      "signature": "(*args, n_runs=None, pars=None, priors=False, **kwargs)",
+      "summary": "Run many sims: different sims, each sim many times with its own seed, or with sets of values of its parameters",
+      "pars": {},
+      "methods": {},
+      "example": "s1 = ss.Sim(n_agents=1000, label='Small', diseases='sis', networks='random')\ns2 = ss.Sim(n_agents=2000, label='Large', diseases='sis', networks='random')\nss.parallel(s1, s2).plot()\nmsim = ss.parallel([s1, s2], shrink=False)\nmsim = ss.parallel(s1, n_runs=10) # Ten runs of one sim (also sim.run(n_runs=10))\nmsim = ss.parallel({'Baseline': s1, 'With vaccine': s2}, n_runs=10) # Two scenarios; see msim.diff('Baseline')\nmsim = ss.parallel(sim, pars=dict(beta=np.linspace(0.1, 0.5, 100))) # One run with each value of beta",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Pars",
+      "kind": "class",
+      "module": "parameters",
+      "signature": "(*args, **kwargs)",
+      "summary": "Dict-like container of parameters",
+      "pars": {},
+      "methods": {
+        "to_json": "Return an attribute of instance, which is of type owner"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.pars",
+      "kind": "function",
+      "module": "other",
+      "signature": "(defaults, **kwargs)",
+      "summary": "Create several parameters at once, from defaults and the values given, as a class's declared parameters are made",
+      "pars": {},
+      "methods": {},
+      "example": "defaults = dict(beta=ss.par(ss.peryear(2), bounds=[ss.peryear(0.5), ss.peryear(5)]), dur=ss.years(2), relapse=None)\np = ss.pars(defaults, beta=3) # beta is 3 per year, with the default's bounds\nS, I, R = ss.states('S I R')\ntransitions = [S >> I @ p.beta*I, I >> R @ p.dur] + ([R >> I @ p.relapse] if p.relapse is not None else [])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.People",
+      "kind": "class",
+      "module": "people",
+      "signature": "(n_agents, age_data=None, extra_states=None, p_female=0.5, mock=False)",
+      "summary": "A class to perform all the operations on the people This class is usually created automatically by the sim. The only required input argument is the population size, but typically the full parameters dictionary will get passed instead since it will be needed before the People object is initialized.",
+      "pars": {},
+      "methods": {
+        "n_alive": "The number of living agents, which is what `results.alive` records (with each agent [\u2026]",
+        "n": "In a compartmental run, the number of people in each group now, from the compartments [\u2026]",
+        "keys()": "Return keys of the states stored in the People object",
+        "init_results()": "Initialize results for People; called during `Sim.init_results()`",
+        "add_module()": "Add a Module to the People instance",
+        "add_state()": "Add a property of each person, from a module (e.g. a social determinant of health that [\u2026]",
+        "dead": "Whether each agent has died",
+        "request_death()": "External-facing function to request an agent die at the current timestep",
+        "step_die()": "Carry out any deaths or removals that took place this timestep",
+        "update_results()": "Record per-timestep population counts into the simulation results",
+        "to_df()": "Export to dataframe; 2D states have one column per value, e.g. `sus_imm_0` (or [\u2026]",
+        "plot()": "Plot all the properties of the People object",
+        "plot_ages()": "Plot the age pyramid for males and females",
+        "person()": "Get all the properties for a single person"
+      },
+      "example": "ppl = ss.People(2000)\nkids = ss.ppl.age < 15 # A lazy condition, for a sim run as agents or as compartments (see ss.ppl)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.people",
+      "kind": "function",
+      "module": "people",
+      "signature": "(place, year=None, n_agents=None, revision=None)",
+      "summary": "A named population: the size, age structure, and sex ratio of a country or a US state",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.per",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value, unit=None)",
+      "summary": "A `per` represents an instantaneous rate of an event occurring. Rates must be non-negative, but need not be less than 1.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.peract",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, **directions)",
+      "summary": "A probability per act, for a transmission over a network that defines acts (e.g. `ss.SexualNet`)",
+      "pars": {},
+      "methods": {
+        "values": "The values, one or one for each direction",
+        "pars": "The parameters in its values, so they can be fitted",
+        "check()": "A probability per act must be in [0, 1]"
+      },
+      "example": "S, I = ss.states(2)\nhiv = ss.Disease(infection=S >> I @ dict(sexualnet=ss.peract(m2f=0.001, f2m=0.0005), needles=ss.peract(0.006))*I)\nsyph = ss.Disease(infection=S >> I @ ss.peract({('m', 'f'): 0.3, ('f', 'm'): 0.15})*I)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.perday",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value, unit=None)",
+      "summary": "An instantaneous rate per day, e.g. `ss.perday(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.permonth",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value, unit=None)",
+      "summary": "An instantaneous rate per month, e.g. `ss.permonth(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.perweek",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value, unit=None)",
+      "summary": "An instantaneous rate per week, e.g. `ss.perweek(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.peryear",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value, unit=None)",
+      "summary": "An instantaneous rate per year, e.g. `ss.peryear(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.plot_args",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(kwargs=None, _debug=False, **defaults)",
+      "summary": "Process known plotting kwargs.",
+      "pars": {},
+      "methods": {},
+      "example": "kw = ss.plot_args(kwargs, fig_kw=dict(figsize=(10,10)) # Explicit way to set figure size, passed to `plt.figure()` eventually\nkw = ss.plot_args(kwargs, figsize=(10,10)) # Shortcut since known keyword",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.poisson",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(lam=1.0, **kwargs)",
+      "summary": "Poisson distribution",
+      "pars": {},
+      "methods": {
+        "ppf()": "Fast inverse-CDF sampling for the common-random-number (ppf) path"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.PostnatalNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, dur=None, **kwargs)",
+      "summary": "Network to track postnatal processes",
+      "pars": {
+        "memory": "None",
+        "dur": "None"
+      },
+      "methods": {
+        "add_pairs()": "Add an edge from each mother to her infant"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Pregnancy",
+      "kind": "class",
+      "module": "demographics",
+      "signature": "(*args, **kwargs)",
+      "summary": "Pregnancy, as declared states and transitions",
+      "pars": {
+        "fertility": "<bound method Pregnancy.conception_rate of Pregnancy(pars=fertility, p_abortion, [\u2026]",
+        "p_abortion": "0.0",
+        "loss_rate": "ss.peryear(0)",
+        "loss_threshold": "ss.weeks(20)",
+        "maternal_rate": "ss.peryear(0)",
+        "infant_rate": "ss.peryear(0)",
+        "dur_pregnancy": "ss.choice(a=[32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42.], p=[0.001 0.002 0.005  [\u2026]",
+        "fertility_rate": "ss.peryear(100)",
+        "rel_fertility": "1",
+        "p_infertile": "ss.bernoulli(p=0)",
+        "min_age": "15",
+        "max_age": "50",
+        "rate_units": "None",
+        "dur_breastfeed": "ss.lognorm_ex(mean=ss.years(0.75), std=ss.years(0.5))",
+        "p_breastfeed": "ss.bernoulli(p=1)",
+        "embryos_per_pregnancy": "ss.choice(a=[1 2], p=[1. 0.], replace=True)",
+        "rr_ptb": "ss.normal(loc=1, scale=0.1)",
+        "rr_ptb_age": "array([[ 18. , 35. , 1000. ], [ 1.2, 1. , 1.2]])",
+        "p_maternal_death": "ss.bernoulli(p=0)",
+        "sex_ratio": "ss.bernoulli(p=0.5)",
+        "preterm_threshold": "ss.weeks(37)",
+        "very_preterm_threshold": "ss.weeks(32)",
+        "burnin": "True"
+      },
+      "methods": {
+        "since_birth": "Time since the last live birth (inf if never); survives later losses",
+        "attr()": "A value drawn for each woman each time a transition of the pregnancy happens to her, e.g. [\u2026]",
+        "init_pre()": "Prepare the fertility rates, then initialize as a disease",
+        "step()": "The pregnancy's transitions, at the start of the step, before the diseases'",
+        "step_die()": "As agents: take the dead out of the states"
+      },
+      "example": "preg = ss.Pregnancy(fertility_rate=ss.freqperyear(80))\nsim = ss.Sim(demographics=preg, n_agents=5000, start=2000, stop=2010, dt=ss.months(1)).run()\nsim.results.pregnancy.conception.sum()\n\n# Nigeria's age-specific fertility rates, from the UN\npreg = ss.Pregnancy(fertility_rate='Nigeria')\n\n# Lactational amenorrhea: fewer conceptions while breastfeeding, in the first 6 months\nlam = ss.modify(preg.conception, multiply=0.1, where=preg.lactating & (preg.since_birth < ss.months(6)))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.PrenatalNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, edges=None, **kwargs)",
+      "summary": "Prenatal transmission network",
+      "pars": {},
+      "methods": {
+        "add_pairs()": "Add an edge from each mother to her unborn child; called by `ss.Pregnancy`"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.prob",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, rate=None)",
+      "summary": "`prob` represents the probability of an event occurring during a specified period of time.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.probperday",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, rate=None)",
+      "summary": "A probability per day, e.g. `ss.probperday(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.probpermonth",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, rate=None)",
+      "summary": "A probability per month, e.g. `ss.probpermonth(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.probperweek",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, rate=None)",
+      "summary": "A probability per week, e.g. `ss.probperweek(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.probperyear",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, rate=None)",
+      "summary": "A probability per year, e.g. `ss.probperyear(0.1)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Product",
+      "kind": "class",
+      "module": "products",
+      "signature": "(name=None, label=None, **kwargs)",
+      "summary": "Generic product base class: see `ss.Vaccine`, `ss.Diagnostic`, and `ss.Treatment`",
+      "pars": {},
+      "methods": {
+        "administer()": "The effect of a product written as code: called with the UIDs of the people a delivery [\u2026]",
+        "init_pre()": "Initialize the product, and its events, once: both the sim and its deliveries initialize [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.randint",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(*args, low=None, high=None, dtype=None, **kwargs)",
+      "summary": "Random integer distribution, on the interval [low, high)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.random",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(dtype=None, **kwargs)",
+      "summary": "Random distribution, with values on the interval (0, 1)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.RandomNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, n_contacts=None, dur=None, beta=None, age_range=None, dynamic=None, method=None, remove_self_loops=None, **kwargs)",
+      "summary": "Random connectivity between agents",
+      "pars": {
+        "memory": "None",
+        "n_contacts": "ss.constant(v=10)",
+        "dur": "ss.years(0)",
+        "beta": "1.0",
+        "age_range": "None",
+        "dynamic": "True",
+        "method": "'fast'",
+        "remove_self_loops": "False"
+      },
+      "methods": {
+        "step()": "If dynamic, replace expired edges; otherwise, do nothing",
+        "add_pairs()": "Generate edges"
+      },
+      "example": "# Static network with Poisson-distributed contacts among adults, as in Covasim v3\nnet = ss.RandomNet(n_contacts=ss.poisson(20), age_range=[18, 65], dynamic=False, method='uniform')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Rate",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, unit=None, *args, **kwargs)",
+      "summary": "Store a value per unit time e.g., 2 per day - self.value - the numerator (e.g., 2) - a scalar float - self.unit - the denominator (e.g., 1 day) - a dur object",
+      "pars": {},
+      "methods": {
+        "rate": "The instantaneous rate; an alias to `self.value`, except for `ss.prob`, where it is [\u2026]",
+        "to_dt()": "Convert this rate to its per-timestep value; see `TimePar.to_dt()`",
+        "to()": "Convert this rate to one with a different denominator",
+        "to_prob()": "Convert from one time probability to another",
+        "to_events()": "Simple multiplication: calculate the number of events over the time period"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.register_modules",
+      "kind": "function",
+      "module": "modules",
+      "signature": "(*args)",
+      "summary": "Register custom modules with Starsim so they can be referred to by string.",
+      "pars": {},
+      "methods": {},
+      "example": "# Standard use case, register modules automatically\nimport my_custom_disease_model as mcdm\nss.register_modules(mcdm)\nss.Sim(diseases='mydisease', networks='random').run() # This will work if mcdm.MyDisease() is defined\n\n# Manual usage\nmy_modules = [mcdm.MyDisease, mcdm.MyNetwork]\nss.register_modules(my_modules)\nss.Sim(diseases='mydisease', networks='mynetwork').run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.required",
+      "kind": "function",
+      "module": "modules",
+      "signature": "()",
+      "summary": "Decorator to mark module methods as required.",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim.library as ssl\n\nclass CustomSIS(ssl.AgentSIS):\n\n    def step(self):\n        super().step()\n        self.custom_step() # Will raise an exception if this line is not here\n        return\n\n    @ss.required() # Mark this method as required on run\n    def custom_step(self):\n        pass",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Result",
+      "kind": "class",
+      "module": "results",
+      "signature": "(name=None, label=None, dtype=<class 'float'>, shape=None, scale='auto', auto_plot=True, module=None, values=None, timevec=None, low=None, high=None, kind='auto', summarize_by='auto', columns=None, runs=None, groups=False, **kwargs)",
+      "summary": "Array-like container for holding sim results.",
+      "pars": {},
+      "methods": {
+        "select()": "Select groups of a stratified result by name: keeps the given levels of each dimension, [\u2026]",
+        "axes()": "The dimensions of this result, whichever way they are kept, for `select()` and `by()`: [\u2026]",
+        "scenarios()": "The positions of the runs of each scenario, in order",
+        "take()": "Some of the runs of a result across runs: a result of one run for a position, or across [\u2026]",
+        "quantiles()": "Quantiles over the runs of each scenario, for a result across the runs of a MultiSim",
+        "median()": "For a result across runs, the median over the runs of each scenario (as a result of one [\u2026]",
+        "mean()": "For a result across runs, the mean over the runs of each scenario (as a result of one [\u2026]",
+        "diff()": "The difference of each other scenario from the baseline, run by run (the runs are paired [\u2026]",
+        "by()": "Split a stratified result by one dimension, summing over the rest; returns a 2D result [\u2026]",
+        "set_groups()": "Set the value at time point ti from values by group (one for each of `sim.groups`, e.g. [\u2026]",
+        "col()": "Return a 1D result for one column of a 2D result, e.g. `res.col('alpha')`; its values are [\u2026]",
+        "by_column()": "Return a dict of 1D results, one per column, for a 2D result",
+        "summarize()": "The result over the whole run, by its `summarize_by`: the total of a flow ('sum'), the [\u2026]",
+        "cum": "The cumulative total of a flow over time, e.g. `sim.results.sir.infection.cum` (a stock; [\u2026]",
+        "resample()": "Resample the result to a longer time unit, by its `summarize_by` (which by default [\u2026]",
+        "to_series()": "Convert to a series with timevec as the index and value as the data Args: set_name [\u2026]",
+        "to_df()": "Convert to a dataframe with time, value, low, and high columns",
+        "df": "The result as a dataframe: a shortcut for `to_df()`",
+        "plot()": "Plot the result, with one line per column for a 2D result"
+      },
+      "example": "res = ss.Result('infection', columns=['wild', 'alpha'], shape=10)\nres[3] = [20, 5] # Set the values for timestep 3\nres['alpha'][4] = 8 # Set one value for timestep 4\nres['alpha'].label # Returns 'infection (alpha)'",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Results",
+      "kind": "class",
+      "module": "results",
+      "signature": "(*args, **kwargs)",
+      "summary": "Container for storing results",
+      "pars": {},
+      "methods": {
+        "append": "Return an attribute of instance, which is of type owner",
+        "flatten": "Return an attribute of instance, which is of type owner",
+        "resample": "Return an attribute of instance, which is of type owner",
+        "to_df": "Return an attribute of instance, which is of type owner",
+        "df": "The results as a dataframe: a shortcut for `to_df()`",
+        "plot": "Return an attribute of instance, which is of type owner"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.return_fig",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(fig, given=False, **kwargs)",
+      "summary": "Do postprocessing on the figure: save it, show it, and return it; not for the user, but its arguments can be given to any plot of results",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.save",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(filename, obj, **kwargs)",
+      "summary": "Alias to Sciris `sc.save()`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.screen",
+      "kind": "class",
+      "module": "interventions",
+      "signature": "(what=None, who=None, move=None, increment=None, start=None, stop=None, at=None, interval=None, where=None, coverage=None, capacity=None, when=None, deliver=None, trace=None, priority=None, queue=None, delay=None, disease=None, at_age=None, strain=None, name=None, label=None, **kwargs)",
+      "summary": "Deliver a diagnostic test; see `ss.Delivery` for the arguments",
+      "pars": {},
+      "methods": {},
+      "example": "S, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.3*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\nscreening = ss.screen(sensitivity=0.9, specificity=0.98, coverage=0.4, interval=7)\ntreatment = ss.treat(cure=0.95, who=screening.positive, coverage=0.8)\nsim = ss.Sim(sir, interventions=[screening, treatment], stop=100).run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.seasonal",
+      "kind": "class",
+      "module": "parameters",
+      "signature": "(mean=1.0, amplitude=0.0, peak=0.0, period=None)",
+      "summary": "A value with a yearly cycle: `mean \u00d7 (1 + amplitude \u00d7 cos(2\u03c0(t \u2212 peak)))`, with `t` in years (or another period)",
+      "pars": {},
+      "methods": {
+        "factor()": "The value relative to the mean, at a year or an array of them"
+      },
+      "example": "beta = ss.seasonal(mean=0.3, amplitude=0.4, peak='January')\nS, I = ss.states(2)\nsis = ss.Disease(infection=S >> I @ beta*I, recovery=ss.Transition(I, S, dur=10), init_prev=0.01)\nsim = ss.Sim(sis, start='2020-01-01', stop='2023-01-01').run()\nrains = ss.seasonal(amplitude=0.5, peak='April', period=ss.years(0.5)) # Peaks in April and October",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.SEIR",
+      "kind": "class",
+      "module": "diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SEIR model: as `ss.SIR`, with an exposed (latent) state before people become infectious",
+      "pars": {
+        "beta": "ss.peryear(0.1)",
+        "dur_exp": "ss.years(0.5)",
+        "dur_inf": "ss.years(6)",
+        "p_death": "0.0",
+        "init_prev": "0.01"
+      },
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.SexualNet",
+      "kind": "class",
+      "module": "networks",
+      "signature": "(pars=None, between=None, dur=None, debut=None, acts=None, participation=None, n_contacts=None, concurrency=None, max_contacts=None, match=None, **kwargs)",
+      "summary": "Sexual partnerships that form and dissolve, between two groups of people: by default, men and women",
+      "pars": {
+        "memory": "None",
+        "between": "'mf'",
+        "n_contacts": "None",
+        "dur": "ss.lognorm_ex(mean=ss.years(15), std=ss.years(1))",
+        "concurrency": "None",
+        "max_contacts": "None",
+        "match": "None",
+        "acts": "ss.lognorm_ex(mean=ss.freqperyear(80), std=ss.freqperyear(30))",
+        "where": "None",
+        "debut": "ss.normal(loc=16, scale=1.0)",
+        "participation": "ss.bernoulli(p=0.9)"
+      },
+      "methods": {
+        "active()": "Return boolean array of agents who are alive, participating, past sexual debut, and in a [\u2026]"
+      },
+      "example": "net = ss.SexualNet() # Men and women, at most one partner at a time\nmsm = ss.SexualNet(name='msm', between='mm', participation=0.1, dur=ss.lognorm_ex(mean=ss.years(2), std=ss.years(1)))\nnet = ss.SexualNet(n_contacts=ss.poisson(0.7), dur=ss.lognorm_ex(mean=ss.years(2), std=ss.years(1)), concurrency=0.1, match=dict(risk=0.8))\nsw = ss.SexualNet(name='sw', between=('fsw', 'client'), n_contacts=dict(fsw=5, client=0.5), dur=ss.months(1)) # With boolean attributes fsw and client",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.show",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(**kwargs)",
+      "summary": "Shortcut for matplotlib.pyplot.show()",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Sim",
+      "kind": "class",
+      "module": "sim",
+      "signature": "(*models, label=None, people=None, demographics=None, connectors=None, networks=None, diseases=None, interventions=None, analyzers=None, custom=None, modules=None, data=None, pars=None, **kwargs)",
+      "summary": "The Sim object",
+      "pars": {
+        "label": "''",
+        "verbose": "1",
+        "n_agents": "10000.0",
+        "total_pop": "None",
+        "pop_scale": "None",
+        "rescale": "False",
+        "rescale_threshold": "0.05",
+        "rescale_factor": "1.2",
+        "people_results": "True",
+        "start": "None",
+        "stop": "None",
+        "dur": "None",
+        "dt": "None",
+        "rand_seed": "1",
+        "even_draws": "False",
+        "unit": "None",
+        "solver": "'auto'",
+        "branching": "False",
+        "approx": "None",
+        "integrator": "None",
+        "substeps": "None",
+        "stratify": "None",
+        "results": "None",
+        "use_aging": "None",
+        "people": "None",
+        "custom": "ss.ndict()",
+        "demographics": "ss.ndict()",
+        "connectors": "ss.ndict()",
+        "networks": "ss.ndict()",
+        "interventions": "ss.ndict()",
+        "diseases": "ss.ndict()",
+        "analyzers": "ss.ndict()",
+        "modules": "ss.ndict()"
+      },
+      "methods": {
+        "products()": "List all products across interventions; not an ndict like the other module types",
+        "modules": "Return an iterator over all Module instances (stored in standard places) in the Sim",
+        "new()": "A new, uninitialized sim: a copy of this one as it was when it was initialized, [\u2026]",
+        "fit()": "Fit every parameter that has bounds to every result that has data",
+        "sensitivity()": "Which parameters matter: partial rank correlations of each parameter with bounds and each [\u2026]",
+        "check_dt()": "Rerun the sim with a smaller timestep, and report how much each result changes",
+        "what_modifies()": "Print everything that modifies a quantity: each `ss.modify()`, and the efficacy of each [\u2026]",
+        "stratify()": "Stratify every module in the sim by a property of people, e.g. `sim.stratify(age=[0, 15, [\u2026]",
+        "describe()": "Print the resolved model: every state, transition, and default, with each guess marked",
+        "add_module()": "Add a module to a sim that has already been initialized, and possibly run part-way",
+        "label": "Get the sim label from the parameters, if available",
+        "init_results()": "Create initial results that are present in all simulations",
+        "run_one_step()": "Run a single sim step; only used for debugging purposes",
+        "run()": "Run the model -- the main method for running a simulation",
+        "branching": "For a run as a branching process (`ss.Sim(branching=True)`): what came of it, as an [\u2026]",
+        "kernel_reason()": "Why the sim is not run in one call to the kernels, in a few words, or None if it is (see [\u2026]",
+        "kernel_only()": "Whether the sim is nothing but compartments that the kernels can run from start to [\u2026]",
+        "gradient()": "The derivative of results, or of a function of the run sim, with respect to parameters, [\u2026]",
+        "log_density()": "The log of the posterior density of the fitted parameters, as a function in JAX of their [\u2026]",
+        "restart()": "Take a sim back to its start so that it can be run again, without building it again",
+        "finalize_results()": "Scale the results and remove any \"unused\" results",
+        "summarize()": "A table of each result over the whole run, by its `summarize_by`, as `msim.summarize()` [\u2026]",
+        "shrink()": "\"Shrinks\" the simulation by removing the people and other memory-intensive attributes [\u2026]",
+        "check_method_calls()": "Check if any required methods were not called, and warn if so",
+        "to_df()": "The results as a dataframe, with a column for each (e.g. `sir_prevalence`); see [\u2026]",
+        "to_data()": "Data drawn from the results of the run, as if observed: e.g. to check that a fit finds [\u2026]",
+        "profile()": "Profile the performance of the simulation using a line profiler (`sc.profile()`)",
+        "cprofile()": "Profile the performance of the simulation using a function profiler (`sc.cprofile()`)",
+        "save()": "Save to disk as a gzipped pickle: the sim itself, with its results, read back by [\u2026]",
+        "to_json()": "Export the results and the sim's parameters as JSON",
+        "plot()": "Plot all results in the Sim object"
+      },
+      "example": "sim = ss.Sim(diseases='sir', networks='random') # Simplest Starsim sim; equivalent to ss.demo()\nsim = ss.Sim(diseases=ss.SIR(), networks=ss.RandomNet()) # Equivalent using objects instead of strings\nsim = ss.Sim(diseases=['sir', ss.SIS()], networks=['random', 'degree']) # Example using list inputs; can mix and match types\nsim = ss.Sim(modules=[ss.SIR(), ss.RandomNet()]) # Can supply multiple types of module with the 'modules' argument",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.simdata",
+      "kind": "class",
+      "module": "results",
+      "signature": "(source, aliases=None, ignore_extra=False)",
+      "summary": "Data to compare with a sim's results, matched by name: each column is named like the result it corresponds to",
+      "pars": {},
+      "methods": {
+        "load()": "Load the data and rename the columns"
+      },
+      "example": "data = ss.simdata('kenya_2020.csv', aliases=dict(cases='Reported Cases (weekly)', date='Week ending'), ignore_extra=True)\nsim = ss.Sim(sir, data=data, start='2020-01-01', stop='2020-12-31')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.SimPars",
+      "kind": "class",
+      "module": "sim",
+      "signature": "(pars=None, create=True, **kwargs)",
+      "summary": "Create the parameters for the simulation. Typically, this function is used internally rather than called by the user; e.g. typical use would be to do sim = ss.Sim() and then inspect sim.pars, rather than calling this function directly.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.SIR",
+      "kind": "class",
+      "module": "diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SIR model: susceptible, infected, and recovered, optionally with deaths from infection",
+      "pars": {
+        "beta": "ss.peryear(0.1)",
+        "dur_inf": "ss.years(6)",
+        "p_death": "0.0",
+        "init_prev": "0.01"
+      },
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.SIS",
+      "kind": "class",
+      "module": "diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SIS model: people recover from infection and are susceptible again",
+      "pars": {
+        "beta": "ss.peryear(0.05)",
+        "dur_inf": "ss.years(10)",
+        "init_prev": "0.01"
+      },
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.State",
+      "kind": "class",
+      "module": "other",
+      "signature": "(name=None, init=None, init_n=None, people=None, rel_sus=1.0, rel_trans=1.0, keep_time=False, label=None, **kwargs)",
+      "summary": "Something a person can be in, or a count of something that is not people",
+      "pars": {},
+      "methods": {
+        "time": "Time since this person last entered the state, in the sim's unit (NaN outside it)",
+        "total": "The number in these states in the whole population: in a model with places, in every [\u2026]"
+      },
+      "example": "S, R = ss.states(2)\nI = ss.State(init=0.01)     # 1% of people\nE = ss.State(init_n=10)     # 10 people\nV = ss.State(rel_sus=0.2, label='Vaccinated')\nA = ss.State(keep_time=True) # Code reads mod.ti_A",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.state",
+      "kind": "function",
+      "module": "other",
+      "signature": "(path)",
+      "summary": "A state of a module by its path, resolved when the condition is evaluated: for a module made before the others exist",
+      "pars": {},
+      "methods": {},
+      "example": "canceled = (S + P + C + L) >> Z @ ss.on(ss.state('hpv18.X') | ss.state('hpv31.X'))\nseek = ss.treat(drug, where=ss.state('ng.C').enter) # For a module made from a string",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.states",
+      "kind": "function",
+      "module": "other",
+      "signature": "(arg, **kwargs)",
+      "summary": "Create several states at once",
+      "pars": {},
+      "methods": {},
+      "example": "S, I, R = ss.states(3)\nS, I, R = ss.states('S I R') # The same, with the names given up front\nSv, Ev, Iv = ss.states(3, people=False) # Mosquitoes: counts, not people",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Strains",
+      "kind": "class",
+      "module": "other",
+      "signature": "(strains, immunity=None, max_strains=None, transmit='one', split=None, name='strain', label=None, **values)",
+      "summary": "The strains of a disease: `ss.Disease(..., strains=ss.Strains(...))`, which is then `dis.strains`",
+      "pars": {},
+      "methods": {
+        "immunity": "The protection between the strains, a list of `ss.immunity`; it can be set after the [\u2026]",
+        "move()": "A change of the strains people carry, from a strain or a tuple of them to a strain or a [\u2026]",
+        "describe()": "The strains of a disease, as rows of its description (`out`, an `ss.Description`): how [\u2026]"
+      },
+      "example": "# TB: one course for the person, several strains in it\nstrains = ss.Strains(dict(DS=dict(rel_trans=1, cure=1), RIF=dict(rel_trans=0.575, cure=1/3)), max_strains=2, split=[0.9, 0.1],\n                     immunity=ss.immunity(due_to=L, rel_sus=0.79)) # Latent infection protects in part against a new strain\nDS, RIF = strains\nfailure = ss.Transition(Tx, I, rate=ss.peryear(0.1), move=DS >> (DS, RIF)) # Treatment fails, and DS acquires resistance\ntb = ss.Disease(..., failure, strains=strains)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.style",
+      "kind": "function",
+      "module": "settings",
+      "signature": "(style=None, **kwargs)",
+      "summary": "Set the style in a with block.",
+      "pars": {},
+      "methods": {},
+      "example": "# Create a plot using default Starsim styling\nwith ss.style():\n    plt.plot()\n\n# Create a plot using a built-in Matplotlib style\nwith ss.style('seaborn-v0_8-whitegrid'):\n    plt.plot()\n\n# Customize the current style\nwith ss.style(font='Rosario'):\n    plt.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.TimeArr",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(name=None, **kwargs)",
+      "summary": "Times, as step numbers of the module's timeline: when something happened or is due for each agent, e.g. a declared disease's `ti_X` (when each entered state X) and `ti_exit_X`, as agents, and `people.ti_dead`",
+      "pars": {},
+      "methods": {
+        "due()": "Whose time has come by the current step, as a boolean array (e.g. `mask = self.exposed & [\u2026]",
+        "isclose()": "Whose time is taken at step `other` (e.g. `self.ti_infectious.isclose(self.ti)`, those [\u2026]",
+        "years": "The values as years (e.g. 2020.5), with NaN where not set"
+      },
+      "example": "sim = ss.Sim(ss.SIR(), unit='day', stop=100).run()\nsir = sim.diseases.sir\ninfected_today = sir.ti_I.isclose(sim.ti).uids\nyears = sir.ti_I.years # The year of infection of each agent (NaN if never infected)\n\n# In a disease written as code\nself.define_states(ss.BoolState('exposed'), ss.TimeArr('ti_infectious'))\nself.ti_infectious[uids] = self.ti + dur # In steps\nmask = self.exposed & self.ti_infectious.due() # Those whose time has come",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Timeline",
+      "kind": "class",
+      "module": "timeline",
+      "signature": "(start=None, stop=None, dt=None, dur=None, name=None, init=None, sim=None)",
+      "summary": "Handle time vectors and sequencing (\"timelines\") for both simulations and modules.",
+      "pars": {},
+      "methods": {
+        "datevec": "Time vector as `ss.date` objects (derived lazily from tvec/yearvec)",
+        "timevec": "Human-friendly (plotting-friendly) representation of tvec (derived lazily)",
+        "relvec": "Time since the start of the sim, as numbers in the unit of the sim's step, `dt` (e.g. [\u2026]",
+        "now()": "Get the current simulation time: the start of the current step, which runs from time [\u2026]",
+        "init()": "Initialize all vectors"
+      },
+      "example": "t1 = ss.Timeline(start=2000, stop=2020, dt=1.0)\nt2 = ss.Timeline(start='2021-01-01', stop='2021-04-04', dt=ss.days(2))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.TimePar",
+      "kind": "class",
+      "module": "time",
+      "signature": "(*args, **kwargs)",
+      "summary": "Parent class for all TimePars -- dur, Rate, etc.",
+      "pars": {},
+      "methods": {
+        "to()": "Convert this TimePar to one of a different class",
+        "to_dt()": "Resolve this timepar against the timestep, returning a plain number of timesteps (for a [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.timeseries",
+      "kind": "class",
+      "module": "parameters",
+      "signature": "(data, values=None, mode='constant', period=None)",
+      "summary": "A value that varies in time, given at some times and interpolated between them",
+      "pars": {},
+      "methods": {
+        "years()": "The times as years on the sim's timeline (for a sim with no dates, the time since the [\u2026]"
+      },
+      "example": "beta = ss.timeseries({'2020-01-01': 0.3, '2020-03-15': 0.1, '2020-06-01': 0.2})\ndecay = ss.timeseries({0: 0.1, 91: 0.2, 183: 0.15, 274: 0.1}, period=ss.days(365)) # The same each year\nS, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ beta*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\nsim = ss.Sim(sir, start='2020-01-01', stop='2020-09-01').run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.transfer",
+      "kind": "function",
+      "module": "other",
+      "signature": "(rate=None, dur=None, p=None, states=None, name=None, label=None, increment=None, **kwargs)",
+      "summary": "Movement between the levels of a stratification, without a change of disease state",
+      "pars": {},
+      "methods": {},
+      "example": "ss.transfer(risk=('low', 'high'), rate=ss.peryear(0.1))\nss.transfer(vaccinated=True, rate=ss.peryear(0.2))\nss.transfer(increment=dict(immunity=-1), rate=ss.peryear(0.5)) # A counter, down a level at a time\nss.transfer(method=('none', ['pill', 'iud']), p=[0.6, 0.4], dur=ss.lognorm_ex(ss.years(2), ss.years(1))) # To one of two levels, after a time drawn for each person",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Transition",
+      "kind": "class",
+      "module": "other",
+      "signature": "(src=None, dst=None, rate=None, dur=None, p=None, stages=None, name=None, label=None, where=None, move=None, increment=None, after=None, acquisition=None, per=None, alone=False)",
+      "summary": "A movement between states",
+      "pars": {},
+      "methods": {
+        "incidence()": "A condition on how many go through the transition: the number over the last `over`, as a [\u2026]",
+        "hazard()": "In a running sim, as agents: the current rate of the transition for some agents, with its [\u2026]",
+        "to()": "The event of taking one branch of this transition, e.g. `precin.to(S)`: for `where=` or [\u2026]",
+        "uids": "The agents who went through this transition, from the moment they moved until the same [\u2026]",
+        "ever": "Whether each person has gone through this transition, as a condition (agents only), e.g. [\u2026]",
+        "count": "How many times each person has gone through this transition (agents only), e.g. [\u2026]",
+        "since": "The time since each person last went through this transition (infinite if never; agents [\u2026]",
+        "split": "Whether it splits between several destinations when it is taken (ss.stay and ss.null [\u2026]",
+        "deaths": "The name of the flow that counts the people who die by this transition: the transition's [\u2026]",
+        "dur": "The dwell time, as a parameter (or None, if the transition has a rate)"
+      },
+      "example": "S, I, R = ss.states(3)\ninfection = ss.Transition(S, I, rate=0.05 * I)\ncure      = ss.Transition(I, S) # No driver: only by treatment\nrecovery  = ss.Transition(I, R, dur=ss.days(10))\nmaturing  = ss.Transition(J, A, rate=ss.perday(1), where=ppl.age > 1) # Only adults\nfailure   = ss.Transition(Tx, I, rate=ss.peryear(0.1), move=DS >> (DS, RIF)) # Treatment fails, and the strain acquires resistance (DS, RIF = strains)\ntwins     = ss.Transition(P, PP, dur=ss.months(9), p=0.02, increment=dict(parity=2)) # Parity goes up by 2\nweaning   = ss.Transition(NB, W, rate=ss.perday(0.5), after=ss.days(21)) # At least 21 days old first, as EMULSION's duration\npostpartum = ss.Transition(PP, NP, where=preg.delivery, dur=ss.months(6)) # Six months after each woman's own delivery\nimportation = ss.Transition(S, I, rate=ss.perday(1e-4), acquisition=True) # An infection from outside, alongside one by contact",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.treat",
+      "kind": "class",
+      "module": "interventions",
+      "signature": "(what=None, who=None, move=None, increment=None, start=None, stop=None, at=None, interval=None, where=None, coverage=None, capacity=None, when=None, deliver=None, trace=None, priority=None, queue=None, delay=None, disease=None, at_age=None, strain=None, name=None, label=None, **kwargs)",
+      "summary": "Deliver a treatment; see `ss.Delivery` for the arguments",
+      "pars": {},
+      "methods": {},
+      "example": "S, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.3*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\ntreatment = ss.treat(cure=0.95, coverage=0.5, interval=7) # Makes the drug, ss.Treatment(cure=0.95)\nsim = ss.Sim(sir, interventions=treatment, stop=100).run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Treatment",
+      "kind": "class",
+      "module": "products",
+      "signature": "(cure=None, efficacy=None, transition=None, to=None, moves=None, **kwargs)",
+      "summary": "A treatment: what `ss.treat()` delivers",
+      "pars": {},
+      "methods": {
+        "diseases": "The names of the diseases whose transitions the treatment names (or, for one that changes [\u2026]",
+        "recovery()": "How a cured person leaves: the transition whose flow counts them (or None), the state [\u2026]"
+      },
+      "example": "drug = ss.Treatment(cure=0.95, cost=120.0)\nablation = ss.Treatment(cure=dict(infected=0.936, cin=0.936)) # By state\ndrug = ss.Treatment(efficacy=dict(transmission=0.5), during=typhoid.acute) # Half as infectious while acute\nart = ss.Treatment(efficacy=dict(transmission=0.96, mortality=0.9))\nboth = ss.Treatment(cure=0.3, efficacy=dict(transmission=0.9))\nbpg = ss.Treatment(moves={syph.cure_early: 0.98, syph.cure_late: 0.95}) # A destination for each stage\nkit = ss.Treatment(moves={ng.cure: 0.95, ct.cure: 0.95}) # Two diseases, one product",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.truncnorm",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(loc=0.0, scale=1.0, low=-inf, high=inf, **kwargs)",
+      "summary": "Normal distribution truncated to an interval",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF: a uniform draw between the normal's CDF at the two ends"
+      },
+      "example": "ss.truncnorm(loc=2.5, scale=0.5, low=1.0, high=4.0, strict=False).rvs(1000)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.uids",
+      "kind": "class",
+      "module": "arrays",
+      "signature": "(arr=None)",
+      "summary": "Class to specify that integers should be interpreted as UIDs.",
+      "pars": {},
+      "methods": {
+        "concatenate()": "Concatenate uids into a single instance",
+        "remove()": "Remove provided UIDs from current array",
+        "intersect()": "Keep only UIDs that are also present in the other array",
+        "union()": "Return all UIDs present in either array, sorted, without repeats (as np.union1d() gives [\u2026]"
+      },
+      "example": "a = ss.uids([1, 2, 3])\nb = ss.uids([3, 4, 5])\na + b   # Concatenate: uids([1, 2, 3, 3, 4, 5])\na | b   # Union:       uids([1, 2, 3, 4, 5])\na & b   # Intersect:   uids([3])\na - b   # Difference:  uids([1, 2])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.uniform",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(low=None, high=None, **kwargs)",
+      "summary": "Uniform distribution, values on interval (low, high)",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.vaccinate",
+      "kind": "class",
+      "module": "interventions",
+      "signature": "(what=None, who=None, move=None, increment=None, start=None, stop=None, at=None, interval=None, where=None, coverage=None, capacity=None, when=None, deliver=None, trace=None, priority=None, queue=None, delay=None, disease=None, at_age=None, strain=None, name=None, label=None, **kwargs)",
+      "summary": "Deliver a vaccine; see `ss.Delivery` for the arguments",
+      "pars": {},
+      "methods": {},
+      "example": "S, I, R = ss.states(3)\nsir = ss.Disease(infection=S >> I @ 0.3*I, recovery=ss.Transition(I, R, dur=10), init_prev=0.01)\ncampaign = ss.vaccinate(efficacy=0.85, coverage=0.7, at=[20, 40]) # Makes the vaccine, ss.Vaccine(efficacy=0.85)\nsim = ss.Sim(sir, interventions=campaign, stop=100).run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.Vaccine",
+      "kind": "class",
+      "module": "products",
+      "signature": "(efficacy=None, leaky=True, **kwargs)",
+      "summary": "A vaccine: what `ss.vaccinate()` delivers",
+      "pars": {},
+      "methods": {},
+      "example": "bcg = ss.Vaccine(efficacy=0.85, waning=ss.years(5), cost=12.50)\nss.Vaccine(efficacy=dict(acquisition=0.85, transmission=0.3))\nmcv = ss.Vaccine(efficacy=0.85, leaky=False) # 85% fully protected\nhpv = ss.Vaccine(efficacy=0.95, doses=[0.85, 1.0]) # The first dose gives 85% of the protection of two\nbivalent = ss.Vaccine(efficacy=dict(hpv16=0.9975, hpv18=0.9975)) # Against two diseases\nrtss = ss.Vaccine(efficacy=0.8, waning=ss.box(dur=ss.days(180), decay=ss.days(730))) # Full for 180 days, then declining\nlinear = ss.Vaccine(efficacy=0.9, waning=lambda t: np.clip(1 - t.years/5, 0, 1)) # Fading to nothing over 5 years",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.warn",
+      "kind": "function",
+      "module": "utils",
+      "signature": "(msg, category=None, verbose=None, die=None)",
+      "summary": "Helper function to handle warnings -- shortcut to warnings.warn",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.weeks",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=None, base=None, **kwargs)",
+      "summary": "A duration in weeks, e.g. `ss.weeks(6)`",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.weibull",
+      "kind": "class",
+      "module": "distributions",
+      "signature": "(c=1.0, scale=1.0, *, loc=0.0, **kwargs)",
+      "summary": "Weibull distribution (specifically, scipy.stats.weibull_min)",
+      "pars": {},
+      "methods": {
+        "ppf()": "The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's for unusual [\u2026]"
+      },
+      "example": "ss.weibull(c=1.4, scale=ss.days(8))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ss.years",
+      "kind": "class",
+      "module": "time",
+      "signature": "(value=1, base=None)",
+      "summary": "A duration in years, e.g. `ss.years(5)`; the default unit, which also reads a date as a decimal year",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.AgentSEIR",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SEIR model written as code: Starsim 3's `ss.SEIR` (see `ssl.AgentSIR`), with its lognormal `dur_exp` and `dur_inf` and `p_death=0.01`; for an SEIR model, use `ss.SEIR`",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.01)",
+        "beta": "ss.peryear(0.1)",
+        "dur_inf": "ss.lognorm_ex(mean=ss.years(6), std=1.0)",
+        "p_death": "ss.bernoulli(p=0.01)",
+        "dur_exp": "ss.lognorm_ex(mean=ss.years(0.5), std=1.0)"
+      },
+      "methods": {
+        "set_progression()": "Schedule recovery or death, relative to the end of the latent period",
+        "step_state()": "Progress exposed -> infectious, then the usual SIR transitions"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.AgentSIR",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SIR model written as code: Starsim 3's `ss.SIR`",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.01)",
+        "beta": "ss.peryear(0.1)",
+        "dur_inf": "ss.lognorm_ex(mean=ss.years(6), std=1.0)",
+        "p_death": "ss.bernoulli(p=0.01)"
+      },
+      "methods": {
+        "set_prognoses()": "Set prognoses: infect the agents, then schedule what happens to them",
+        "set_progression()": "Schedule recovery or death, relative to when each agent becomes infectious",
+        "step_die()": "Reset infected/recovered flags for dead agents",
+        "plot()": "Default plot for SIR model"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.AgentSIS",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "An SIS model with waning immunity, written as code: Starsim 3's `ss.SIS` (see `ssl.AgentSIR`), with its lognormal `dur_inf`",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.01)",
+        "beta": "ss.peryear(0.05)",
+        "dur_inf": "ss.lognorm_ex(mean=ss.years(10), std=1.0)",
+        "waning": "ss.peryear(0.05)",
+        "imm_boost": "1.0"
+      },
+      "methods": {
+        "step_state()": "Progress infectious -> recovered",
+        "make_naive()": "As `ss.Disease.make_naive()`, but also resets `rel_sus` by default, since SIS sets it [\u2026]",
+        "set_prognoses()": "Set prognoses",
+        "init_results()": "Initialize results",
+        "update_results()": "Store the population immunity (susceptibility)",
+        "plot()": "Default plot for SIS model"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.ART",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(year, coverage, pars=None, **kwargs)",
+      "summary": "Scale up antiretroviral therapy over time.",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim.library as ssl\n\nart = ssl.ART(year=[2000, 2010, 2020], coverage=[0, 0.4, 0.8])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.CD4_analyzer",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(**kwargs)",
+      "summary": "Record the CD4 count of every agent at every timestep.",
+      "pars": {},
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Cholera",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Cholera, with both direct and environmental (waterborne) transmission.",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.005)",
+        "beta": "ss.probperday(1)",
+        "p_death": "ss.bernoulli(p=0.005)",
+        "dur_exp": "ss.lognorm_ex(mean=ss.days(2.772), std=ss.days(4.737))",
+        "dur_asymp2rec": "ss.uniform(low=ss.days(1), high=ss.days(10))",
+        "dur_symp2rec": "ss.lognorm_ex(mean=ss.days(5), std=ss.days(1.8))",
+        "dur_symp2dead": "ss.lognorm_ex(mean=ss.days(1), std=ss.days(0.5))",
+        "p_symp": "ss.bernoulli(p=0.5)",
+        "asymp_trans": "0.01",
+        "beta_env": "ss.prob(0.166667)",
+        "half_sat_rate": "1000000",
+        "shedding_rate": "ss.freqperday(10)",
+        "decay_rate": "ss.perday(0.033)",
+        "p_env_transmit": "ss.bernoulli(p=0)"
+      },
+      "methods": {
+        "init_results()": "Initialize results",
+        "step_state()": "Adapted from [\u2026]",
+        "set_progression()": "Schedule symptoms, recovery, and death",
+        "step_die()": "Reset infected/recovered flags for dead agents"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Cholera(), networks='random')\nsim.run()\nsim.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.ClusterNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(pars=None, cluster_size=None, age_range=None, beta=None, dynamic=None, **kwargs)",
+      "summary": "Fully connected clusters of agents, e.g. households, schools, or workplaces",
+      "pars": {
+        "cluster_size": "ss.poisson(lam=4)",
+        "age_range": "None",
+        "beta": "1.0",
+        "dynamic": "False"
+      },
+      "methods": {
+        "step()": "If dynamic, recreate the clusters; otherwise, do nothing",
+        "add_pairs()": "Assign agents to clusters, and connect every pair of agents within each cluster"
+      },
+      "example": "households = ssl.ClusterNet(name='households', cluster_size=ss.poisson(3))\nsim = ss.Sim(diseases='sis', networks=households)\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.CongenitalDisease",
+      "kind": "class",
+      "module": "library.mnch",
+      "signature": "(*args, **kwargs)",
+      "summary": "Simple disease with congenital outcomes, scheduled around delivery",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.01)",
+        "beta": "ss.peryear(0.1)",
+        "dur_inf": "ss.lognorm_ex(mean=ss.years(6), std=1.0)",
+        "p_death": "ss.bernoulli(p=0.01)",
+        "birth_outcome_keys": "['stillborn', 'congenital', 'normal']",
+        "birth_outcomes": "sc.obj(default=ss.choice(a=3, p=[0.3 0.4 0.3], replace=True))"
+      },
+      "methods": {
+        "step_congenital()": "Execute scheduled congenital events whose `ti_<key>` has arrived"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Costs",
+      "kind": "class",
+      "module": "library.econ",
+      "signature": "(unit_costs=None, fixed=0, start=None, deliveries=True, **kwargs)",
+      "summary": "The costs of a sim, from its results, with their total",
+      "pars": {},
+      "methods": {
+        "step()": "The costs so far, for what runs during the sim, such as `ssl.ICER`; the results are final [\u2026]"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nvx = ss.vaccinate(efficacy=0.9, coverage=0.5, where=ss.ppl.age < 5, interval=ss.years(1), cost=5)\ncosts = ssl.Costs(unit_costs={'sir.infection': 50}, fixed=1000)\nsim = ss.Sim(diseases='sir', networks='random', interventions=vx, analyzers=costs)\nsim.run()\nsim.results.costs.plot()\nprint(sim.results.costs.total.sum())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.COVID",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "COVID-19, as a SECIR model: a chain of increasingly severe states, each of which some people leave by recovering",
+      "pars": {
+        "beta": "ss.perday(1)",
+        "rel_ins": "0.67",
+        "rel_sym": "0.25",
+        "dur_exp": "ss.days(3.2)",
+        "dur_ins": "ss.days(2)",
+        "dur_sym": "ss.days(6)",
+        "dur_sev": "ss.days(12)",
+        "dur_crit": "ss.days(8)",
+        "p_sym": "0.91",
+        "p_sev": "0.2",
+        "p_crit": "0.25",
+        "p_death": "0.3",
+        "init_prev": "0.01"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.COVID(), total_pop=83_000, unit='day', stop=100)\nsim.run()\nsim.plot('covid')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.DALYs",
+      "kind": "class",
+      "module": "library.econ",
+      "signature": "(weights=None, life_lost=None, deaths=None, **kwargs)",
+      "summary": "The disability-adjusted life years of a sim: the years lived with disability, plus the years of life lost",
+      "pars": {},
+      "methods": {
+        "step()": "The years of life lost by those who died in this step, and the results so far, for what [\u2026]"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsir = ss.SIR(p_death=0.01)\nsim = ss.Sim(diseases=sir, networks='random', analyzers=ssl.DALYs(weights={'sir.I': 0.1}))\nsim.run()\nprint(sim.results.dalys.dalys.sum())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Dengue",
+      "kind": "function",
+      "module": "library.diseases",
+      "signature": "(n_serotypes=4, cross=0.3, a=perday(0.5), b=0.5, c=0.5, m=2.0, dur_inf=days(6), eip=days(10), mu_v=perday(0.1), init=0.001, **kwargs)",
+      "summary": "Dengue: several serotypes, each passed on by mosquitoes, with partial cross-protection between them",
+      "pars": {},
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Dengue(), demographics=True, n_agents=5000, unit='day', stop=365*5)\nsim.run()\nsim.plot('den1')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.discount",
+      "kind": "function",
+      "module": "library.econ",
+      "signature": "(values, rate, start=None, t=None)",
+      "summary": "Discount values over time at a yearly rate",
+      "pars": {},
+      "methods": {},
+      "example": "cost = ssl.discount(sim.results.costs.total, 0.03, start=2010).sum()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.DiskNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(pars=None, **kwargs)",
+      "summary": "Disk graph in which edges are made between agents located within a user-defined radius.",
+      "pars": {
+        "r": "0.1",
+        "v": "ss.freqperday(0.05)"
+      },
+      "methods": {
+        "add_pairs()": "Generate contacts"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases='sis', networks=ssl.DiskNet(r=0.05))\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Ebola",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Ebola, including severe disease and transmission from unburied bodies.",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.005)",
+        "beta": "ss.probperday(1)",
+        "p_death": "ss.bernoulli(p=0.55)",
+        "dur_exp": "ss.lognorm_ex(mean=ss.days(12.7), std=1.0)",
+        "sev_factor": "2.2",
+        "unburied_factor": "2.1",
+        "dur_symp2sev": "ss.lognorm_ex(mean=ss.days(6), std=1.0)",
+        "dur_sev2dead": "ss.lognorm_ex(mean=ss.days(1.5), std=1.0)",
+        "dur_dead2buried": "ss.lognorm_ex(mean=ss.days(2), std=1.0)",
+        "dur_symp2rec": "ss.lognorm_ex(mean=ss.days(10), std=1.0)",
+        "dur_sev2rec": "ss.lognorm_ex(mean=ss.days(10.4), std=1.0)",
+        "p_sev": "ss.bernoulli(p=0.7)",
+        "p_safe_bury": "ss.bernoulli(p=0.25)"
+      },
+      "methods": {
+        "step_state()": "Progress exposed -> infectious -> severe -> recovered/dead -> buried",
+        "set_progression()": "Schedule severe disease, recovery, death, and burial",
+        "step_die()": "Reset states for dead agents"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Ebola(), networks='random')\nsim.run()\nsim.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.ErdosRenyiNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(pars=None, **kwargs)",
+      "summary": "In the Erdos-Renyi network, every possible edge has a probability, p, of being created on each time step.",
+      "pars": {
+        "memory": "None",
+        "p": "0.1",
+        "dur": "ss.years(0)"
+      },
+      "methods": {
+        "add_pairs()": "Generate contacts"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases='sis', networks=ssl.ErdosRenyiNet(p=0.01))\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.fetal_infection",
+      "kind": "class",
+      "module": "library.mnch",
+      "signature": "(pars=None, **kwargs)",
+      "summary": "Connect a disease to fetal health outcomes during pregnancy.",
+      "pars": {
+        "timing_shift": "ss.lognorm_ex(mean=3.0, std=1.0)",
+        "growth_penalty": "0.15"
+      },
+      "methods": {
+        "init_pre()": "Check that the sim has what the connector needs",
+        "init_post()": "Register a callback so we can apply damage at conception for women who are already [\u2026]",
+        "step()": "Each timestep, check for new infections in pregnant women and apply damage"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.FetalHealth",
+      "kind": "class",
+      "module": "library.mnch",
+      "signature": "(pars=None, **kwargs)",
+      "summary": "Track fetal health outcomes during pregnancy.",
+      "pars": {
+        "weight_by_ga": "array([[ 24., 600.], [ 25., 700.], [ 26., 800.], [ 27., 900.], [ 28., 1000.], [  [\u2026]",
+        "interp_fn": "<function interp>",
+        "sga_ratio": "0.87",
+        "lbw_threshold": "2500",
+        "vlbw_threshold": "1500",
+        "min_ga": "ss.weeks(24)",
+        "percentile_dist": "ss.normal(loc=1.0, scale=0.1)"
+      },
+      "methods": {
+        "init_pre()": "Register callbacks with the Pregnancy module"
+      },
+      "example": "import starsim as ss\n\nsim = ss.Sim(\n    demographics=[ss.Pregnancy(fertility_rate=10), ss.Deaths(death_rate=10)],\n    modules=ssl.mnch.FetalHealth(),\n    networks=ss.PrenatalNet(),\n)\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.GeoNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(places='Kenya', level=1, local=0.9, c=2.0, pars=None, **kwargs)",
+      "summary": "Random contacts between real places",
+      "pars": {
+        "memory": "None",
+        "n_contacts": "ss.constant(v=10)",
+        "dur": "ss.years(0)",
+        "beta": "1.0",
+        "age_range": "None",
+        "dynamic": "True",
+        "method": "'fast'",
+        "remove_self_loops": "False"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(n_agents=10_000, diseases='sis', networks=ssl.GeoNet('Kenya', n_contacts=10))\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Gonorrhea",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Gonorrhea, as an SIS model on a sexual network",
+      "pars": {
+        "beta": "ss.peract(m2f=0.06, f2m=0.03)",
+        "dur_inf": "ss.months(6)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nnet = ss.SexualNet(dur=ss.years(2), n_contacts=ss.poisson(1))\nsim = ss.Sim(diseases=ssl.Gonorrhea(), networks=net, n_agents=5000, start=2000, stop=2030, dt=ss.months(1))\nsim.run()\nsim.plot('gonorrhea')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.GridNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(diagonal=False, periodic=False, pars=None, **kwargs)",
+      "summary": "Agents on a square grid, in contact with their neighbors",
+      "pars": {
+        "seed": "True",
+        "p": "None",
+        "n_contacts": "10"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(n_agents=2500, diseases='sir', networks=ssl.GridNet(periodic=True))\nsim.run()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.HIV",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Simple HIV model with CD4 count dynamics and ART.",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.05)",
+        "beta": "0.0",
+        "cd4_min": "100",
+        "cd4_max": "500",
+        "cd4_rate": "5",
+        "art_efficacy": "0.96",
+        "death_dist": "ss.bernoulli(p=<function HIV.death_prob_func>)",
+        "p_death": "ss.peryear(0.05)"
+      },
+      "methods": {
+        "step_state()": "Update CD4",
+        "init_results()": "Initialize results"
+      },
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(\n    diseases = ssl.HIV(beta=0.02, init_prev=0.05),\n    networks = 'random',\n    interventions = ssl.ART(year=[2000, 2020], coverage=[0, 0.8]),\n)\nsim.run()\nsim.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.HouseholdNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(pars=None, dhs_data=None, dynamic=True, prob_move_out=None, update_freq=None, **kwargs)",
+      "summary": "A household contact network built from DHS-style survey data.",
+      "pars": {},
+      "methods": {
+        "init_pre()": "Initialize the network, and check that a dynamic network has `ss.Pregnancy`",
+        "init_post()": "Add the first edges, and add a random fraction of a year to each age",
+        "add_pairs()": "Generate contacts by assigning agents to households sampled from the data",
+        "load_dhs()": "Load a DHS Household Recode (HR) Stata file and return a dataframe suitable for use with [\u2026]"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.HybridNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(pars=None, household_size=None, contacts=None, beta=None, school_ages=None, work_ages=None, dynamic=None, method=None, clustered=None, **kwargs)",
+      "summary": "Covasim v3's \"hybrid\" population: households, schools, workplaces, and community",
+      "pars": {
+        "household_size": "ss.poisson(lam=2.0)",
+        "contacts": "{'s': 20, 'w': 16, 'c': 20}",
+        "beta": "{'h': 3.0, 's': 0.6, 'w': 0.6, 'c': 0.3}",
+        "school_ages": "[6, 22]",
+        "work_ages": "[22, 65]",
+        "dynamic": "False",
+        "method": "'fast'",
+        "clustered": "True"
+      },
+      "methods": {
+        "step()": "Not used, since the networks returned by expand() are used instead"
+      },
+      "example": "sim = ss.Sim(diseases='sis', networks=ssl.HybridNet())\nsim.run()\nprint(sim.networks.keys()) # ['h', 's', 'w', 'c']\n\n# Larger households and smaller schools; contacts and beta can be partial\nhybrid = ssl.HybridNet(household_size=ss.poisson(3), contacts=dict(s=10))",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.ICER",
+      "kind": "class",
+      "module": "library.econ",
+      "signature": "(sims=None, outcome='dalys.dalys', cost='costs.total', baseline=None, rate=0, start=None, window=None, **kwargs)",
+      "summary": "Compare the costs and effects of scenarios: incremental cost-effectiveness ratios",
+      "pars": {},
+      "methods": {
+        "step()": "Count this sim as a scenario, as it stands",
+        "df": "The table of the scenarios (see the class docstring)",
+        "best()": "The scenario with the highest mean net benefit at a willingness to pay",
+        "plot()": "Plot the cost-effectiveness plane: each scenario's cost against the outcome it averts, [\u2026]",
+        "plot_ceac()": "Plot the cost-effectiveness acceptability curve: the share of runs in which each scenario [\u2026]"
+      },
+      "example": "# After the runs\nmsim = ss.parallel({'Nothing': base, 'Vaccine': base.new(interventions=vx)}, n_runs=20)\nicer = ssl.ICER(msim, rate=0.03, start=2010)\nicer.df\nicer.plot()\nicer.plot_ceac()\nicer.best(wtp=1000)\n\n# During a run, compared with a finished sim\nicer = ssl.ICER(dict(Nothing=base.run()), window=1)\nsim = ss.Sim(..., analyzers=[ssl.Costs(), ssl.DALYs(weights=...), icer])",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Influenza",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Seasonal influenza, as a SEIRS model with a yearly cycle in transmission",
+      "pars": {
+        "beta": "ss.seasonal(mean=0.26, amplitude=0.3, peak='January')",
+        "dur_exp": "ss.days(2)",
+        "dur_inf": "ss.days(5)",
+        "dur_imm": "ss.years(1)",
+        "birth_rate": "ss.peryear(0.02)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Influenza(), total_pop=100_000, start='2000-01-01', stop='2010-01-01', dt=ss.days(1))\nsim.run()\nsim.plot('influenza')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Malaria",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Malaria as the Ross-Macdonald model of humans and mosquitoes",
+      "pars": {
+        "a": "ss.perday(0.5)",
+        "b": "0.5",
+        "c": "0.8",
+        "m": "10.09",
+        "gamma": "ss.perday(0.033)",
+        "mu_h": "ss.perday(5.5e-05)",
+        "mu_v": "ss.perday(0.143)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Malaria(), total_pop=10_000, unit='day', stop=1000)\nsim.run()\nsim.diseases.malaria.plot('Ih', 'Iv')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.MalariaImmunity",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Malaria with immunity, as the Garki model",
+      "pars": {
+        "C": "0.1",
+        "g": "0.097",
+        "r1": "ss.perday(0.0023)",
+        "ratio": "10.0",
+        "alpha1": "ss.perday(0.002)",
+        "alpha2": "ss.perday(0.00019)",
+        "delta": "ss.perday(0.0001)",
+        "dur_inc": "ss.days(15)",
+        "q3": "0.7",
+        "dur_x2": "ss.constant(v=par(days(15), doc='Incubation period in people'))",
+        "dur_x4": "ss.constant(v=par(days(15), doc='Incubation period in people'))"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.MalariaImmunity(C=0.1), total_pop=10_000, unit='day', stop=365*20)\nsim.run()\nsim.plot('malariaimmunity')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Measles",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Measles, as an SEIR model.",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.005)",
+        "beta": "ss.peryear(1)",
+        "dur_inf": "ss.normal(loc=ss.days(11), scale=1.0)",
+        "p_death": "ss.bernoulli(p=0.005)",
+        "dur_exp": "ss.normal(loc=ss.days(8), scale=1.0)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Measles(), networks='random')\nsim.run()\nsim.plot()",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.NCD",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Example non-communicable disease",
+      "pars": {
+        "initial_risk": "ss.bernoulli(p=0.3)",
+        "dur_risk": "ss.expon(scale=ss.years(10))",
+        "prognosis": "ss.weibull(c=2, scale=ss.years(5), loc=0.0)"
+      },
+      "methods": {
+        "init_post()": "Set initial values for states",
+        "init_results()": "Initialize results"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.NeonatalSepsis",
+      "kind": "class",
+      "module": "library.mnch",
+      "signature": "(*args, **kwargs)",
+      "summary": "Minimal neonatal sepsis model.",
+      "pars": {
+        "init_prev": "ss.bernoulli(p=0.3)",
+        "beta": "ss.peryear(0)",
+        "dur_inf": "ss.lognorm_ex(mean=ss.days(7), std=ss.days(3))",
+        "p_death": "ss.bernoulli(p=0.5)"
+      },
+      "methods": {
+        "init_post()": "Exempt the initial population from being treated as newborns",
+        "step()": "Infect newly born agents",
+        "set_prognoses()": "Set prognoses \u2014 only apply lethal outcomes to neonates (age < 28 days)"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.NullNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(n_people=None, **kwargs)",
+      "summary": "A convenience class for a network of size n that only has self-connections with a weight of 0. This network can be useful for debugging purposes or as a placeholder network during development for conditions that require more complex network mechanisms.",
+      "pars": {},
+      "methods": {
+        "init_pre()": "Initialize the network, with the number of people from the sim if not given",
+        "step()": "Not used for NullNet"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Pertussis",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Pertussis (whooping cough), as a SEIRS model with slowly waning immunity",
+      "pars": {
+        "beta": "ss.perday(0.866667)",
+        "dur_exp": "ss.days(8)",
+        "dur_inf": "ss.days(15)",
+        "dur_imm": "ss.years(30)",
+        "birth_rate": "ss.peryear(0.02)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Pertussis(), total_pop=500_000, start='1920-01-01', stop='1960-01-01', dt=ss.days(2))\nsim.run()\nsim.plot('pertussis')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Polio",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Poliovirus, with a paralytic fraction",
+      "pars": {
+        "beta": "ss.perday(0.3)",
+        "dur_exp": "ss.days(3)",
+        "dur_inf": "ss.days(20)",
+        "p_paralysis": "0.005",
+        "birth_rate": "ss.peryear(0.03)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Polio(), total_pop=100_000, start=1980, stop=2000, dt=ss.days(2))\nsim.run()\nprint('Paralytic cases:', sim.results.polio['outcome.P'].sum())",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.RSV",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Respiratory syncytial virus (RSV), as a seasonal MSEIRS model",
+      "pars": {
+        "beta": "ss.seasonal(mean=0.2, amplitude=0.35, peak='January')",
+        "dur_mat": "ss.months(4)",
+        "dur_exp": "ss.days(5)",
+        "dur_inf": "ss.days(10)",
+        "dur_imm": "ss.years(1)",
+        "birth_rate": "ss.peryear(0.02)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.RSV(), total_pop=100_000, start='2000-01-01', stop='2006-01-01', dt=ss.days(1))\nsim.run()\nsim.plot('rsv')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.ScaleFreeNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(m=2, pars=None, **kwargs)",
+      "summary": "A scale-free (Barab\u00e1si-Albert) network: a few agents have many contacts, and most have few",
+      "pars": {
+        "seed": "True",
+        "p": "None",
+        "n_contacts": "10"
+      },
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.SmallWorldNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(k=4, p=0.1, pars=None, **kwargs)",
+      "summary": "A small-world (Watts-Strogatz) network: mostly local contacts, with a few long-range ones",
+      "pars": {
+        "seed": "True",
+        "p": "0.1",
+        "n_contacts": "10"
+      },
+      "methods": {},
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.StaticNet",
+      "kind": "class",
+      "module": "library.networks",
+      "signature": "(graph=None, pars=None, **kwargs)",
+      "summary": "A network class of static partnerships converted from a networkx graph. There's no formation of new partnerships and initialized partnerships only end when one of the partners dies. The networkx graph can be created outside Starsim if population size is known. Or the graph can be created by passing [\u2026]",
+      "pars": {
+        "seed": "True",
+        "p": "None",
+        "n_contacts": "10"
+      },
+      "methods": {
+        "init_pre()": "Initialize the network, with a random (Erd\u0151s\u2013R\u00e9nyi) graph if none is given"
+      },
+      "example": "# Generate a networkx graph and pass to Starsim\nimport networkx as nx\nimport starsim as ss\nimport starsim.library as ssl\ng = nx.scale_free_graph(n=10000)\nssl.StaticNet(graph=g)\n\n# Pass a networkx graph generator to Starsim\nssl.StaticNet(graph=nx.erdos_renyi_graph, p=0.0001, seed=True)",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Syphilis",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Syphilis, as a staged infection, wholly declared",
+      "pars": {
+        "beta": "ss.peract(m2f=0.1, f2m=0.05)",
+        "dur_exp": "ss.days(50)",
+        "dur_primary": "ss.weeks(6)",
+        "dur_secondary": "ss.months(3.6)",
+        "dur_early": "ss.months(23)",
+        "dur_late": "ss.years(10)",
+        "p_reactivate": "0.35",
+        "p_tertiary": "0.35",
+        "death_rate": "ss.peryear(0.05)",
+        "latent_half_life": "ss.years(1)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nnet = ss.SexualNet(dur=ss.years(2), n_contacts=ss.poisson(1))\nsim = ss.Sim(diseases=ssl.Syphilis(), networks=net, n_agents=5000, start=2000, stop=2030, dt=ss.months(1))\nsim.run()\nsim.plot('syphilis')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.TB",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Tuberculosis, as the LSHTM model of the spectrum of TB disease",
+      "pars": {
+        "beta": "ss.peryear(9)",
+        "trans_asymp": "0.82",
+        "rr_reinfect_cleared": "1.0",
+        "rr_reinfect_rec": "0.21",
+        "inf_cle": "ss.peryear(1.9)",
+        "inf_non": "ss.peryear(0.16)",
+        "inf_asy": "ss.peryear(0.06)",
+        "non_rec": "ss.peryear(0.18)",
+        "non_asy": "ss.peryear(0.25)",
+        "asy_non": "ss.peryear(1.66)",
+        "asy_sym": "ss.peryear(0.88)",
+        "sym_asy": "ss.peryear(0.54)",
+        "sym_dead": "ss.peryear(0.34)",
+        "mu": "ss.peryear(0.0142857)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.TB(), total_pop=100_000, start=1900, stop=2000)\nsim.run()\nsim.plot('tb')",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.treat_pregnant",
+      "kind": "class",
+      "module": "library.mnch",
+      "signature": "(disease='sir', start_year=None, end_year=None, pars=None, **kwargs)",
+      "summary": "Treat infected pregnant women and partially reverse fetal damage.",
+      "pars": {
+        "p_treat": "ss.bernoulli(p=0.9)",
+        "tx_growth_reversal": "0.7",
+        "tx_timing_reversal": "0.7"
+      },
+      "methods": {
+        "init_pre()": "Check that the sim has the disease and `ssl.mnch.FetalHealth`, and fill in the years"
+      },
+      "example": "",
+      "aliases": [],
+      "deprecated": false
+    },
+    {
+      "name": "ssl.Typhoid",
+      "kind": "class",
+      "module": "library.diseases",
+      "signature": "(*args, **kwargs)",
+      "summary": "Typhoid fever, with chronic carriers",
+      "pars": {
+        "beta": "ss.perday(0.072)",
+        "rel_carrier": "0.01",
+        "p_carrier": "0.05",
+        "dur_inf": "ss.weeks(4)",
+        "dur_imm": "ss.years(1000)",
+        "birth_rate": "ss.peryear(0.0166667)"
+      },
+      "methods": {},
+      "example": "import starsim as ss\nimport starsim.library as ssl\n\nsim = ss.Sim(diseases=ssl.Typhoid(), total_pop=100_000, start=1980, stop=2020, dt=ss.weeks(2))\nsim.run()\nsim.plot('typhoid')",
+      "aliases": [],
+      "deprecated": false
+    }
+  ]
+}

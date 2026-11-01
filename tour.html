@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>A tour of Starsim – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./gallery.html" rel="next">
+<link href="./index.html" rel="prev">
+<link href=".//assets/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="./assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./tour.html">Tour</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tour.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Tour</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gallery</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tutorials</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./user_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">User guide</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatsnew.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What’s new</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contributing/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">API</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#an-sir-model" id="toc-an-sir-model" class="nav-link active" data-scroll-target="#an-sir-model">An SIR model</a></li>
+  <li><a href="#how-the-epidemic-starts" id="toc-how-the-epidemic-starts" class="nav-link" data-scroll-target="#how-the-epidemic-starts">How the epidemic starts</a></li>
+  <li><a href="#checking-the-model" id="toc-checking-the-model" class="nav-link" data-scroll-target="#checking-the-model">Checking the model</a></li>
+  <li><a href="#age-groups-and-contacts" id="toc-age-groups-and-contacts" class="nav-link" data-scroll-target="#age-groups-and-contacts">Age groups and contacts</a></li>
+  <li><a href="#interventions" id="toc-interventions" class="nav-link" data-scroll-target="#interventions">Interventions</a></li>
+  <li><a href="#data-and-fitting" id="toc-data-and-fitting" class="nav-link" data-scroll-target="#data-and-fitting">Data and fitting</a></li>
+  <li><a href="#uncertainty-and-many-runs" id="toc-uncertainty-and-many-runs" class="nav-link" data-scroll-target="#uncertainty-and-many-runs">Uncertainty and many runs</a></li>
+  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next steps</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">A tour of Starsim</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Written by AI">🧠0% 🤖100%</div>
+<p>This page is a ten-minute tour of Starsim. It builds one model step by step: a simple epidemic, then the same epidemic with age groups, an intervention, data to fit it to, and many runs to show the uncertainty. Each step is a few lines of code, and each step says what the code means in the terms of an epidemiological model. The parameters are illustrative, not estimates for any particular disease or setting.</p>
+<p>To follow along, install Starsim with <code>pip install "starsim[jax]"</code>, and paste each block into a notebook or a Python script, in order.</p>
+<section id="an-sir-model" class="level2">
+<h2 class="anchored" data-anchor-id="an-sir-model">An SIR model</h2>
+<p>In an SIR model, everyone is in one of three compartments: susceptible (S), infectious (I), or recovered (R). People move between them along two transitions:</p>
+<ul>
+<li><strong>Infection</strong>, from S to I. Each susceptible person is infected at a rate of β times the share of people who are infectious, so the number infected per day is β S I / N (frequency-dependent transmission).</li>
+<li><strong>Recovery</strong>, from I to R. People stay infectious for 10 days on average, so they recover at a rate of 1/10 per day.</li>
+</ul>
+<p>In Starsim, the compartments are states, and each transition says where people move from, where they move to, and at what rate (after <code>@</code>):</p>
+<div id="f8b13051" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.3</span><span class="op">*</span>I        <span class="co"># From S to I, at a rate of 0.3 times the share infectious</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">10</span>)  <span class="co"># From I to R, after 10 days on average</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Starsim kernels: Rust, OUT OF DATE (built before its source last changed, so results may be wrong): run "./build" in starsim/solvers/rust/</code></pre>
+</div>
+</div>
+<p>A state in a rate, like <code>I</code> in <code>0.3*I</code>, is the share of people in it. A duration, like <code>ss.days(10)</code>, is the average time spent in a state before leaving it. Since the duration is in days, β = 0.3 is per day. The model is the standard set of equations:</p>
+<div id="0657fc5f" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sir.equations()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dS/dt = -beta * S * I / N
+dI/dt =  beta * S * I / N - I / dur_I
+dR/dt =  I / dur_I</code></pre>
+</div>
+</div>
+<p>The basic reproduction number is R0 = β × the duration = 0.3 × 10 = 3. To run the model, give it to a sim with how long to run for:</p>
+<div id="ebe78c41" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, stop<span class="op">=</span>ss.days(<span class="dv">100</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>sim.plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: sir, 10,000 people, as an ODE, days 0 to 100
+  sir: R0 = 3, with 100 infectious at the start
+  Done in 0.003 s; sir: 9,309 infections; at most 3,036 infectious, on day 27</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tour_files/figure-html/cell-4-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The sim says what it ran and what happened: 10,000 people (the default population) as an ODE, R0 = 3 as expected, and the size and timing of the peak. Since nothing in this model is about individual people, Starsim runs it as a deterministic compartmental model (an ODE). The same model can also be run as a stochastic model or as agents, as <a href="#uncertainty-and-many-runs">the last section</a> shows.</p>
+</section>
+<section id="how-the-epidemic-starts" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-epidemic-starts">How the epidemic starts</h2>
+<p>By default, 1% of people start infected, and everyone else starts in the first state, S. The share that starts infected is <code>init_prev</code>, the initial prevalence:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery, init_prev<span class="op">=</span><span class="fl">0.001</span>)  <span class="co"># 0.1% start infected</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>init_prev</code> puts people in the state that an infection leads to: <code>I</code> here, but <code>E</code> in an SEIR model, where people are exposed before they are infectious. To start people in any state, give <code>init</code> (the share of people in each state) or <code>init_n</code> (the number of people in each):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>, R<span class="op">=</span><span class="fl">0.2</span>))  <span class="co"># 0.1% infectious, 20% already immune</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery, init_n<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="dv">10</span>))         <span class="co"># 10 people infectious</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="checking-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="checking-the-model">Checking the model</h2>
+<p>Starsim fills in whatever the model leaves out: the population size, how long a state lasts beyond its average (here, exponentially distributed, as in an ODE), how people mix, and so on. <code>describe()</code> lists the whole model as Starsim has built it: every state, transition, and setting, with each value that Starsim chose itself marked as guessed, so that nothing is hidden:</p>
+<div id="a14ef3f7" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sim.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div style="font-size:0.9em; line-height:1.35">
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Sim <span style="opacity:0.6">1 module, 10,000 people [guessed], days 0 to 100</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">solver</td>
+<td style="text-align: left; padding: 0 1em 0 0;">ode</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: every part of the model has a compartmental form</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">unit</td>
+<td style="text-align: left; padding: 0 1em 0 0;">day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">from the typed values in the model</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Disease 'sir' <span style="opacity:0.6">3 states, 2 transitions</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">states</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, I, R</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">I infectious</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">init: init_prev = 0.01; the rest in S</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: the default, 1%</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">infection</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S -&gt; I transmission, from I</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">beta = 0.3 per day</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">rate = 0.3 × I.n / N</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">homogeneous mixing</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">recovery</td>
+<td style="text-align: left; padding: 0 1em 0 0;">I -&gt; R spontaneous</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">time in I ~ exponential(mean = 10 days)</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: scalar duration</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Mixing and interventions</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">mixing</td>
+<td style="text-align: left; padding: 0 1em 0 0;">homogeneous, 1 contact per day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: no network given</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Results and running</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">results</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, I, R, and one flow per transition; also prevalence</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">schedule</td>
+<td style="text-align: left; padding: 0 1em 0 0;">every day: sir</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Notes</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">note</td>
+<td style="text-align: left; padding: 0 1em 0 0;">unit='day' (from the typed values in the model)</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="age-groups-and-contacts" class="level2">
+<h2 class="anchored" data-anchor-id="age-groups-and-contacts">Age groups and contacts</h2>
+<p>Most respiratory infections spread differently between age groups. <code>stratify()</code> splits each state by age: here into three groups, with the share of the population in each. <a href="./api/data.html#starsim.data.contacts" title="0"><code>ss.contacts()</code></a> says how much each group mixes with each other one: a contact matrix, in which row <em>i</em>, column <em>j</em> is the number of contacts a day that a person in group <em>i</em> has with people in group <em>j</em>. With contacts, β is the chance of infection per contact. This model also has an outcome, <code>cases</code>: the infections that are reported, here one in five.</p>
+<div id="64f26a34" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> ss.par(<span class="fl">0.02</span>, bounds<span class="op">=</span>[<span class="fl">0.005</span>, <span class="fl">0.1</span>]) <span class="co"># A parameter that can be fitted, between these bounds</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> beta<span class="op">*</span>I</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">10</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>cases     <span class="op">=</span> ss.outcome(<span class="fl">0.2</span><span class="op">*</span>infection) <span class="co"># One infection in five is reported</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery, cases, init_prev<span class="op">=</span><span class="fl">0.0001</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>sir.stratify(age<span class="op">=</span>{<span class="dv">0</span>: <span class="fl">0.3</span>, <span class="dv">15</span>: <span class="fl">0.6</span>, <span class="dv">65</span>: <span class="fl">0.1</span>}) <span class="co"># Ages 0-14, 15-64, and 65+, with the share of people in each</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>contacts <span class="op">=</span> ss.contacts(ages<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">65</span>], matrix<span class="op">=</span>[[<span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">3</span>]])</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>pars <span class="op">=</span> <span class="bu">dict</span>(networks<span class="op">=</span>contacts, total_pop<span class="op">=</span><span class="fl">1e6</span>, start<span class="op">=</span><span class="st">'2025-01-01'</span>, stop<span class="op">=</span><span class="st">'2025-07-01'</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, <span class="op">**</span>pars)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>sim.results.sir.I.by(<span class="st">'age'</span>).plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: sir, 1,000,000 people, as an ODE, 2025-01-01 to 2025-07-01
+  sir: R0 = 2.82, with 100 infectious at the start
+  Done in 0.0026 s; sir: 907,068 infections; at most 262,517 infectious, on 2025-02-25</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tour_files/figure-html/cell-6-output-2.png" width="600" height="478" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Every state and transition has a result of the same name (<code>S</code>, <code>I</code>, <code>R</code>, <code>infection</code>, <code>recovery</code>), and so does each outcome (<code>cases</code>). <code>by('age')</code> splits a result by age group, and <code>select()</code> picks one group, e.g.&nbsp;<code>sim.results.sir.I.select(age='65+')</code>.</p>
+</section>
+<section id="interventions" class="level2">
+<h2 class="anchored" data-anchor-id="interventions">Interventions</h2>
+<p>An intervention changes the course of the epidemic from some point on. Here are two: vaccinating 80% of people aged 65 and over on 1 February, with a vaccine that cuts their chance of infection by 90%, and masks, which cut transmission by 40% from the same day:</p>
+<div id="eb05c762" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vaccination <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.9</span>, where<span class="op">=</span>sir.age <span class="op">&gt;=</span> <span class="dv">65</span>, coverage<span class="op">=</span><span class="fl">0.8</span>, at<span class="op">=</span><span class="st">'2025-02-01'</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>masks <span class="op">=</span> ss.modify(sir.pars.beta, multiply<span class="op">=</span><span class="fl">0.6</span>, start<span class="op">=</span><span class="st">'2025-02-01'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>To compare them, make a sim for each scenario, and run them together with <a href="./api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a>:</p>
+<div id="8c101c8f" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>scenarios <span class="op">=</span> {<span class="st">'No intervention'</span>: <span class="va">None</span>, <span class="st">'Vaccine'</span>: vaccination, <span class="st">'Masks'</span>: masks}</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {}</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, intervention <span class="kw">in</span> scenarios.items():</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    sims[label] <span class="op">=</span> ss.Sim(sir, interventions<span class="op">=</span>intervention, <span class="op">**</span>pars)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel(sims)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>msim.plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 3 runs of 3 scenarios (No intervention, Vaccine, Masks)
+  Done in 0.36 s</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tour_files/figure-html/cell-8-output-2.png" width="886" height="662" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>msim.summarize()</code> gives each result over the whole run (the total of a flow, such as infections, and the final value of a state) for each scenario:</p>
+<div id="b0a14479" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>msim.summarize()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">result</th>
+<th data-quarto-table-cell-role="th">scenario</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_S</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>9.283216e+04</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>1.624281e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>3.413558e+05</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_I</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>3.766274e+01</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>5.140501e+01</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>1.623704e+03</td>
+</tr>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_R</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>9.071302e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>8.375205e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>6.570205e+05</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_infection</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>9.070678e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>8.374719e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>6.585442e+05</td>
+</tr>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_recovery</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>9.071302e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>8.375205e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>6.570205e+05</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_prevalence</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>4.984270e-02</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>4.601821e-02</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>3.610595e-02</td>
+</tr>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">sir_cases</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>1.814136e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>1.674944e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>1.317088e+05</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">alive</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>1.000000e+06</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>1.000000e+06</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>1.000000e+06</td>
+</tr>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">new_deaths</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">new_emigrants</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">cum_deaths</th>
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">vaccination_delivered</th>
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>8.000000e+04</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">vaccination_eligible</th>
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>1.000000e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">vaccination_coverage</th>
+<th data-quarto-table-cell-role="th">Vaccine</th>
+<td>8.000000e-01</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="data-and-fitting" class="level2">
+<h2 class="anchored" data-anchor-id="data-and-fitting">Data and fitting</h2>
+<p>A model is fitted by finding the values of its parameters that make its results match data. To try this where the right answer is known, make data from the model itself: run it with β = 0.025, and draw weekly counts of cases from it, with random noise as in real reporting. The noise is drawn with the true sim’s own random seed (<code>rand_seed=2</code>), not the default seed of the sims being fitted, since the noise in real data has nothing to do with the model’s.</p>
+<div id="c512ba3b" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>truth <span class="op">=</span> ss.Sim(sir, pars<span class="op">=</span><span class="bu">dict</span>(beta<span class="op">=</span><span class="fl">0.025</span>), rand_seed<span class="op">=</span><span class="dv">2</span>, <span class="op">**</span>pars)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>truth.run()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> truth.to_data(<span class="st">'cases'</span>, resample<span class="op">=</span><span class="st">'week'</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>data.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: sir, 1,000,000 people, as an ODE, 2025-01-01 to 2025-07-01
+  sir: R0 = 3.53, with 100 infectious at the start
+  Done in 0.0019 s; sir: 954,833 infections; at most 341,960 infectious, on 2025-02-11</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">cases</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2025-01-08</td>
+<td>120</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2025-01-15</td>
+<td>768</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2025-01-22</td>
+<td>4216</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2025-01-29</td>
+<td>20454</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2025-02-05</td>
+<td>58362</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Data is matched to results by name: the column <code>cases</code> is compared with the result <code>cases</code>, and since the data is weekly, each row is compared with the total of the model’s cases over its week. <code>sim.fit()</code> then fits every parameter that has bounds (here, β) to every result that has data:</p>
+<div id="6b89e329" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, data<span class="op">=</span>data, <span class="op">**</span>pars)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fit <span class="op">=</span> sim.fit()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fit.plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Searching on a log scale: beta
+Fitting by nelder-mead (1 fitted parameter, for which it is faster than gradients; override with method=)
+Converged: Optimization terminated successfully. (34 evaluations)
+The goodness of fit is 0.002704 at the best values and 1.015 at the initial values</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tour_files/figure-html/cell-11-output-2.png" width="662" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot shows the model’s cases with the starting value of β (before) and the fitted one (after), against the data. As in the fit, the model’s cases are added up over each week, so that each point is compared with a week of data. <code>fit.pars</code> has the values found: β is close to the 0.025 the data was made with.</p>
+<div id="df789430" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fit.pars</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>sc.obj(beta=0.024990760550277973)</code></pre>
+</div>
+</div>
+</section>
+<section id="uncertainty-and-many-runs" class="level2">
+<h2 class="anchored" data-anchor-id="uncertainty-and-many-runs">Uncertainty and many runs</h2>
+<p>The ODE gives one answer: the epidemic as expected on average. A real epidemic varies by chance from one outbreak to the next, and more so in a small population or when there are few cases. To see this, run the model as a stochastic model, in which the number of people who move between states each day is random, and run it many times. <code>solver='binomial'</code> runs the same model this way (as a chain-binomial model), and <code>n_runs=20</code> runs it 20 times, each with its own random seed:</p>
+<div id="2793e9b6" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> fit.sim.run(solver<span class="op">=</span><span class="st">'binomial'</span>, n_runs<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>msim.plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tour_files/figure-html/cell-13-output-1.png" width="759" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot shows the median of the runs, and the range that holds 95% of them. <code>msim.summarize()</code> gives the same for each result over the whole run: the median, the low and high ends of that range, the mean, and the standard deviation:</p>
+<div id="67596f52" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>msim.summarize()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">median</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">result</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">sir_S</th>
+<td>41332.000000</td>
+<td>40914.350000</td>
+<td>41840.200000</td>
+<td>41384.550000</td>
+<td>280.427794</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">sir_I</th>
+<td>5.000000</td>
+<td>2.475000</td>
+<td>9.575000</td>
+<td>5.250000</td>
+<td>2.118372</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">sir_R</th>
+<td>958663.000000</td>
+<td>958155.850000</td>
+<td>959081.225000</td>
+<td>958610.200000</td>
+<td>279.906699</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">sir_infection</th>
+<td>958568.000000</td>
+<td>958059.800000</td>
+<td>958985.650000</td>
+<td>958515.450000</td>
+<td>280.427794</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">sir_recovery</th>
+<td>958663.000000</td>
+<td>958155.850000</td>
+<td>959081.225000</td>
+<td>958610.200000</td>
+<td>279.906699</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">sir_prevalence</th>
+<td>0.053988</td>
+<td>0.053887</td>
+<td>0.054121</td>
+<td>0.053987</td>
+<td>0.000064</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">sir_cases</th>
+<td>191800.500000</td>
+<td>191003.275000</td>
+<td>192758.050000</td>
+<td>191774.550000</td>
+<td>465.731089</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The model can also be run as agents, one for each person (<code>solver='abm'</code>), which is what a model needs when people differ in ways that compartments can’t hold, such as their contacts in a network. The <a href="./tutorials/a1_diseases.html">agent-based tutorials</a> show how.</p>
+</section>
+<section id="next-steps" class="level2">
+<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
+<ul>
+<li>The <a href="./tutorials.html">tutorials</a> cover each of these steps in more depth, one at a time, with a model of a measles outbreak.</li>
+<li>The <a href="./user_guide.html">user guide</a> covers each topic in full, including networks, demographics, custom modules, and solvers.</li>
+<li>The <a href="./gallery.html">gallery</a> has complete models to start from.</li>
+<li>If you have a model in another framework, the <a href="./user_guide/conversion/index.html">conversion guides</a> show how to bring it into Starsim.</li>
+<li>Starsim can also be used from R, with <a href="https://r.starsim.org">R-Starsim</a>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Home">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Home</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./gallery.html" class="pagination-link" aria-label="Gallery">
+        <span class="nav-page-text">Gallery</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

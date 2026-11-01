@@ -1,0 +1,3206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>internals.arrays – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/internals.time.html" rel="next">
+<link href="../api/library.networks.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Utilities</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.arrays.html">internals.arrays</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.internals.arrays" id="toc-starsim.internals.arrays" class="nav-link active" data-scroll-target="#starsim.internals.arrays">internals.arrays</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.internals.arrays.Arr" id="toc-starsim.internals.arrays.Arr" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr">Arr</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.Arr.asnew" id="toc-starsim.internals.arrays.Arr.asnew" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.asnew">asnew</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.astype" id="toc-starsim.internals.arrays.Arr.astype" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.astype">astype</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.col" id="toc-starsim.internals.arrays.Arr.col" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.col">col</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.convert" id="toc-starsim.internals.arrays.Arr.convert" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.convert">convert</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.count" id="toc-starsim.internals.arrays.Arr.count" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.count">count</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.false" id="toc-starsim.internals.arrays.Arr.false" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.false">false</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.grow" id="toc-starsim.internals.arrays.Arr.grow" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.grow">grow</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.init_vals" id="toc-starsim.internals.arrays.Arr.init_vals" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.init_vals">init_vals</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.isin" id="toc-starsim.internals.arrays.Arr.isin" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.isin">isin</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.link_people" id="toc-starsim.internals.arrays.Arr.link_people" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.link_people">link_people</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.own" id="toc-starsim.internals.arrays.Arr.own" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.own">own</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.set" id="toc-starsim.internals.arrays.Arr.set" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.set">set</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.set_nan" id="toc-starsim.internals.arrays.Arr.set_nan" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.set_nan">set_nan</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.shared_raw" id="toc-starsim.internals.arrays.Arr.shared_raw" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.shared_raw">shared_raw</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.to_json" id="toc-starsim.internals.arrays.Arr.to_json" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.to_json">to_json</a></li>
+  <li><a href="#starsim.internals.arrays.Arr.true" id="toc-starsim.internals.arrays.Arr.true" class="nav-link" data-scroll-target="#starsim.internals.arrays.Arr.true">true</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.BaseArr" id="toc-starsim.internals.arrays.BaseArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr">BaseArr</a>
+  <ul class="collapse">
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.BaseArr.asnew" id="toc-starsim.internals.arrays.BaseArr.asnew" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.asnew">asnew</a></li>
+  <li><a href="#starsim.internals.arrays.BaseArr.convert" id="toc-starsim.internals.arrays.BaseArr.convert" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.convert">convert</a></li>
+  <li><a href="#starsim.internals.arrays.BaseArr.disp" id="toc-starsim.internals.arrays.BaseArr.disp" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.disp">disp</a></li>
+  <li><a href="#starsim.internals.arrays.BaseArr.to_json" id="toc-starsim.internals.arrays.BaseArr.to_json" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.to_json">to_json</a></li>
+  <li><a href="#starsim.internals.arrays.BaseArr.update" id="toc-starsim.internals.arrays.BaseArr.update" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.update">update</a></li>
+  <li><a href="#starsim.internals.arrays.BaseArr.validate_columns" id="toc-starsim.internals.arrays.BaseArr.validate_columns" class="nav-link" data-scroll-target="#starsim.internals.arrays.BaseArr.validate_columns">validate_columns</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.BoolArr" id="toc-starsim.internals.arrays.BoolArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolArr">BoolArr</a>
+  <ul class="collapse">
+  <li><a href="#examples-1" id="toc-examples-1" class="nav-link" data-scroll-target="#examples-1">Examples</a></li>
+  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1">Attributes</a></li>
+  <li><a href="#methods-2" id="toc-methods-2" class="nav-link" data-scroll-target="#methods-2">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.BoolArr.split" id="toc-starsim.internals.arrays.BoolArr.split" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolArr.split">split</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.BoolState" id="toc-starsim.internals.arrays.BoolState" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolState">BoolState</a>
+  <ul class="collapse">
+  <li><a href="#attributes-2" id="toc-attributes-2" class="nav-link" data-scroll-target="#attributes-2">Attributes</a></li>
+  <li><a href="#methods-3" id="toc-methods-3" class="nav-link" data-scroll-target="#methods-3">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.BoolState.asnew" id="toc-starsim.internals.arrays.BoolState.asnew" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolState.asnew">asnew</a></li>
+  <li><a href="#starsim.internals.arrays.BoolState.grow" id="toc-starsim.internals.arrays.BoolState.grow" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolState.grow">grow</a></li>
+  <li><a href="#starsim.internals.arrays.BoolState.set" id="toc-starsim.internals.arrays.BoolState.set" class="nav-link" data-scroll-target="#starsim.internals.arrays.BoolState.set">set</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.FloatArr" id="toc-starsim.internals.arrays.FloatArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.FloatArr">FloatArr</a></li>
+  <li><a href="#starsim.internals.arrays.GroupAges" id="toc-starsim.internals.arrays.GroupAges" class="nav-link" data-scroll-target="#starsim.internals.arrays.GroupAges">GroupAges</a></li>
+  <li><a href="#starsim.internals.arrays.GroupAlive" id="toc-starsim.internals.arrays.GroupAlive" class="nav-link" data-scroll-target="#starsim.internals.arrays.GroupAlive">GroupAlive</a>
+  <ul class="collapse">
+  <li><a href="#methods-4" id="toc-methods-4" class="nav-link" data-scroll-target="#methods-4">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.GroupAlive.n_alive" id="toc-starsim.internals.arrays.GroupAlive.n_alive" class="nav-link" data-scroll-target="#starsim.internals.arrays.GroupAlive.n_alive">n_alive</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.IndexArr" id="toc-starsim.internals.arrays.IndexArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.IndexArr">IndexArr</a>
+  <ul class="collapse">
+  <li><a href="#attributes-3" id="toc-attributes-3" class="nav-link" data-scroll-target="#attributes-3">Attributes</a></li>
+  <li><a href="#methods-5" id="toc-methods-5" class="nav-link" data-scroll-target="#methods-5">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.IndexArr.grow" id="toc-starsim.internals.arrays.IndexArr.grow" class="nav-link" data-scroll-target="#starsim.internals.arrays.IndexArr.grow">grow</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.IntArr" id="toc-starsim.internals.arrays.IntArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.IntArr">IntArr</a></li>
+  <li><a href="#starsim.internals.arrays.TimeArr" id="toc-starsim.internals.arrays.TimeArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.TimeArr">TimeArr</a>
+  <ul class="collapse">
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  <li><a href="#attributes-4" id="toc-attributes-4" class="nav-link" data-scroll-target="#attributes-4">Attributes</a></li>
+  <li><a href="#methods-6" id="toc-methods-6" class="nav-link" data-scroll-target="#methods-6">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.TimeArr.due" id="toc-starsim.internals.arrays.TimeArr.due" class="nav-link" data-scroll-target="#starsim.internals.arrays.TimeArr.due">due</a></li>
+  <li><a href="#starsim.internals.arrays.TimeArr.eq" id="toc-starsim.internals.arrays.TimeArr.eq" class="nav-link" data-scroll-target="#starsim.internals.arrays.TimeArr.eq">eq</a></li>
+  <li><a href="#starsim.internals.arrays.TimeArr.isclose" id="toc-starsim.internals.arrays.TimeArr.isclose" class="nav-link" data-scroll-target="#starsim.internals.arrays.TimeArr.isclose">isclose</a></li>
+  <li><a href="#starsim.internals.arrays.TimeArr.shifted" id="toc-starsim.internals.arrays.TimeArr.shifted" class="nav-link" data-scroll-target="#starsim.internals.arrays.TimeArr.shifted">shifted</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.UIDArr" id="toc-starsim.internals.arrays.UIDArr" class="nav-link" data-scroll-target="#starsim.internals.arrays.UIDArr">UIDArr</a>
+  <ul class="collapse">
+  <li><a href="#methods-7" id="toc-methods-7" class="nav-link" data-scroll-target="#methods-7">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.UIDArr.grow" id="toc-starsim.internals.arrays.UIDArr.grow" class="nav-link" data-scroll-target="#starsim.internals.arrays.UIDArr.grow">grow</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.Unkept" id="toc-starsim.internals.arrays.Unkept" class="nav-link" data-scroll-target="#starsim.internals.arrays.Unkept">Unkept</a>
+  <ul class="collapse">
+  <li><a href="#methods-8" id="toc-methods-8" class="nav-link" data-scroll-target="#methods-8">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.Unkept.unkept" id="toc-starsim.internals.arrays.Unkept.unkept" class="nav-link" data-scroll-target="#starsim.internals.arrays.Unkept.unkept">unkept</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.arrays.Watch" id="toc-starsim.internals.arrays.Watch" class="nav-link" data-scroll-target="#starsim.internals.arrays.Watch">Watch</a></li>
+  <li><a href="#starsim.internals.arrays.uids" id="toc-starsim.internals.arrays.uids" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids">uids</a>
+  <ul class="collapse">
+  <li><a href="#examples-2" id="toc-examples-2" class="nav-link" data-scroll-target="#examples-2">Examples</a></li>
+  <li><a href="#methods-9" id="toc-methods-9" class="nav-link" data-scroll-target="#methods-9">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.arrays.uids.concatenate" id="toc-starsim.internals.arrays.uids.concatenate" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.concatenate">concatenate</a></li>
+  <li><a href="#starsim.internals.arrays.uids.intersect" id="toc-starsim.internals.arrays.uids.intersect" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.intersect">intersect</a></li>
+  <li><a href="#starsim.internals.arrays.uids.remove" id="toc-starsim.internals.arrays.uids.remove" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.remove">remove</a></li>
+  <li><a href="#starsim.internals.arrays.uids.to_numpy" id="toc-starsim.internals.arrays.uids.to_numpy" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.to_numpy">to_numpy</a></li>
+  <li><a href="#starsim.internals.arrays.uids.union" id="toc-starsim.internals.arrays.uids.union" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.union">union</a></li>
+  <li><a href="#starsim.internals.arrays.uids.unique" id="toc-starsim.internals.arrays.uids.unique" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.unique">unique</a></li>
+  <li><a href="#starsim.internals.arrays.uids.xor" id="toc-starsim.internals.arrays.uids.xor" class="nav-link" data-scroll-target="#starsim.internals.arrays.uids.xor">xor</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.internals.arrays.nb_count" id="toc-starsim.internals.arrays.nb_count" class="nav-link" data-scroll-target="#starsim.internals.arrays.nb_count">nb_count</a></li>
+  <li><a href="#starsim.internals.arrays.nb_indexer" id="toc-starsim.internals.arrays.nb_indexer" class="nav-link" data-scroll-target="#starsim.internals.arrays.nb_indexer">nb_indexer</a></li>
+  <li><a href="#starsim.internals.arrays.nb_true" id="toc-starsim.internals.arrays.nb_true" class="nav-link" data-scroll-target="#starsim.internals.arrays.nb_true">nb_true</a></li>
+  <li><a href="#starsim.internals.arrays.nb_true_raw" id="toc-starsim.internals.arrays.nb_true_raw" class="nav-link" data-scroll-target="#starsim.internals.arrays.nb_true_raw">nb_true_raw</a></li>
+  <li><a href="#starsim.internals.arrays.np_indexer" id="toc-starsim.internals.arrays.np_indexer" class="nav-link" data-scroll-target="#starsim.internals.arrays.np_indexer">np_indexer</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Utilities</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.arrays.html">internals.arrays</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.internals.arrays" class="level1">
+<h1>internals.arrays</h1>
+<p><a href="../api/internals.arrays.html#starsim.internals.arrays" title="0"><code>internals.arrays</code></a></p>
+<p>Arrays of agents’ values: states such as age or infection status, and the UIDs that index them</p>
+<p>A state holds a value for every agent, and reads only the active ones, so code can use it like a NumPy array as agents are born and die. A few classes here stand in for them when a run has groups of people rather than agents (<code>GroupAges</code>, <code>GroupAlive</code>).</p>
+<p>Used with: agents and compartments; declared and coded modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr">Arr</a></td>
+<td>Store a state of the agents (e.g.&nbsp;age, infection status, etc.) as an array.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BaseArr">BaseArr</a></td>
+<td>An object that acts exactly like a NumPy array, except stores the values in self.values.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolArr">BoolArr</a></td>
+<td>Subclass of <code>ss.Arr</code> with defaults for booleans.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BoolState">BoolState</a></td>
+<td>A boolean array being used as a state.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.FloatArr">FloatArr</a></td>
+<td>Subclass of <code>ss.Arr</code> with defaults for floats and ints.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.GroupAges">GroupAges</a></td>
+<td><code>people.age</code> in a compartmental run: one row per group, at the middle of its age group</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.GroupAlive">GroupAlive</a></td>
+<td><code>people.alive</code> in a run without agents: one row per group of people, not one per person</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.IndexArr">IndexArr</a></td>
+<td>A special class of Arr used for UIDs and RNG IDs; not to be used as a general integer array (for that, use IntArr)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.IntArr">IntArr</a></td>
+<td>Subclass of <code>ss.Arr</code> with defaults for ints.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.TimeArr">TimeArr</a></td>
+<td>Times, as step numbers of the module’s timeline: when something happened or is due for each agent, e.g.&nbsp;a declared disease’s <code>ti_X</code> (when each entered state X) and <code>ti_exit_X</code>, as agents, and <code>people.ti_dead</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.UIDArr">UIDArr</a></td>
+<td>The UIDs of all agents (<code>people.uid</code>), which take no memory: a UID is the agent’s index, so <code>raw</code> is made when read</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Unkept">Unkept</a></td>
+<td>A declared disease’s time of entering a state (<code>ti_X</code>) that is not kept, since the engine does not need it (see <code>ss.options.keep_times</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Watch">Watch</a></td>
+<td>The link from a state to the engine that keeps count of who is in it (<code>BoolState.watch</code>), which is told of</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.uids">uids</a></td>
+<td>Class to specify that integers should be interpreted as UIDs.</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.Arr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.Arr">Arr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    dtype<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    default<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    nan<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    raw<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    skip_init<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    people<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    mock<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    shared<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Store a state of the agents (e.g.&nbsp;age, infection status, etc.) as an array.</p>
+<p>In practice, <code>Arr</code> objects can be used interchangeably with NumPy arrays. They have two main data interfaces: <code>Arr.raw</code> contains the “raw”, underlying NumPy array of the data. <code>Arr.values</code> contains the “active” values, which usually corresponds to agents who are alive.</p>
+<p>By default, operations are performed on active agents only (specified by <code>Arr.auids</code>, which is a pointer to <code>sim.people.auids</code>). For example, <code>sim.people.age.mean()</code> will only use the ages of active agents. Thus, <code>sim.people.age.mean()</code> is equal to <code>sim.people.age.values.mean()</code>, not <code>sim.people.age.raw.mean()</code>.</p>
+<p>If indexing by an int, integer array, or <code>ss.uids</code> object, <code>Arr.raw</code> is used (i.e.&nbsp;the ints are treated as UIDs). If indexing by a full slice (<code>[:]</code>) or a boolean array, <code>Arr.values</code> is used. <code>Arr</code> objects can’t be directly indexed by a list, as this would be ambiguous about whether <code>values</code> or <code>raw</code> is intended. For example, if there are 1000 people in a simulation and 100 of them have died, <code>sim.people.age[999]</code> and <code>sim.people.age[ss.uids(999)]</code> both return the age of the agent with UID 999, whereas <code>sim.people.age.values[899]</code> returns the age of the last active agent.</p>
+<p>Note on terminology: the term “states” is often used to refer to <em>all</em> <code>ss.Arr</code> objects, (e.g.&nbsp;in <code>module.define_states()</code>, whether or not they are BoolStates.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>The name for the state (also used as the dictionary key, so should not have spaces etc.)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>dtype</td>
+<td>class</td>
+<td>The dtype to use for this instance (if None, infer from <code>raw</code> or <code>default</code>; <code>str</code> is stored as <code>object</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>default</td>
+<td><code>any</code></td>
+<td><p>Specify default value for new agents. This can be:</p>
+<ul>
+<li>A scalar with the same dtype (or castable to the same dtype) as the Arr;</li>
+<li>A callable, with a single argument for the number of values to produce;</li>
+<li>A <code>ss.Dist</code> instance.</li>
+</ul></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>nan</td>
+<td><code>any</code></td>
+<td>the value to use to represent NaN (not a number); also used as the default value if not supplied (if None, inferred from the dtype, e.g.&nbsp;<code>int_nan</code> for integers)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>label</td>
+<td><code>str</code></td>
+<td>The human-readable name for the state</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>raw</td>
+<td><code>array</code></td>
+<td>If provided, initialize the array with these raw values</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>skip_init</td>
+<td><code>bool</code></td>
+<td>Whether to skip initialization with the People object (used for uid and slot states)</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td>people</td>
+<td><a href="../api/people.html#starsim.people.People" title="0"><code>ss.People</code></a></td>
+<td>Optionally specify an initialized People object, used to construct temporary Arr instances</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>mock</td>
+<td><code>int</code></td>
+<td>if provided, create a mock People object (of length <code>mock</code>, unless <code>raw</code> is provided) to initialize the array (for debugging purposes)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>columns</td>
+<td><code>int</code> / <code>list</code></td>
+<td>if provided, create a 2D array with this many columns (e.g.&nbsp;one per variant), or a list of column names (e.g.&nbsp;<code>['wildtype', 'mutant']</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>shared</td>
+<td><code>bool</code> / <a href="../api/internals.arrays.html#starsim.internals.arrays.Arr">Arr</a></td>
+<td>if True, the array takes no memory per agent until a value is set (other than by its default, which must be a scalar): until then every agent has the default, and <code>raw</code> is a read-only view of it; if an <code>Arr</code>, the same with that array’s values (as <code>people.slot</code> reads <code>people.uid</code>)</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<p>For 2D arrays (i.e.&nbsp;if <code>columns</code> is supplied), <code>arr[uids]</code> returns an array of shape <code>(len(uids), ncols)</code>, <code>arr[uids, v]</code> or <code>arr[:, v]</code> returns column <code>v</code>, and <code>arr.col(v)</code> returns column <code>v</code> as a 1D <code>Arr</code>. If the columns are named, <code>v</code> can also be a name, e.g.&nbsp;<code>arr.col('mutant')</code>, <code>arr['mutant']</code>, or <code>arr.mutant</code>. A scalar default fills every column, and a callable default should return an array of shape <code>(n, ncols)</code>. Arrays with more dimensions are also supported via a tuple, e.g.&nbsp;<code>columns=(2,3)</code> gives a raw array of shape <code>(len_tot, 2, 3)</code>.</p>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a standalone Arr for quick testing</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> ss.Arr(<span class="st">'age'</span>, default<span class="op">=</span><span class="dv">0</span>, mock<span class="op">=</span><span class="dv">5</span>) <span class="co"># 5 = length if not supplying a real People object</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>age[:] <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>, <span class="dv">60</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>age.mean()  <span class="co"># Returns 40.0</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Use within a simulation</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(n_agents<span class="op">=</span><span class="dv">100</span>).init()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>sim.people.age.mean()  <span class="co"># Mean age of active agents</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a 2D array, e.g. immunity to each of 3 variants</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>imm <span class="op">=</span> ss.FloatArr(<span class="st">'imm'</span>, default<span class="op">=</span><span class="dv">0</span>, columns<span class="op">=</span><span class="dv">3</span>, mock<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>imm[ss.uids([<span class="dv">0</span>, <span class="dv">1</span>]), <span class="dv">2</span>] <span class="op">=</span> <span class="fl">0.8</span> <span class="co"># Set immunity to variant 2 for agents 0 and 1</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>imm[ss.uids([<span class="dv">0</span>, <span class="dv">1</span>])] <span class="co"># Returns an array of shape (2, 3)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>(imm.col(<span class="dv">2</span>) <span class="op">&gt;</span> <span class="fl">0.5</span>).uids  <span class="co"># Returns ss.uids([0, 1])</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a 2D array with named columns</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>imm <span class="op">=</span> ss.FloatArr(<span class="st">'imm'</span>, default<span class="op">=</span><span class="dv">0</span>, columns<span class="op">=</span>[<span class="st">'wildtype'</span>, <span class="st">'mutant'</span>], mock<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>imm[ss.uids([<span class="dv">0</span>, <span class="dv">1</span>]), <span class="st">'mutant'</span>] <span class="op">=</span> <span class="fl">0.8</span> <span class="co"># Same as imm[ss.uids([0, 1]), 1] = 0.8</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>(imm.col(<span class="st">'mutant'</span>) <span class="op">&gt;</span> <span class="fl">0.5</span>).uids  <span class="co"># Returns ss.uids([0, 1])</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.auids">auids</a></td>
+<td>Link to the indices of active agents – sim.people.auids</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.isnan">isnan</a></td>
+<td>Return BoolArr for NaN values</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.notnan">notnan</a></td>
+<td>Return BoolArr for non-NaN values</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.values">values</a></td>
+<td>Return the values of the active agents</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.asnew">asnew</a></td>
+<td>Duplicate and copy (rather than link) data, optionally resetting the array</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.astype">astype</a></td>
+<td>Convert the Arr type, e.g.&nbsp;<code>arr.astype(ss.IntArr)</code>; other types (e.g.&nbsp;<code>int</code>) return a NumPy array</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.col">col</a></td>
+<td>Return column <code>v</code> of a 2D array as a 1D <code>Arr</code>, e.g.&nbsp;<code>(imm.col(2) &gt; 0.5).uids</code> or <code>imm.col('mutant')</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.convert">convert</a></td>
+<td>Check if an object is an array-like, and convert it to this array’s type if so.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.count">count</a></td>
+<td>Count the number of nonzero (truthy) values among active agents (for 2D arrays, use <code>axis=0</code> to count each column)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.false">false</a></td>
+<td>Reverse of true(); return UIDs of falsy values</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.grow">grow</a></td>
+<td>Add new agents to an Arr</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.init_vals">init_vals</a></td>
+<td>Actually populate the initial values and mark as initialized; only to be used on initialization</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.isin">isin</a></td>
+<td>Return a <code>BoolArr</code> that is True wherever the array’s value is in <code>values</code>.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.link_people">link_people</a></td>
+<td>Link a People object to this state, for access auids</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.own">own</a></td>
+<td>Give an array that has no memory of its own yet (see <code>shared</code> in <code>ss.Arr</code>) its own values, before one is set</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.set">set</a></td>
+<td>Set the values for the specified UIDs</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.set_nan">set_nan</a></td>
+<td>Shortcut function to set values to NaN</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.shared_raw">shared_raw</a></td>
+<td>The read-only values of an array that has no memory of its own yet (see <code>shared</code> in <code>ss.Arr</code>): its default, or the values of the array it reads</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Arr.to_json">to_json</a></td>
+<td>Export to JSON</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.Arr.true">true</a></td>
+<td>Efficiently convert truthy values to UIDs</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.Arr.asnew" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.asnew">asnew</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.asnew(arr<span class="op">=</span><span class="va">None</span>, cls<span class="op">=</span><span class="va">None</span>, name<span class="op">=</span><span class="va">None</span>, copy<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Duplicate and copy (rather than link) data, optionally resetting the array</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 13%">
+<col style="width: 69%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>arr</td>
+<td><code>array</code></td>
+<td>the values of the new array; if None, a copy of the active values</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>cls</td>
+<td><code>type</code></td>
+<td>the class of the new array; if None, the same class</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name of the new array</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>copy</td>
+<td><code>bool</code></td>
+<td>whether to copy <code>arr</code>; if None, copy if <code>arr</code> is None or is a different size than the array</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.astype" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.astype">astype</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.astype(cls, copy<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert the Arr type, e.g.&nbsp;<code>arr.astype(ss.IntArr)</code>; other types (e.g.&nbsp;<code>int</code>) return a NumPy array</p>
+<section id="parameters-2" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 14%">
+<col style="width: 64%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cls</td>
+<td><code>type</code></td>
+<td>the class to convert to, e.g.&nbsp;<code>ss.IntArr</code>, or a NumPy type such as <code>int</code></td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>copy</td>
+<td><code>bool</code></td>
+<td>whether to copy the values, for an <code>ss.Arr</code> class</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.col" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.col">col</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.col(v)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return column <code>v</code> of a 2D array as a 1D <code>Arr</code>, e.g.&nbsp;<code>(imm.col(2) &gt; 0.5).uids</code> or <code>imm.col('mutant')</code></p>
+<p>For arrays with more dimensions, returns an <code>Arr</code> with one fewer dimension. The new <code>Arr</code> is a view, so setting its values also changes the original array. It is not linked to <a href="../api/people.html#starsim.people.People" title="0"><code>People</code></a>, so should not be stored (since it will not grow).</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 32%">
+<col style="width: 40%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>v</td>
+<td><code>int</code> / <code>str</code></td>
+<td>the column, by position or by name</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.convert" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.convert">convert</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.convert(obj, copy<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check if an object is an array-like, and convert it to this array’s type if so.</p>
+<section id="parameters-4" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 16%">
+<col style="width: 60%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>obj</td>
+<td></td>
+<td>object to convert (BaseArr, np.ndarray, or raises TypeError)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>copy</td>
+<td><code>bool</code></td>
+<td>whether to copy the data; passed through to asnew()</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.count" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.count">count</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.count(axis<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Count the number of nonzero (truthy) values among active agents (for 2D arrays, use <code>axis=0</code> to count each column)</p>
+<section id="parameters-5" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 64%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>axis</td>
+<td><code>int</code></td>
+<td>the axis to count along, for a 2D array; if None, count all values</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.false" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.false">false</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.false()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Reverse of true(); return UIDs of falsy values</p>
+</section>
+<section id="starsim.internals.arrays.Arr.grow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.grow">grow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.grow(new_uids<span class="op">=</span><span class="va">None</span>, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add new agents to an Arr</p>
+<p>This method is normally only called via <a href="../api/people.html#starsim.people.People.grow" title="0"><code>People.grow()</code></a>.</p>
+<section id="parameters-6" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 18%">
+<col style="width: 56%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>new_uids</td>
+<td><code>array</code></td>
+<td>Numpy array of UIDs for the new agents being added</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>new_vals</td>
+<td><code>array</code></td>
+<td>If provided, assign these state values to the new UIDs</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.init_vals" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.init_vals">init_vals</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.init_vals()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Actually populate the initial values and mark as initialized; only to be used on initialization</p>
+</section>
+<section id="starsim.internals.arrays.Arr.isin" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.isin">isin</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.isin(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a <code>BoolArr</code> that is True wherever the array’s value is in <code>values</code>.</p>
+<p>An <code>Arr</code>-aware analogue of <code>numpy.isin</code> that also picks the faster algorithm: <code>values</code> may be a scalar or any array-like of test values. For a small number of test values the equality comparisons are OR-ed together (which avoids the sort/hash overhead of <code>np.isin</code> and is faster for the common handful-of-categories case); for larger sets it falls back to <code>np.isin</code>. The result is a <code>BoolArr</code>, so <code>.uids</code>, <code>[uids]</code>, and boolean combination all work.</p>
+<section id="parameters-7" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 69%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>values</td>
+<td></td>
+<td>a scalar, or an array-like (list/tuple/array) of values to test against.</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level6 doc-section doc-section-returns">
+<h6 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 11%">
+<col style="width: 74%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BoolArr</td>
+<td></td>
+<td>True wherever the array’s value equals one of <code>values</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:</p>
+<pre><code>active = disease.state.isin([State.MILD, State.SEVERE]).uids</code></pre>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.link_people" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.link_people">link_people</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.link_people(people)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Link a People object to this state, for access auids</p>
+</section>
+<section id="starsim.internals.arrays.Arr.own" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.own">own</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.own()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Give an array that has no memory of its own yet (see <code>shared</code> in <code>ss.Arr</code>) its own values, before one is set</p>
+</section>
+<section id="starsim.internals.arrays.Arr.set" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.set">set</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.<span class="bu">set</span>(uids, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Set the values for the specified UIDs</p>
+<section id="parameters-8" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 19%">
+<col style="width: 53%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>uids</td>
+<td><code>ss.uids</code></td>
+<td>the agents to set values for</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>new_vals</td>
+<td><code>array</code></td>
+<td>the values; if None, use the default of the array</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.set_nan" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.set_nan">set_nan</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.set_nan(uids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Shortcut function to set values to NaN</p>
+<section id="parameters-9" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 37%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>uids</td>
+<td><code>ss.uids</code></td>
+<td>the agents to set to NaN</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.Arr.shared_raw" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.shared_raw">shared_raw</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.shared_raw()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The read-only values of an array that has no memory of its own yet (see <code>shared</code> in <code>ss.Arr</code>): its default, or the values of the array it reads</p>
+</section>
+<section id="starsim.internals.arrays.Arr.to_json" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.to_json">to_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.to_json()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Export to JSON</p>
+</section>
+<section id="starsim.internals.arrays.Arr.true" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Arr.true">true</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Arr.true()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Efficiently convert truthy values to UIDs</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.BaseArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr">BaseArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr(values, <span class="op">*</span>args, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An object that acts exactly like a NumPy array, except stores the values in self.values.</p>
+<p>It exists so that a state works in NumPy expressions while carrying what Starsim keeps with its values.</p>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BaseArr.asnew">asnew</a></td>
+<td>Duplicate and copy (rather than link) data.</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BaseArr.convert">convert</a></td>
+<td>Check if an object is an array, and convert if so</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BaseArr.disp">disp</a></td>
+<td>Full display of object</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BaseArr.to_json">to_json</a></td>
+<td>Return a dictionary representation of the Arr</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BaseArr.update">update</a></td>
+<td>Update the attributes, skipping None values and raising an error if extra keys are added</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BaseArr.validate_columns">validate_columns</a></td>
+<td>Check that column names are unique strings that don’t clash with attributes, e.g.&nbsp;“low”</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.BaseArr.asnew" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.asnew">asnew</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.asnew(values<span class="op">=</span><span class="va">None</span>, cls<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Duplicate and copy (rather than link) data.</p>
+<section id="parameters-10" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 17%">
+<col style="width: 61%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>values</td>
+<td><code>array</code></td>
+<td>replacement data; if None, copies existing values</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>cls</td>
+<td><code>type</code></td>
+<td>class to use for the new instance; defaults to the current class</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td>additional attributes to set on the new instance</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.BaseArr.convert" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.convert">convert</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.convert(obj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check if an object is an array, and convert if so</p>
+</section>
+<section id="starsim.internals.arrays.BaseArr.disp" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.disp">disp</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.disp()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Full display of object</p>
+</section>
+<section id="starsim.internals.arrays.BaseArr.to_json" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.to_json">to_json</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.to_json()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a dictionary representation of the Arr</p>
+</section>
+<section id="starsim.internals.arrays.BaseArr.update" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.update">update</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.update(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    skip_none<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    overwrite<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    force<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Update the attributes, skipping None values and raising an error if extra keys are added</p>
+</section>
+<section id="starsim.internals.arrays.BaseArr.validate_columns" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BaseArr.validate_columns">validate_columns</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BaseArr.validate_columns()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check that column names are unique strings that don’t clash with attributes, e.g.&nbsp;“low”</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.BoolArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.BoolArr">BoolArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolArr(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Subclass of <code>ss.Arr</code> with defaults for booleans.</p>
+<p>It exists so that a flag can be defined by name alone, and adds what is useful for booleans, such as <code>.uids</code>.</p>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a standalone BoolArr</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>infected <span class="op">=</span> ss.BoolArr(<span class="st">'infected'</span>, mock<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>infected[ss.uids([<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">4</span>])] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>infected.count()  <span class="co"># Returns 3</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>infected.uids     <span class="co"># Returns ss.uids([0, 2, 4])</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes-1" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-1">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolArr.isnan">isnan</a></td>
+<td>Always False for BoolArr (booleans cannot be NaN).</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BoolArr.notnan">notnan</a></td>
+<td>Always True for BoolArr (booleans cannot be NaN).</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolArr.uids">uids</a></td>
+<td>Alias to Arr.true</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolArr.split">split</a></td>
+<td>Return UIDs of values that are true and false as separate arrays</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.BoolArr.split" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BoolArr.split">split</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolArr.split()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return UIDs of values that are true and false as separate arrays</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.BoolState" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.BoolState">BoolState</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolState(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A boolean array being used as a state.</p>
+<p>Although functionally identical to <code>BoolArr</code>, a <code>BoolState</code> is handled differently in terms of automation: specifically, results are automatically generated from a <code>BoolState</code> (but not a <code>BoolArr</code>).</p>
+<p>BoolStates are typically used to keep track of externally-facing variables (e.g. <code>disease.susceptible</code>), while BoolArrs can be used to keep track of internal ones (e.g.&nbsp;<code>disease.has_immunity</code>). A BoolState named “susceptible” will automatically generate a result named “susceptible” (the number susceptible), for example.</p>
+<p>Note on terminology: the term “states” is often used to refer to <em>all</em> <code>ss.Arr</code> objects, (e.g.&nbsp;in <code>module.define_states()</code>, whether or not they are BoolStates.</p>
+<section id="attributes-2" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-2">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolState.n">n</a></td>
+<td>The number of people in the state: its agents, each counted by its weight (<code>people.scale</code>), as <code>I.n</code> in a rate counts them, and as a compartmental run’s state gives it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BoolState.stays">stays</a></td>
+<td>For a state of a declared disease run as agents: how long each person who has been through it stayed there, e.g.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolState.time">time</a></td>
+<td>For a state of a declared disease run as agents: the time each person in it (or leaving it) has spent there, by</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-3" class="level4">
+<h4 class="anchored" data-anchor-id="methods-3">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolState.asnew">asnew</a></td>
+<td>As <code>Arr.asnew()</code>; a copy whose values are not the state’s own is not counted (see <code>watch</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.BoolState.grow">grow</a></td>
+<td>Add new agents (see <code>Arr.grow()</code>); they were not counted before, so whatever keeps count of the state counts those who start in it</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.BoolState.set">set</a></td>
+<td>Set the values for the specified UIDs, telling whatever keeps count of the state (see <code>__setitem__()</code>)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.BoolState.asnew" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BoolState.asnew">asnew</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolState.asnew(arr<span class="op">=</span><span class="va">None</span>, cls<span class="op">=</span><span class="va">None</span>, name<span class="op">=</span><span class="va">None</span>, copy<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>As <code>Arr.asnew()</code>; a copy whose values are not the state’s own is not counted (see <code>watch</code>)</p>
+<section id="parameters-11" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 17%">
+<col style="width: 61%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>arr</td>
+<td><code>array</code></td>
+<td>the values of the new array; if None, a copy of the active values</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>cls</td>
+<td><code>type</code></td>
+<td>the class of the new array; if None, the same class</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name of the new array</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>copy</td>
+<td><code>bool</code></td>
+<td>whether to copy <code>arr</code>; see <code>Arr.asnew()</code></td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.BoolState.grow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BoolState.grow">grow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolState.grow(new_uids<span class="op">=</span><span class="va">None</span>, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add new agents (see <code>Arr.grow()</code>); they were not counted before, so whatever keeps count of the state counts those who start in it</p>
+<section id="parameters-12" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 19%">
+<col style="width: 55%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>new_uids</td>
+<td><code>ss.uids</code></td>
+<td>the UIDs of the new agents</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>new_vals</td>
+<td><code>array</code></td>
+<td>their values; if None, use the default of the array</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.BoolState.set" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.BoolState.set">set</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.BoolState.<span class="bu">set</span>(uids, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Set the values for the specified UIDs, telling whatever keeps count of the state (see <code>__setitem__()</code>)</p>
+<section id="parameters-13" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 19%">
+<col style="width: 53%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>uids</td>
+<td><code>ss.uids</code></td>
+<td>the agents to set values for</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>new_vals</td>
+<td><code>array</code></td>
+<td>the values; if None, use the default of the array</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.FloatArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.FloatArr">FloatArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.FloatArr(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Subclass of <code>ss.Arr</code> with defaults for floats and ints.</p>
+<p>It exists so that a state can be defined by name alone, e.g.&nbsp;<code>ss.FloatArr('cd4')</code>.</p>
+<p>Note: Starsim does not support integer arrays by default since they introduce ambiguity in dealing with NaNs, and float arrays are suitable for most purposes.</p>
+</section>
+<section id="starsim.internals.arrays.GroupAges" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.GroupAges">GroupAges</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.GroupAges(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>people.age</code> in a compartmental run: one row per group, at the middle of its age group</p>
+<p>Comparing it with an age inside a group (<code>sim.people.age &gt; 50</code> with groups [0, 15, 65]) raises, since the answer would be the same for everyone in the group; an edge works.</p>
+</section>
+<section id="starsim.internals.arrays.GroupAlive" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.GroupAlive">GroupAlive</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.GroupAlive(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>people.alive</code> in a run without agents: one row per group of people, not one per person</p>
+<p>Counting it (<code>sim.people.alive.sum()</code>, <code>.count()</code>) gives the number of people alive, as it does with agents, and its mean is 1, the share of them alive; so code that counts people means the same under every solver. Which people (<code>.uids</code>, <code>.true()</code>) a run without agents does not have, so these raise, saying what to use instead.</p>
+<section id="methods-4" class="level4">
+<h4 class="anchored" data-anchor-id="methods-4">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.GroupAlive.n_alive">n_alive</a></td>
+<td>The number of people (<code>people.n</code>, the same in every declared disease), or with none, the population</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.GroupAlive.n_alive" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.GroupAlive.n_alive">n_alive</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.GroupAlive.n_alive()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of people (<code>people.n</code>, the same in every declared disease), or with none, the population</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.IndexArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.IndexArr">IndexArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.IndexArr(name<span class="op">=</span><span class="va">None</span>, label<span class="op">=</span><span class="va">None</span>, shared<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A special class of Arr used for UIDs and RNG IDs; not to be used as a general integer array (for that, use IntArr)</p>
+<p>The values are stored as 32-bit integers, to save memory (so there can be up to 2^31 agents), and read as UIDs (<code>ss.uids</code>, which keep 32-bit integers as they are).</p>
+<section id="attributes-3" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-3">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.IndexArr.raw">raw</a></td>
+<td>The stored values; while they are those of <code>people.uid</code> (see <code>shared</code> in <code>ss.Arr</code>), the UIDs, made when read</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.IndexArr.uids">uids</a></td>
+<td>Alias to self.values, to allow Arr.uids like BoolArr</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.IndexArr.values">values</a></td>
+<td>The values of the active agents, as UIDs</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-5" class="level4">
+<h4 class="anchored" data-anchor-id="methods-5">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.IndexArr.grow">grow</a></td>
+<td>Change the size of the array</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.IndexArr.grow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.IndexArr.grow">grow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.IndexArr.grow(new_uids<span class="op">=</span><span class="va">None</span>, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Change the size of the array</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.IntArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.IntArr">IntArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.IntArr(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Subclass of <code>ss.Arr</code> with defaults for ints.</p>
+<p>It exists so that a state can be defined by name alone, e.g.&nbsp;<code>ss.IntArr('n_doses')</code>.</p>
+<p>Note: Because integer arrays do not handle NaN values natively, users are recommended to use <code>ss.FloatArr()</code> in most cases instead.</p>
+</section>
+<section id="starsim.internals.arrays.TimeArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.TimeArr">TimeArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.TimeArr(name<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Times, as step numbers of the module’s timeline: when something happened or is due for each agent, e.g.&nbsp;a declared disease’s <code>ti_X</code> (when each entered state X) and <code>ti_exit_X</code>, as agents, and <code>people.ti_dead</code></p>
+<p>Stored as float32 step numbers, NaN for “never” (not set), so <code>ti_I &gt; 0</code> and <code>(sim.ti - ti_I)*sim.t.dt</code> give the right answer. <code>due()</code> gives whose time has come, with a time between steps rounded up or down at random in proportion (by each agent’s phase, as the agent engine rounds a dwell time: see <a href="../api/people.html#starsim.people.People.phase" title="0"><code>ss.People.phase()</code></a>), so it keeps its mean; <code>isclose(sim.ti)</code> gives whose time is taken at this step, and <code>.years</code> converts them to years. <code>==</code> and <code>!=</code> raise, since a time between steps never equals a step: <code>eq()</code> is exact equality. For plain arithmetic on the times, compare them: e.g.&nbsp;<code>ti_x &lt; sim.ti + 0.5</code> is due at the nearest step, and <code>ti_x &lt;= sim.ti</code> at the first step at or after it.</p>
+<p>A declared state’s time of entering (<code>ti_X</code>) reads as the index of the step the move happened in, whatever kind of move it was (a progression at the step’s start, an infection by contact at its end), so <code>ti_X.isclose(sim.ti)</code> is “entered this step”. The engine keeps its own time of the move, which <code>.raw</code> gives (see <code>shift</code>). So the difference of two of them is not always a duration: an infection by contact happens at the end of its step and a scheduled move at the start of its step, so <code>ti_I - ti_E</code> of an SEIR reads one step longer than the latent period was. For the time people spent in a state, use the state’s <code>stays</code> (e.g.&nbsp;<code>np.mean(seir.E.stays)</code>, the mean latent period), which is built from the engine’s times.</p>
+<section id="example" class="level4 doc-section doc-section-example">
+<h4 class="doc-section doc-section-example anchored" data-anchor-id="example">Example</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(ss.SIR(), unit<span class="op">=</span><span class="st">'day'</span>, stop<span class="op">=</span><span class="dv">100</span>).run()</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> sim.diseases.sir</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>infected_today <span class="op">=</span> sir.ti_I.isclose(sim.ti).uids</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>years <span class="op">=</span> sir.ti_I.years <span class="co"># The year of infection of each agent (NaN if never infected)</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="co"># In a disease written as code</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.define_states(ss.BoolState(<span class="st">'exposed'</span>), ss.TimeArr(<span class="st">'ti_infectious'</span>))</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.ti_infectious[uids] <span class="op">=</span> <span class="va">self</span>.ti <span class="op">+</span> dur <span class="co"># In steps</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> <span class="va">self</span>.exposed <span class="op">&amp;</span> <span class="va">self</span>.ti_infectious.due() <span class="co"># Those whose time has come</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes-4" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-4">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.TimeArr.years">years</a></td>
+<td>The values as years (e.g.&nbsp;2020.5), with NaN where not set</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-6" class="level4">
+<h4 class="anchored" data-anchor-id="methods-6">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.TimeArr.due">due</a></td>
+<td>Whose time has come by the current step, as a boolean array (e.g.&nbsp;<code>mask = self.exposed &amp; self.ti_infectious.due()</code>): a time between steps is rounded up or down at random in proportion, by each agent’s phase (see <a href="../api/people.html#starsim.people.People.phase" title="0"><code>ss.People.phase()</code></a>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.TimeArr.eq">eq</a></td>
+<td>Whose time is exactly <code>other</code>, as a boolean array (<code>==</code> and <code>!=</code> are refused: see <code>__eq__()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.TimeArr.isclose">isclose</a></td>
+<td>Whose time is taken at step <code>other</code> (e.g.&nbsp;<code>self.ti_infectious.isclose(self.ti)</code>, those who became infectious this step, as <code>due()</code> counts them), as a boolean array</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.TimeArr.shifted">shifted</a></td>
+<td>Add the shift to some values read, by agent (all of them, or those of <code>key</code>)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.TimeArr.due" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.TimeArr.due">due</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.TimeArr.due()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whose time has come by the current step, as a boolean array (e.g.&nbsp;<code>mask = self.exposed &amp; self.ti_infectious.due()</code>): a time between steps is rounded up or down at random in proportion, by each agent’s phase (see <a href="../api/people.html#starsim.people.People.phase" title="0"><code>ss.People.phase()</code></a>)</p>
+</section>
+<section id="starsim.internals.arrays.TimeArr.eq" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.TimeArr.eq">eq</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.TimeArr.eq(other)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whose time is exactly <code>other</code>, as a boolean array (<code>==</code> and <code>!=</code> are refused: see <code>__eq__()</code>)</p>
+<section id="parameters-14" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 35%">
+<col style="width: 41%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>float</code> / <code>array</code></td>
+<td>the timestep or timesteps to compare with</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.TimeArr.isclose" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.TimeArr.isclose">isclose</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.TimeArr.isclose(other)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whose time is taken at step <code>other</code> (e.g.&nbsp;<code>self.ti_infectious.isclose(self.ti)</code>, those who became infectious this step, as <code>due()</code> counts them), as a boolean array</p>
+<section id="parameters-15" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>int</code></td>
+<td>the timestep</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.TimeArr.shifted" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.TimeArr.shifted">shifted</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.TimeArr.shifted(vals, key<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add the shift to some values read, by agent (all of them, or those of <code>key</code>)</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.UIDArr" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.UIDArr">UIDArr</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.UIDArr(name<span class="op">=</span><span class="va">None</span>, label<span class="op">=</span><span class="va">None</span>, shared<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The UIDs of all agents (<code>people.uid</code>), which take no memory: a UID is the agent’s index, so <code>raw</code> is made when read</p>
+<p>It is <code>np.arange()</code> up to the number of agents made, and -1 (not set) in the room for agents not yet made, as a stored <code>IndexArr</code> would be. Code that only needs its length reads <code>len_used</code> or <code>len_tot</code> instead.</p>
+<section id="methods-7" class="level4">
+<h4 class="anchored" data-anchor-id="methods-7">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.UIDArr.grow">grow</a></td>
+<td>Add new agents, whose UIDs are the next ones</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.UIDArr.grow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.UIDArr.grow">grow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.UIDArr.grow(new_uids<span class="op">=</span><span class="va">None</span>, new_vals<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add new agents, whose UIDs are the next ones</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.Unkept" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.Unkept">Unkept</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Unkept(name, mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A declared disease’s time of entering a state (<code>ti_X</code>) that is not kept, since the engine does not need it (see <code>ss.options.keep_times</code>)</p>
+<p>Setting it does nothing, and reading it raises an <code>AttributeError</code> that says how to keep it. It takes no memory, and is not one of the module’s states.</p>
+<section id="methods-8" class="level4">
+<h4 class="anchored" data-anchor-id="methods-8">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.Unkept.unkept">unkept</a></td>
+<td>The error for reading it</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.Unkept.unkept" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.Unkept.unkept">unkept</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Unkept.unkept()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The error for reading it</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.arrays.Watch" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.Watch">Watch</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.Watch(engine)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The link from a state to the engine that keeps count of who is in it (<code>BoolState.watch</code>), which is told of every change to it (see <code>ss.solvers.Agents.wrote()</code>). It is never searched for distributions (see <a href="../api/internals.dists.html#starsim.internals.dists.no_dists" title="0"><code>ss.dists.no_dists()</code></a>), so the link does not change where they are found, which gives each its random numbers.</p>
+</section>
+<section id="starsim.internals.arrays.uids" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.uids">uids</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Class to specify that integers should be interpreted as UIDs.</p>
+<p>It exists so that indexing an <code>ss.Arr</code> with these reads those agents by UID, not by position.</p>
+<p>For all practical purposes, behaves like a NumPy integer array. However, has additional methods <code>uids.concatenate()</code>, <code>uids.remove()</code>, and <code>uids.intersect()</code> to simplify common UID operations.</p>
+<p>The following operators are supported:</p>
+<ul>
+<li><code>+</code> / <code>+=</code>: if the RHS is a <code>uids</code>, concatenation (equivalent to <code>uids.concatenate()</code>); otherwise element-wise addition (e.g.&nbsp;<code>uids([1,2]) + 1</code> → <code>uids([2,3])</code>). Concatenation preserves duplicates.</li>
+<li><code>-</code> / <code>-=</code>: set difference — equivalent to <code>uids.remove()</code>. Duplicate entries in the original will also be removed (uses <code>np.setdiff1d</code> internally).</li>
+<li><code>|</code> / <code>|=</code>: union (unique elements from both arrays). Note that duplicate entries in the original are <strong>removed</strong> (use <code>+</code> instead to keep them).</li>
+<li><code>&amp;</code> / <code>&amp;=</code>: intersection</li>
+<li><code>^</code> / <code>^=</code>: symmetric difference</li>
+</ul>
+<p>Note: because <code>uids</code> is a subclass of <code>np.ndarray</code>, set-like in-place operators (<code>+=</code> with a <code>uids</code> RHS, <code>-=</code>, <code>|=</code>, <code>&amp;=</code>, <code>^=</code>) must return a new array and rebind the variable. However, <code>+=</code> with a scalar or array RHS modifies the array in-place and preserves <code>id(self)</code>.</p>
+<section id="examples-2" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> ss.uids([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> ss.uids([<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">+</span> b   <span class="co"># Concatenate: uids([1, 2, 3, 3, 4, 5])</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>a <span class="op">|</span> b   <span class="co"># Union:       uids([1, 2, 3, 4, 5])</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">&amp;</span> b   <span class="co"># Intersect:   uids([3])</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">-</span> b   <span class="co"># Difference:  uids([1, 2])</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods-9" class="level4">
+<h4 class="anchored" data-anchor-id="methods-9">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.uids.concatenate">concatenate</a></td>
+<td>Concatenate uids into a single instance</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.uids.intersect">intersect</a></td>
+<td>Keep only UIDs that are also present in the other array</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.uids.remove">remove</a></td>
+<td>Remove provided UIDs from current array</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.uids.to_numpy">to_numpy</a></td>
+<td>Return a view as a standard NumPy array</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.uids.union">union</a></td>
+<td>Return all UIDs present in either array, sorted, without repeats (as np.union1d() gives them, faster: see unique())</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.uids.unique">unique</a></td>
+<td>Return unique UIDs; equivalent to np.unique()</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.uids.xor">xor</a></td>
+<td>Return UIDs present in only one of the arrays</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.uids.concatenate" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.concatenate">concatenate</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.concatenate(<span class="op">*</span>args)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Concatenate uids into a single instance</p>
+<p>Can be called as either an instance method or an unbound class method::</p>
+<pre><code>x.concatenate(y)               # instance method
+x.concatenate(None)            # None is treated as empty
+ss.uids.concatenate(x, y)      # unbound; identical to instance call
+ss.uids.concatenate([x, y])    # single iterable of arrays
+ss.uids.concatenate([None, x]) # None elements are filtered out
+ss.uids.concatenate()          # returns empty ss.uids()</code></pre>
+<section id="parameters-16" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 69%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>*args</td>
+<td><code>ss.uids</code></td>
+<td>the UIDs to join, as arrays or as one list of arrays; None is treated as empty</td>
+<td><code>()</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.uids.intersect" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.intersect">intersect</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.intersect(other, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Keep only UIDs that are also present in the other array</p>
+<section id="parameters-17" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-17">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 25%">
+<col style="width: 51%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>ss.uids</code>/<code>ss.BoolArr</code></td>
+<td>the UIDs to keep, if they are also in this array</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>**kw</td>
+<td><code>dict</code></td>
+<td>passed to <code>np.intersect1d()</code></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.uids.remove" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.remove">remove</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.remove(other, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Remove provided UIDs from current array</p>
+<section id="parameters-18" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-18">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 32%">
+<col style="width: 37%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>ss.uids</code>/<code>ss.BoolArr</code></td>
+<td>the UIDs to remove</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>**kw</td>
+<td><code>dict</code></td>
+<td>passed to <code>np.setdiff1d()</code></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.uids.to_numpy" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.to_numpy">to_numpy</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.to_numpy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a view as a standard NumPy array</p>
+</section>
+<section id="starsim.internals.arrays.uids.union" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.union">union</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.union(other)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return all UIDs present in either array, sorted, without repeats (as np.union1d() gives them, faster: see unique())</p>
+<section id="parameters-19" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-19">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 34%">
+<col style="width: 25%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>ss.uids</code>/<code>ss.BoolArr</code></td>
+<td>the UIDs to add</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.uids.unique" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.unique">unique</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.unique(return_index<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return unique UIDs; equivalent to np.unique()</p>
+<section id="parameters-20" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-20">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 14%">
+<col style="width: 61%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>return_index</td>
+<td><code>bool</code></td>
+<td>whether to also return the position of the first time each UID appears</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.arrays.uids.xor" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.arrays.uids.xor">xor</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.uids.xor(other, <span class="op">**</span>kw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return UIDs present in only one of the arrays</p>
+<section id="parameters-21" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-21">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 32%">
+<col style="width: 36%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>ss.uids</code>/<code>ss.BoolArr</code></td>
+<td>the UIDs to compare with</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>**kw</td>
+<td><code>dict</code></td>
+<td>passed to <code>np.setxor1d()</code></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.nb_count">nb_count</a></td>
+<td>The number of active agents whose value is truthy (as <code>np.count_nonzero()</code>), without gathering the values first</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.nb_indexer">nb_indexer</a></td>
+<td>Roughly 30% faster than NumPy for large numbers of indices (&gt;10k)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.nb_true">nb_true</a></td>
+<td>Return the UIDs where <code>bool(vals[k])</code> equals <code>want</code> (True for true(), False for false()).</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.arrays.nb_true_raw">nb_true_raw</a></td>
+<td>As <code>nb_true()</code>, reading each agent’s value from the full array, so the values of the active agents are not gathered first</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.arrays.np_indexer">np_indexer</a></td>
+<td>Much faster than Numba for small numbers of indices (&lt;1k)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.arrays.nb_count" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.nb_count">nb_count</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.nb_count(auids, raw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of active agents whose value is truthy (as <code>np.count_nonzero()</code>), without gathering the values first</p>
+</section>
+<section id="starsim.internals.arrays.nb_indexer" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.nb_indexer">nb_indexer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.nb_indexer(arr, inds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Roughly 30% faster than NumPy for large numbers of indices (&gt;10k)</p>
+<p>NB: in some versions of Numba (&gt;0.62), the explicit loop is much faster than array indexing.</p>
+</section>
+<section id="starsim.internals.arrays.nb_true" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.nb_true">nb_true</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.nb_true(auids, vals, want)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return the UIDs where <code>bool(vals[k])</code> equals <code>want</code> (True for true(), False for false()).</p>
+<p>~4-5x faster than <code>auids[vals.astype(bool)]</code> for large arrays: a single branchless pass with no intermediate mask allocation. <code>vals[k] != 0</code> matches <code>.astype(bool)</code> for every dtype, including NaN floats (NaN != 0 is True, i.e.&nbsp;NaN is truthy), so results are identical.</p>
+</section>
+<section id="starsim.internals.arrays.nb_true_raw" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.nb_true_raw">nb_true_raw</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.nb_true_raw(auids, raw, want)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>As <code>nb_true()</code>, reading each agent’s value from the full array, so the values of the active agents are not gathered first</p>
+</section>
+<section id="starsim.internals.arrays.np_indexer" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.arrays.np_indexer">np_indexer</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>internals.arrays.np_indexer(arr, inds)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Much faster than Numba for small numbers of indices (&lt;1k)</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/library.networks.html" class="pagination-link" aria-label="library.networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">library.networks</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/internals.time.html" class="pagination-link" aria-label="internals.time">
+        <span class="nav-page-text">internals.time</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

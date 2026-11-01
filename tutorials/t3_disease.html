@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>T3 – Building a disease – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../tutorials/t4_ages.html" rel="next">
+<link href="../tutorials/t2_model.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../tutorials.html" aria-current="page"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tutorials/t3_disease.html">T3 – Building a disease</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Tutorials</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t1_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T1 – Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T2 – Building a model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t3_disease.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">T3 – Building a disease</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t4_ages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T4 – Age groups and contacts</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t5_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 – Interventions and scenarios</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t6_places.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T6 – Geography and mixing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t7_calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T7 – Data and calibration</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t8_strata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T8 – Stratification and co-transmission</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t9_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T9 – Custom modules</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Agent-based modeling</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/a1_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A1 – Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/a2_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A2 – Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/a3_demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A3 – Demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/a4_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A4 – Interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/a5_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">A5 – Custom modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#a-latent-period" id="toc-a-latent-period" class="nav-link active" data-scroll-target="#a-latent-period">A latent period</a></li>
+  <li><a href="#how-long-people-stay-in-a-state" id="toc-how-long-people-stay-in-a-state" class="nav-link" data-scroll-target="#how-long-people-stay-in-a-state">How long people stay in a state</a></li>
+  <li><a href="#waning-immunity" id="toc-waning-immunity" class="nav-link" data-scroll-target="#waning-immunity">Waning immunity</a></li>
+  <li><a href="#deaths-a-branch" id="toc-deaths-a-branch" class="nav-link" data-scroll-target="#deaths-a-branch">Deaths: a branch</a></li>
+  <li><a href="#naming-the-parameters" id="toc-naming-the-parameters" class="nav-link" data-scroll-target="#naming-the-parameters">Naming the parameters</a></li>
+  <li><a href="#checking-the-disease" id="toc-checking-the-disease" class="nav-link" data-scroll-target="#checking-the-disease">Checking the disease</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">T3 – Building a disease</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Written by AI, merging two AI drafts">🧠0% 🤖100%</div>
+<p>The SIR model of <a href="../tutorials/t1_intro.html">Tutorial 1</a> and <a href="../tutorials/t2_model.html">Tutorial 2</a> leaves out much of what happens in a measles infection, and its outbreak is over within a few weeks, far faster than real measles. <a href="../tutorials/t2_model.html">Tutorial 2</a> found that R0 and prior immunity decide how <em>many</em> people are infected. This tutorial asks the other half of the question: <strong>what decides how <em>fast</em> an outbreak spreads?</strong> It adds, one at a time, the pieces of structure that most models of infectious disease need, and compares the epidemic with and without each:</p>
+<ul>
+<li>a latent period, in which people are infected but not yet infectious;</li>
+<li>the distribution of the time people spend in a state, not just its average;</li>
+<li>immunity that wanes;</li>
+<li>a branch, where people in one state go one of two ways (here, a small share die).</li>
+</ul>
+<p>It then names the parameters of the model, and checks the finished disease with <code>describe()</code>, its equations, and its diagram. By the end of this tutorial, you will be able to:</p>
+<ul>
+<li>turn an SIR model into an SEIR model, and say why it changes the course of the epidemic but not R0;</li>
+<li>choose the distribution of a duration;</li>
+<li>add waning immunity and deaths;</li>
+<li>name parameters, with a description and a range of plausible values;</li>
+<li>check a disease from its description, equations, and diagram.</li>
+</ul>
+<section id="a-latent-period" class="level2">
+<h2 class="anchored" data-anchor-id="a-latent-period">A latent period</h2>
+<p>After someone is infected with measles, there are about 10 days before they become infectious (and about two weeks before the rash appears). In an SEIR model, people in this latent period are in a compartment of their own, E (exposed): infected, but not yet infectious. Infection now moves people from S to E, and a new transition, progression, moves them from E to I after the latent period.</p>
+<p>Here is the SIR model of Tutorial 2 next to the SEIR model, both run for 150 days. Each disease is named <code>measles</code>, so that the two runs’ results have the same names and can be plotted together:</p>
+<div id="62d4847d" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The SIR model of Tutorials 1 and 2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I        <span class="co"># β = 1.9 per day</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">8</span>)   <span class="co"># Infectious for 8 days on average</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection, recovery, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>), name<span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># The SEIR model: infection leads to E, not I</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>S, E, I, R <span class="op">=</span> ss.states(<span class="st">'S E I R'</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>infection   <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I        <span class="co"># Infected by contact with infectious people, I</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.days(<span class="dv">10</span>)  <span class="co"># Infectious after a latent period of 10 days on average</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>recovery    <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">8</span>)   <span class="co"># Recovered after 8 days on average</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>seir <span class="op">=</span> ss.Disease(infection, progression, recovery, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>), name<span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>sir_sim  <span class="op">=</span> ss.Sim(sir,  total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>seir_sim <span class="op">=</span> ss.Sim(seir, total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({<span class="st">'SIR'</span>: sir_sim, <span class="st">'SEIR'</span>: seir_sim})</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'measles.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 2 runs of 2 scenarios (SIR, SEIR)
+  Done in 0.41 s</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t3_disease_files/figure-html/cell-2-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The rate of infection is still β times the share of people in <code>I</code>, not <code>E</code>, since people in <code>E</code> don’t transmit: a state is infectious only if it appears in the rate of infection. Both outbreaks start with 0.1% of people infectious (<code>init=dict(I=0.001)</code>). <code>init_prev=0.001</code> would instead put them in <code>E</code>, where an infection leads, so that nobody would be infectious until the first of them had been through the latent period (<a href="../tutorials/t2_model.html">Tutorial 2</a>).</p>
+<p>R0 is the same in both, 15.2, as the runs print: it depends on how many people each infectious person infects (β = 1.9 a day, for 8 days), not on how long it takes them to become infectious. But the outbreak is very different. With a latent period, the time from one infection to the next (the generation time) is about 18 days instead of 8, so the epidemic grows more slowly: it peaks on day 28 rather than day 6, and lower, with about 29,000 people infectious at once rather than 74,000. Almost everyone is still infected in the end, since that depends on R0. So the first answer to this tutorial’s question is the generation time: for the same R0, a longer generation time means a slower, flatter epidemic.</p>
+</section>
+<section id="how-long-people-stay-in-a-state" class="level2">
+<h2 class="anchored" data-anchor-id="how-long-people-stay-in-a-state">How long people stay in a state</h2>
+<p>A duration such as <code>ss.days(10)</code> is an average. By default, the time each person spends in the state is exponentially distributed with this average, as in the standard ODE model. An exponential distribution is a poor description of most latent periods, though: with an average of 10 days, it has 10% of people becoming infectious within a day, and 12% still not infectious after three weeks. The latent period of measles varies much less than this.</p>
+<p>A duration can be given as any distribution instead. An Erlang distribution (a gamma distribution with a whole-number shape, <code>k</code>) is the usual choice in compartmental models. With <code>k=10</code>, the latent period has the same average, 10 days, and a standard deviation of about 3 days. Here it is, compared with the exponential latent period above:</p>
+<div id="143f4624" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.erlang(k<span class="op">=</span><span class="dv">10</span>, mean<span class="op">=</span>ss.days(<span class="dv">10</span>))  <span class="co"># 10 days on average; 95% between 5 and 17</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>seir_erlang <span class="op">=</span> ss.Disease(infection, progression, recovery, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>), name<span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>erlang_sim <span class="op">=</span> ss.Sim(seir_erlang, total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({<span class="st">'Exponential latent period'</span>: seir_sim, <span class="st">'Erlang latent period'</span>: erlang_sim})</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'measles.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 2 runs of 2 scenarios (Exponential latent period, Erlang latent period)
+  Done in 0.37 s</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t3_disease_files/figure-html/cell-3-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The epidemic has the same R0 again, but grows more slowly still: it peaks about two weeks later, on day 44, and higher, with about 35,000 people infectious at once rather than 29,000. With an exponential latent period, the few people who become infectious within a day or two start new chains of infection early, and this speeds up the whole epidemic; with an Erlang one, almost nobody becomes infectious early, so growth is slower, but more of the town is infected at about the same time. So the distribution of a duration, not just its average, sets how fast an epidemic grows. This is worth knowing when a model is fitted to the early growth of an outbreak.</p>
+<p>As an ODE, Starsim runs an Erlang distribution as <code>k</code> stages that people go through one after another, each exponential, with an average of 1/<code>k</code> of the whole. The stages are not separate conditions of the disease, only a way of giving the time spent in <code>E</code> a narrower distribution. The same can be written by saying how many stages to use: <code>ss.Transition(E, I, dur=ss.days(10), stages=10)</code> is the same model as <code>E &gt;&gt; I @ ss.erlang(k=10, mean=ss.days(10))</code>. <code>equations()</code> shows the stages, as <code>E_1</code> to <code>E_10</code>:</p>
+<div id="34f74584" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>seir_erlang.equations()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dS/dt    = -beta * S * I / N
+dE_1/dt  =  beta * S * I / N - 10 * E_1 / mean(dur_E)
+dE_2/dt  =  10 * E_1 / mean(dur_E) - 10 * E_2 / mean(dur_E)
+dE_3/dt  =  10 * E_2 / mean(dur_E) - 10 * E_3 / mean(dur_E)
+dE_4/dt  =  10 * E_3 / mean(dur_E) - 10 * E_4 / mean(dur_E)
+dE_5/dt  =  10 * E_4 / mean(dur_E) - 10 * E_5 / mean(dur_E)
+dE_6/dt  =  10 * E_5 / mean(dur_E) - 10 * E_6 / mean(dur_E)
+dE_7/dt  =  10 * E_6 / mean(dur_E) - 10 * E_7 / mean(dur_E)
+dE_8/dt  =  10 * E_7 / mean(dur_E) - 10 * E_8 / mean(dur_E)
+dE_9/dt  =  10 * E_8 / mean(dur_E) - 10 * E_9 / mean(dur_E)
+dE_10/dt =  10 * E_9 / mean(dur_E) - 10 * E_10 / mean(dur_E)
+dI/dt    =  10 * E_10 / mean(dur_E) - I / dur_I
+dR/dt    =  I / dur_I</code></pre>
+</div>
+</div>
+<p>As agents, each person draws their own time from the distribution instead. Other distributions, such as <code>ss.lognorm_ex(mean=ss.days(10), std=ss.days(2))</code>, are covered in <a href="../user_guide/mechanics_distributions.html">Distributions</a>. The rest of the tutorials keep to exponential durations, for simplicity.</p>
+</section>
+<section id="waning-immunity" class="level2">
+<h2 class="anchored" data-anchor-id="waning-immunity">Waning immunity</h2>
+<p>In the models so far, people who recover are immune for life, as they are after measles. For many other infections, such as pertussis, RSV, or cholera, immunity wanes: after some time, people become susceptible again. This is a transition from <code>R</code> back to <code>S</code>, which makes an SEIRS model. To see what it does, suppose (unlike real measles) that immunity lasted 2 years on average, and run both models for 5 years:</p>
+<div id="03b70f95" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.days(<span class="dv">10</span>)  <span class="co"># Back to an exponential latent period</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>waning      <span class="op">=</span> R <span class="op">&gt;&gt;</span> S <span class="op">@</span> ss.years(<span class="dv">2</span>)  <span class="co"># Susceptible again after 2 years on average</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>seirs <span class="op">=</span> ss.Disease(infection, progression, recovery, waning, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>), name<span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>lifelong <span class="op">=</span> ss.Sim(seir,  total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.years(<span class="dv">5</span>), unit<span class="op">=</span><span class="st">'day'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>waning_sim <span class="op">=</span> ss.Sim(seirs, total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.years(<span class="dv">5</span>), unit<span class="op">=</span><span class="st">'day'</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({<span class="st">'Lifelong immunity'</span>: lifelong, <span class="st">'Immunity lasting 2 years'</span>: waning_sim})</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'measles.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 2 runs of 2 scenarios (Lifelong immunity, Immunity lasting 2 years)
+  Done in 1 s</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t3_disease_files/figure-html/cell-5-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model now has durations in days and in years, so <code>unit='day'</code> says which unit the bare number β = 1.9 is in (<a href="../tutorials/t2_model.html">Tutorial 2</a>). The first outbreak is the same in both. With lifelong immunity, it is the only one: the town is left immune, and the disease dies out. With waning immunity, people return to <code>S</code> and new, smaller waves follow, which settle down to a steady level of about 1,000 people infectious at any time: the disease becomes endemic. A supply of new susceptible people, whether from waning immunity or from births (<a href="../tutorials/t4_ages.html">Tutorial 4</a>), is what lets an infection persist in a population rather than burn out.</p>
+</section>
+<section id="deaths-a-branch" class="level2">
+<h2 class="anchored" data-anchor-id="deaths-a-branch">Deaths: a branch</h2>
+<p>Most people with measles recover, but a small share die, from complications such as pneumonia. How many varies widely between settings, from 1 in 1,000 cases or fewer in high-income countries to several in 100 in some low-income settings. Suppose it is 2 in 1,000 here. People leaving <code>I</code> then go one of two ways, a branch: 99.8% recover and 0.2% die. A branch is a transition with <code>p=</code>, the share of people that take it:</p>
+<div id="208d0b72" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>S, E, I, R <span class="op">=</span> ss.states(<span class="st">'S E I R'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>infection   <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.days(<span class="dv">10</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>recovery    <span class="op">=</span> ss.Transition(I, R, dur<span class="op">=</span>ss.days(<span class="dv">8</span>), p<span class="op">=</span><span class="fl">0.998</span>)        <span class="co"># 99.8% recover...</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>death       <span class="op">=</span> ss.Transition(I, ss.null, dur<span class="op">=</span>ss.days(<span class="dv">8</span>), p<span class="op">=</span><span class="fl">0.002</span>)  <span class="co"># ...and 0.2% die</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.Disease(infection, progression, recovery, death, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(measles, total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Deaths:'</span>, <span class="bu">round</span>(sim.results.measles.death.<span class="bu">sum</span>()))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: measles, 100,000 people, as an ODE, days 0 to 150
+  measles: R0 = 15.2, with 100 infectious at the start
+  Done in 0.0027 s; measles: 99,900 infections; at most 29,216 infectious, on day 28
+Deaths: 200</code></pre>
+</div>
+</div>
+<p><code>ss.null</code> is outside the model: people who die leave the population. Each branch has its own result, named after it (<code>recovery</code> and <a href="../api/transitions.html#starsim.transitions.death" title="0"><code>death</code></a>), and could have its own duration (if, say, people who die did so sooner). Since almost everyone in the town is infected, about 0.2% of 100,000 people die; with so few deaths, the epidemic itself is all but unchanged. The equations show how a branch works: who goes which way is decided when people enter <code>I</code>, so <code>I</code> is in two parts, <code>I_1</code> for those who will recover and <code>I_2</code> for those who will die:</p>
+<div id="6b970908" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>measles.equations()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dS/dt   = -beta * S * I / N
+dE/dt   =  beta * S * I / N - E / dur_E
+dI_1/dt =  p_recovery * E / dur_E - I_1 / dur_recovery
+dI_2/dt =  p_death * E / dur_E - I_2 / dur_death
+dR/dt   =  I_1 / dur_recovery</code></pre>
+</div>
+</div>
+<p>A branch is not the only way for two transitions to leave one state. Two transitions out of a state with rates (or durations), and no <code>p=</code>, are competing risks: both act on everyone in the state, and whichever happens first moves them. Then the share that goes each way is set by the rates. A branch says the share directly, which is how the share of cases that die (the case fatality ratio) is usually known. Use whichever matches what you know about the disease.</p>
+<p>The next tutorials leave deaths out, since they are few and change little else in this model.</p>
+</section>
+<section id="naming-the-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="naming-the-parameters">Naming the parameters</h2>
+<p>Starsim names the parameters of a model itself (<code>beta</code>, <code>dur_E</code>, …), as <a href="../tutorials/t2_model.html">Tutorial 2</a> showed. To name them yourself, and to say more about them, write them with <code>ss.par()</code>. Each takes its name from its variable, and can have a description (<code>doc=</code>), where its value comes from (<code>source=</code>), and bounds, the range of values it could plausibly take:</p>
+<div id="ed870946" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>S, E, I, R <span class="op">=</span> ss.states(<span class="st">'S E I R'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>beta           <span class="op">=</span> ss.par(<span class="fl">1.9</span>, bounds<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">3</span>], doc<span class="op">=</span><span class="st">'Transmission rate per day'</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dur_latent     <span class="op">=</span> ss.par(ss.days(<span class="dv">10</span>), bounds<span class="op">=</span>[ss.days(<span class="dv">7</span>), ss.days(<span class="dv">14</span>)], doc<span class="op">=</span><span class="st">'Average latent period'</span>, source<span class="op">=</span><span class="st">'Assumed for this tutorial'</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>dur_infectious <span class="op">=</span> ss.par(ss.days(<span class="dv">8</span>), doc<span class="op">=</span><span class="st">'Average infectious period'</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>infection   <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> beta<span class="op">*</span>I</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> dur_latent</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>recovery    <span class="op">=</span> ss.Transition(I, R, dur<span class="op">=</span>dur_infectious, p<span class="op">=</span><span class="fl">0.998</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>death       <span class="op">=</span> ss.Transition(I, ss.null, dur<span class="op">=</span>dur_infectious, p<span class="op">=</span><span class="fl">0.002</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.Disease(infection, progression, recovery, death, init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>))</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(measles, total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>One parameter can be used in several places, as <code>dur_infectious</code> is here, and changing it changes it everywhere: <code>ss.Sim(measles, pars=dict(dur_latent=ss.days(12)), ...)</code> runs the model with a latent period of 12 days. The bounds are what <a href="../tutorials/t7_calibration.html">calibration</a> uses: <code>sim.fit()</code> searches for the values of every parameter with bounds that best match data. <a href="../user_guide/building_parameters.html">Parameters</a> in the user guide has more, including priors.</p>
+</section>
+<section id="checking-the-disease" class="level2">
+<h2 class="anchored" data-anchor-id="checking-the-disease">Checking the disease</h2>
+<p>The disease now has four states and four transitions, and it is worth checking that it is the disease you meant before using it. There are three ways to look at it. <code>describe()</code> lists every state, transition, and parameter as Starsim has built it: which states are infectious (<code>I</code>, since it is in the rate of infection), the distribution of each duration, each parameter with its value, bounds, description, and source (<code>beta = 1.9 per day, between 1 and 3</code>), and every value that Starsim chose itself, marked as guessed:</p>
+<div id="45618bd0" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sim.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div style="font-size:0.9em; line-height:1.35">
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Sim <span style="opacity:0.6">1 module, 100,000 people, days 0 to 150</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">solver</td>
+<td style="text-align: left; padding: 0 1em 0 0;">ode</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: every part of the model has a compartmental form</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">unit</td>
+<td style="text-align: left; padding: 0 1em 0 0;">day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">from the typed values in the model</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Disease 'measles' <span style="opacity:0.6">4 states, 4 transitions</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">states</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, E, I, R</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">I infectious</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">init: I = 0.001; the rest in S</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">infection</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S -&gt; E transmission, from I</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">beta = 1.9 per day, between 1 and 3</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">Transmission rate per day</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">rate = 1.9 × I.n / N</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">homogeneous mixing</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">progression</td>
+<td style="text-align: left; padding: 0 1em 0 0;">E -&gt; I spontaneous</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">time in E ~ exponential(mean = 10 days)</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: scalar duration</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">dur_latent = 10 days, between 7 and 14</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">Average latent period</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">source: Assumed for this tutorial</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">recovery</td>
+<td style="text-align: left; padding: 0 1em 0 0;">I -&gt; R spontaneous</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">time in I ~ exponential(mean = 8 days)</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: scalar duration</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">p = 0.998</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">dur_infectious = 8 days</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">Average infectious period</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">death</td>
+<td style="text-align: left; padding: 0 1em 0 0;">I -&gt; (removed) spontaneous</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">time in I ~ exponential(mean = 8 days)</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: scalar duration</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">p = 0.002</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Mixing and interventions</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">mixing</td>
+<td style="text-align: left; padding: 0 1em 0 0;">homogeneous, 1 contact per day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: no network given</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Results and running</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">results</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, E, I, R, and one flow per transition</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">schedule</td>
+<td style="text-align: left; padding: 0 1em 0 0;">every day: measles</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Notes</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">note</td>
+<td style="text-align: left; padding: 0 1em 0 0;">unit='day' (from the typed values in the model)</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><code>equations()</code> prints the disease as the ODEs it stands for, with the names of the parameters. It is the quickest way to check that every flow leaves one state and enters another, and that the force of infection is what you meant:</p>
+<div id="da038caf" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>measles.equations()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dS/dt   = -beta * S * I / N
+dE/dt   =  beta * S * I / N - E / dur_latent
+dI_1/dt =  p_recovery * E / dur_latent - I_1 / dur_infectious
+dI_2/dt =  p_death * E / dur_latent - I_2 / dur_infectious
+dR/dt   =  I_1 / dur_infectious</code></pre>
+</div>
+</div>
+<p><code>diagram()</code> draws the states and transitions as a flowchart, with the transmission dashed, the empty circle for <code>ss.null</code>, and each arrow labeled with its value and, for a branch, the share that takes it:</p>
+<div id="51e2fa14" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>measles.diagram()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="10">
+<div class="cell" data-layout-align="default">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>flowchart LR</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    S(["S"])</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    E(["E"])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    I(["I"])</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    R(["R"])</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    S -.-&gt;|"infection: 1.9 × I"| E</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    E --&gt;|"progression: 10 days"| I</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    I --&gt;|"recovery: 8 days, p = 0.998"| R</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    I --&gt;|"death: 8 days, p = 0.002"| null1(( ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+
+<pre class="mermaid mermaid-js">flowchart LR
+    S(["S"])
+    E(["E"])
+    I(["I"])
+    R(["R"])
+    S -.-&gt;|"infection: 1.9 × I"| E
+    E --&gt;|"progression: 10 days"| I
+    I --&gt;|"recovery: 8 days, p = 0.998"| R
+    I --&gt;|"death: 8 days, p = 0.002"| null1(( ))
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The diagram is written in Mermaid, a language for diagrams that JupyterLab, Quarto, GitHub, and many other tools draw; <code>print(measles.diagram())</code> gives its text.</p>
+<p>This disease is written as states and transitions, the way the rest of the tutorials write diseases. A disease can also be written as a class, with its states, parameters, and transitions in the class body; this is worth doing for a disease that will be used in several models, or shared with others, since then it can be made with different values of its parameters, like the diseases in Starsim’s library (e.g.&nbsp;<code>Measles(beta=1.5)</code>). <a href="../user_guide/building_diseases.html">Diseases</a> in the user guide shows how, along with other kinds of transition, such as those triggered by an event. <a href="../tutorials/t4_ages.html">Tutorial 4</a> takes the SEIR model of this tutorial (without deaths) and splits the town into age groups.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<ol type="1">
+<li>Measles has a latent period of 10 to 12 days. Using the model with named parameters, run it with a latent period of 12 days, using <code>pars=</code>. Does R0 change? How do the timing and height of the peak change?</li>
+<li>Give the infectious period an Erlang distribution too, with <code>k=4</code>. Using <code>R0()</code> and a plot of <code>I</code>, check whether R0 or the course of the epidemic changes.</li>
+<li>About 1 in 10 people with measles in this town are admitted to hospital, after 4 days of being infectious on average, and stay for 7 days. Add a state for people in hospital (assume they don’t transmit), and find the largest number of people in hospital at once.</li>
+</ol>
+<p><a href="../tutorials/solutions.html">Solutions</a> · Next: <a href="../tutorials/t4_ages.html">T4 – Age groups and contacts</a></p>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://doi.org/10.1371/journal.pmed.0020174">Wearing, Rohani &amp; Keeling (2005): Appropriate models for the management of infectious diseases</a>: why exponential latent and infectious periods mislead, and how Erlang stages fix it</li>
+<li><a href="https://www.cdc.gov/pinkbook/hcp/table-of-contents/chapter-13-measles.html">CDC Pink Book: Measles</a>: the natural history of measles, including its incubation and infectious periods and complications</li>
+<li><a href="https://www.who.int/news-room/fact-sheets/detail/measles">WHO: Measles fact sheet</a>: deaths from measles, and how they vary between settings</li>
+<li><a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">Wikipedia: Compartmental models in epidemiology</a>: the SEIR and SEIRS models, among others</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../tutorials/t2_model.html" class="pagination-link" aria-label="T2 – Building a model">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">T2 – Building a model</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../tutorials/t4_ages.html" class="pagination-link" aria-label="T4 – Age groups and contacts">
+        <span class="nav-page-text">T4 – Age groups and contacts</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

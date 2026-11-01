@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>internals.gradients – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/solvers.agents.html" rel="next">
+<link href="../api/internals.debugtools.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.dists.html"><strong>Internals</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.gradients.html">internals.gradients</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.internals.gradients" id="toc-starsim.internals.gradients" class="nav-link active" data-scroll-target="#starsim.internals.gradients">internals.gradients</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.internals.gradients.CrossRun" id="toc-starsim.internals.gradients.CrossRun" class="nav-link" data-scroll-target="#starsim.internals.gradients.CrossRun">CrossRun</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.gradients.Density" id="toc-starsim.internals.gradients.Density" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density">Density</a>
+  <ul class="collapse">
+  <li><a href="#parameters-1" id="toc-parameters-1" class="nav-link" data-scroll-target="#parameters-1">Parameters</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.gradients.Density.capture" id="toc-starsim.internals.gradients.Density.capture" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.capture">capture</a></li>
+  <li><a href="#starsim.internals.gradients.Density.convert" id="toc-starsim.internals.gradients.Density.convert" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.convert">convert</a></li>
+  <li><a href="#starsim.internals.gradients.Density.corners" id="toc-starsim.internals.gradients.Density.corners" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.corners">corners</a></li>
+  <li><a href="#starsim.internals.gradients.Density.evaluate" id="toc-starsim.internals.gradients.Density.evaluate" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.evaluate">evaluate</a></li>
+  <li><a href="#starsim.internals.gradients.Density.init_outputs" id="toc-starsim.internals.gradients.Density.init_outputs" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.init_outputs">init_outputs</a></li>
+  <li><a href="#starsim.internals.gradients.Density.init_program" id="toc-starsim.internals.gradients.Density.init_program" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.init_program">init_program</a></li>
+  <li><a href="#starsim.internals.gradients.Density.init_several" id="toc-starsim.internals.gradients.Density.init_several" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.init_several">init_several</a></li>
+  <li><a href="#starsim.internals.gradients.Density.loglik" id="toc-starsim.internals.gradients.Density.loglik" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.loglik">loglik</a></li>
+  <li><a href="#starsim.internals.gradients.Density.numbers" id="toc-starsim.internals.gradients.Density.numbers" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.numbers">numbers</a></li>
+  <li><a href="#starsim.internals.gradients.Density.outcomes" id="toc-starsim.internals.gradients.Density.outcomes" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.outcomes">outcomes</a></li>
+  <li><a href="#starsim.internals.gradients.Density.results" id="toc-starsim.internals.gradients.Density.results" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.results">results</a></li>
+  <li><a href="#starsim.internals.gradients.Density.reverse" id="toc-starsim.internals.gradients.Density.reverse" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.reverse">reverse</a></li>
+  <li><a href="#starsim.internals.gradients.Density.states" id="toc-starsim.internals.gradients.Density.states" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.states">states</a></li>
+  <li><a href="#starsim.internals.gradients.Density.values" id="toc-starsim.internals.gradients.Density.values" class="nav-link" data-scroll-target="#starsim.internals.gradients.Density.values">values</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.gradients.LogDensity" id="toc-starsim.internals.gradients.LogDensity" class="nav-link" data-scroll-target="#starsim.internals.gradients.LogDensity">LogDensity</a>
+  <ul class="collapse">
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.gradients.LogDensity.apply" id="toc-starsim.internals.gradients.LogDensity.apply" class="nav-link" data-scroll-target="#starsim.internals.gradients.LogDensity.apply">apply</a></li>
+  <li><a href="#starsim.internals.gradients.LogDensity.grad" id="toc-starsim.internals.gradients.LogDensity.grad" class="nav-link" data-scroll-target="#starsim.internals.gradients.LogDensity.grad">grad</a></li>
+  <li><a href="#starsim.internals.gradients.LogDensity.run" id="toc-starsim.internals.gradients.LogDensity.run" class="nav-link" data-scroll-target="#starsim.internals.gradients.LogDensity.run">run</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.gradients.Run" id="toc-starsim.internals.gradients.Run" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run">Run</a>
+  <ul class="collapse">
+  <li><a href="#parameters-2" id="toc-parameters-2" class="nav-link" data-scroll-target="#parameters-2">Parameters</a></li>
+  <li><a href="#methods-2" id="toc-methods-2" class="nav-link" data-scroll-target="#methods-2">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.gradients.Run.checkpoint" id="toc-starsim.internals.gradients.Run.checkpoint" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.checkpoint">checkpoint</a></li>
+  <li><a href="#starsim.internals.gradients.Run.comp_matrices" id="toc-starsim.internals.gradients.Run.comp_matrices" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.comp_matrices">comp_matrices</a></li>
+  <li><a href="#starsim.internals.gradients.Run.deliver" id="toc-starsim.internals.gradients.Run.deliver" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.deliver">deliver</a></li>
+  <li><a href="#starsim.internals.gradients.Run.derivs" id="toc-starsim.internals.gradients.Run.derivs" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.derivs">derivs</a></li>
+  <li><a href="#starsim.internals.gradients.Run.evaluate" id="toc-starsim.internals.gradients.Run.evaluate" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.evaluate">evaluate</a></li>
+  <li><a href="#starsim.internals.gradients.Run.function" id="toc-starsim.internals.gradients.Run.function" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.function">function</a></li>
+  <li><a href="#starsim.internals.gradients.Run.get" id="toc-starsim.internals.gradients.Run.get" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.get">get</a></li>
+  <li><a href="#starsim.internals.gradients.Run.key" id="toc-starsim.internals.gradients.Run.key" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.key">key</a></li>
+  <li><a href="#starsim.internals.gradients.Run.layout" id="toc-starsim.internals.gradients.Run.layout" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.layout">layout</a></li>
+  <li><a href="#starsim.internals.gradients.Run.prepare" id="toc-starsim.internals.gradients.Run.prepare" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.prepare">prepare</a></li>
+  <li><a href="#starsim.internals.gradients.Run.rates" id="toc-starsim.internals.gradients.Run.rates" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.rates">rates</a></li>
+  <li><a href="#starsim.internals.gradients.Run.share" id="toc-starsim.internals.gradients.Run.share" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.share">share</a></li>
+  <li><a href="#starsim.internals.gradients.Run.stepper" id="toc-starsim.internals.gradients.Run.stepper" class="nav-link" data-scroll-target="#starsim.internals.gradients.Run.stepper">stepper</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.gradients.Unsupported" id="toc-starsim.internals.gradients.Unsupported" class="nav-link" data-scroll-target="#starsim.internals.gradients.Unsupported">Unsupported</a></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.internals.gradients.gradient" id="toc-starsim.internals.gradients.gradient" class="nav-link" data-scroll-target="#starsim.internals.gradients.gradient">gradient</a>
+  <ul class="collapse">
+  <li><a href="#parameters-5" id="toc-parameters-5" class="nav-link" data-scroll-target="#parameters-5">Parameters</a></li>
+  <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">Returns</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.gradients.jax" id="toc-starsim.internals.gradients.jax" class="nav-link" data-scroll-target="#starsim.internals.gradients.jax">jax</a></li>
+  <li><a href="#starsim.internals.gradients.of_results" id="toc-starsim.internals.gradients.of_results" class="nav-link" data-scroll-target="#starsim.internals.gradients.of_results">of_results</a></li>
+  <li><a href="#starsim.internals.gradients.run" id="toc-starsim.internals.gradients.run" class="nav-link" data-scroll-target="#starsim.internals.gradients.run">run</a></li>
+  <li><a href="#starsim.internals.gradients.run_sets" id="toc-starsim.internals.gradients.run_sets" class="nav-link" data-scroll-target="#starsim.internals.gradients.run_sets">run_sets</a>
+  <ul class="collapse">
+  <li><a href="#parameters-6" id="toc-parameters-6" class="nav-link" data-scroll-target="#parameters-6">Parameters</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.dists.html"><strong>Internals</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.gradients.html">internals.gradients</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.internals.gradients" class="level1">
+<h1>internals.gradients</h1>
+<p><a href="../api/internals.gradients.html#starsim.internals.gradients" title="0"><code>internals.gradients</code></a></p>
+<p>Not for the user: the ODE run in JAX: gradients of results with respect to parameters, and many runs at once</p>
+<p>A compartmental engine flattens its flows into a <code>ss.kernels.Program</code>. The Numba kernels step through it; <a href="../api/run.html#starsim.run" title="0"><code>run()</code></a> here takes the same program and runs the same fourth-order Runge-Kutta (or Euler) steps in JAX, so that the run can be differentiated (<code>gradient()</code>) and many runs with different values can be taken in one call (<code>run_sets()</code>). JAX is imported only when one of these is used.</p>
+<p>What JAX differentiates is the run: the program’s numbers, and the compartments at the start, to the compartments and flows at every step. The steps either side of it are Python (working out those numbers from the parameters, and the results from the run, including outcomes and the goodness of fit), and are differentiated by central differences along the direction the run is differentiated in. They are cheap and smooth, so this is accurate to about 1e-9 of the value.</p>
+<p>Used with: compartments; declared modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.CrossRun">CrossRun</a></td>
+<td>The diseases of a crossing, run together by the crossing’s program (see <code>ss.solvers.Crossing</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density">Density</a></td>
+<td>The log of the posterior density of a sim’s fitted parameters, as one function in JAX, so that it can be compiled and differentiated whole (see <code>sim.fit()</code> with method=‘nuts’)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.LogDensity">LogDensity</a></td>
+<td>The log of the posterior density of a sim’s fitted parameters as a function of their values, in JAX, for use outside <code>sim.fit()</code>: see <a href="../api/sim.html#starsim.sim.Sim.log_density" title="0"><code>ss.Sim.log_density()</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run">Run</a></td>
+<td>One engine’s run, as a function of the numbers in it</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Unsupported">Unsupported</a></td>
+<td>Something in the model that the log-density in JAX does not cover yet</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.gradients.CrossRun" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.CrossRun">CrossRun</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.CrossRun(cross, run)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The diseases of a crossing, run together by the crossing’s program (see <code>ss.solvers.Crossing</code>)</p>
+<p>Called with a tuple of the numbers of each disease’s run: they are put together into the numbers of the program (<code>ss.solvers.Crossing.numbers()</code>), which is run as any other, and its output is split between the diseases again. Returns what <code>Run.function()</code> does, with a tuple over the diseases for each of the first three.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cross</td>
+<td><code>ss.solvers.Crossing</code></td>
+<td>the crossing</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>run</td>
+<td><a href="../api/internals.gradients.html#starsim.internals.gradients.Run">Run</a></td>
+<td>the run of its program</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.gradients.Density" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.Density">Density</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    sim,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    fitted,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    x0,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    set_pars,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    likelihood<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    external<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The log of the posterior density of a sim’s fitted parameters, as one function in JAX, so that it can be compiled and differentiated whole (see <code>sim.fit()</code> with method=‘nuts’)</p>
+<p>The numbers in the run are worked out from the parameters in JAX: the values in the rates by evaluating the model’s own expressions, and the rest (e.g.&nbsp;the compartments at the start) from the change in them as each parameter changes, which has to be linear (<code>sim.fit()</code> checks the result against runs of the sim). Then the run, the results that have data, and the likelihood and priors. If anything is not covered, <code>Unsupported</code> says what.</p>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a></td>
+<td>an initialized sim that <code>ss.solvers.why_not(sim, 'jax')</code> allows</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>fitted</td>
+<td><code>dict</code></td>
+<td>the fitted parameters, by name</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>x0</td>
+<td><code>array</code></td>
+<td>their values to start from</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>set_pars</td>
+<td><code>func</code></td>
+<td>restarts the sim with an array of values</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>likelihood</td>
+<td><code>dict</code></td>
+<td>the likelihood of each data series, as for <a href="../api/fit.html#starsim.fit.loglik" title="0"><code>ss.fit.loglik()</code></a></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>weights</td>
+<td><code>dict</code></td>
+<td>a multiplier on each series’ log-likelihood</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>external</td>
+<td><code>list</code></td>
+<td>for each parameter, whether it belongs to a likelihood given at calibration time (rather than to the model)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>bounds</td>
+<td><code>tuple</code></td>
+<td>the lowest and highest value of each parameter, over which a step is allowed as many substeps as the run needs (default: each parameter’s <code>bounds</code>)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.capture">capture</a></td>
+<td>The numbers in the run of each engine with some parameter values, worked out in Python</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.convert">convert</a></td>
+<td>A fitted value as the engine uses it: in the sim’s unit (see <code>convert_fitted()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.corners">corners</a></td>
+<td>The points where the substeps a step needs are worked out: the corners of the bounds (or with more than 4 parameters, each parameter at each of its bounds, the others at their initial values)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.evaluate">evaluate</a></td>
+<td>The log of the posterior density at some parameter values, and the most substeps a step of any run needed (more than it took, if clamped by <code>n_max</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.init_outputs">init_outputs</a></td>
+<td>Which result each data series is compared with, and the matrix that lines it up with the data</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.init_program">init_program</a></td>
+<td>Work out which numbers in the run depend on which parameters, and how</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.init_several">init_several</a></td>
+<td>For each parameter with several values (see <code>ss.fit.expand()</code>), how its value is worked out from the fitted ones: a value</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.loglik">loglik</a></td>
+<td>As <code>ss.fit.logpdf()</code>, in JAX, with the fitted parameters of the likelihood at their values in x</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.numbers">numbers</a></td>
+<td>The numbers in the run of each engine, as JAX arrays, at some parameter values</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.outcomes">outcomes</a></td>
+<td>The outcomes, as <code>ss.solvers.Compartmental.derived_outcomes()</code> works them out</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.results">results</a></td>
+<td>The results that have data, from the run of each engine: a dict by data column</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.reverse">reverse</a></td>
+<td>Make the runs differentiable in reverse mode (each step takes its most substeps), for <code>jax.grad</code>; forward mode, as NUTS uses, is faster without</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Density.states">states</a></td>
+<td>The number in each state at each time point, at some parameter values: a dict of JAX arrays by ‘module.state’</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Density.values">values</a></td>
+<td>The values of a parameter with several values, in the sim’s unit: those fitted from x, the others as given</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.gradients.Density.capture" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.capture">capture</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.capture(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The numbers in the run of each engine with some parameter values, worked out in Python</p>
+</section>
+<section id="starsim.internals.gradients.Density.convert" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.convert">convert</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.convert(i, val)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A fitted value as the engine uses it: in the sim’s unit (see <code>convert_fitted()</code>)</p>
+</section>
+<section id="starsim.internals.gradients.Density.corners" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.corners">corners</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.corners()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The points where the substeps a step needs are worked out: the corners of the bounds (or with more than 4 parameters, each parameter at each of its bounds, the others at their initial values)</p>
+</section>
+<section id="starsim.internals.gradients.Density.evaluate" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.evaluate">evaluate</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.evaluate(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The log of the posterior density at some parameter values, and the most substeps a step of any run needed (more than it took, if clamped by <code>n_max</code>)</p>
+</section>
+<section id="starsim.internals.gradients.Density.init_outputs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.init_outputs">init_outputs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.init_outputs()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Which result each data series is compared with, and the matrix that lines it up with the data</p>
+</section>
+<section id="starsim.internals.gradients.Density.init_program" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.init_program">init_program</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.init_program()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out which numbers in the run depend on which parameters, and how</p>
+</section>
+<section id="starsim.internals.gradients.Density.init_several" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.init_several">init_several</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.init_several()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For each parameter with several values (see <code>ss.fit.expand()</code>), how its value is worked out from the fitted ones: a value for each level as each group’s (<code>levels</code>, the matrix from the levels to the groups), and a time series by interpolating them (<code>series_of</code>), both exactly, as a parameter with one value is; an array (<a href="../api/internals.arrays.html#starsim.internals.arrays" title="0"><code>arrays</code></a>) as the numbers in the run that change linearly with it. Also the value of each entry as the parameter holds it (<code>raws</code>), for <code>convert()</code>.</p>
+</section>
+<section id="starsim.internals.gradients.Density.loglik" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.loglik">loglik</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.loglik(dist, observed, model, x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>As <code>ss.fit.logpdf()</code>, in JAX, with the fitted parameters of the likelihood at their values in x</p>
+</section>
+<section id="starsim.internals.gradients.Density.numbers" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.numbers">numbers</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.numbers(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The numbers in the run of each engine, as JAX arrays, at some parameter values</p>
+</section>
+<section id="starsim.internals.gradients.Density.outcomes" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.outcomes">outcomes</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.outcomes(engine, ctx, new, npts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The outcomes, as <code>ss.solvers.Compartmental.derived_outcomes()</code> works them out</p>
+</section>
+<section id="starsim.internals.gradients.Density.results" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.results">results</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.results(x, stocks, flows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The results that have data, from the run of each engine: a dict by data column</p>
+</section>
+<section id="starsim.internals.gradients.Density.reverse" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.reverse">reverse</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.reverse()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Make the runs differentiable in reverse mode (each step takes its most substeps), for <code>jax.grad</code>; forward mode, as NUTS uses, is faster without</p>
+</section>
+<section id="starsim.internals.gradients.Density.states" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.states">states</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.states(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number in each state at each time point, at some parameter values: a dict of JAX arrays by ‘module.state’</p>
+</section>
+<section id="starsim.internals.gradients.Density.values" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Density.values">values</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Density.values(positions, x, engine)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The values of a parameter with several values, in the sim’s unit: those fitted from x, the others as given</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.gradients.LogDensity" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.LogDensity">LogDensity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.LogDensity(sim, pars<span class="op">=</span><span class="va">None</span>, likelihood<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The log of the posterior density of a sim’s fitted parameters as a function of their values, in JAX, for use outside <code>sim.fit()</code>: see <a href="../api/sim.html#starsim.sim.Sim.log_density" title="0"><code>ss.Sim.log_density()</code></a></p>
+<section id="attributes" class="level4 doc-section doc-section-attributes">
+<h4 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 13%">
+<col style="width: 79%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>names</td>
+<td><code>list</code></td>
+<td>the parameters, in the order of the values</td>
+</tr>
+<tr class="even">
+<td>x0</td>
+<td><code>array</code></td>
+<td>their current values</td>
+</tr>
+<tr class="odd">
+<td>fn</td>
+<td><code>func</code></td>
+<td>the function itself, of a JAX array of values, which can be composed with JAX (<code>jax.grad</code>, <code>jax.vmap</code>, …)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.LogDensity.apply">apply</a></td>
+<td>One of the compiled functions, at some values (compiled the first time)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.LogDensity.grad">grad</a></td>
+<td>Its gradient, by reverse-mode automatic differentiation (one pass, whatever the number of parameters)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.LogDensity.run">run</a></td>
+<td>The number in each state at each time point, at some values: a dict of arrays by ‘module.state’</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.gradients.LogDensity.apply" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.LogDensity.apply">apply</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.LogDensity.<span class="bu">apply</span>(func, x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>One of the compiled functions, at some values (compiled the first time)</p>
+</section>
+<section id="starsim.internals.gradients.LogDensity.grad" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.LogDensity.grad">grad</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.LogDensity.grad(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Its gradient, by reverse-mode automatic differentiation (one pass, whatever the number of parameters)</p>
+</section>
+<section id="starsim.internals.gradients.LogDensity.run" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.LogDensity.run">run</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.LogDensity.run(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number in each state at each time point, at some values: a dict of arrays by ‘module.state’</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.gradients.Run" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.Run">Run</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run(program, dt, npts, solver, n_sub, n_max)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>One engine’s run, as a function of the numbers in it</p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 74%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>program</td>
+<td><code>Program</code></td>
+<td>the engine’s program, for how its flows are put together</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>dt</td>
+<td><code>float</code></td>
+<td>the timestep</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>npts</td>
+<td><code>int</code></td>
+<td>the number of steps</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>solver</td>
+<td><code>int</code></td>
+<td>0 for RK4, 1 for Euler (see <code>ss.kernels.solvers</code>)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>n_sub</td>
+<td><code>int</code></td>
+<td>the number of substeps a step, or 0 for enough that no compartment turns over, or grows through its inflows, by more than a quarter in one</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>n_max</td>
+<td><code>int</code></td>
+<td>the most substeps a step can take; a run that needs more is taken again with more</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.checkpoint">checkpoint</a></td>
+<td>Whether a run differentiated in reverse mode keeps the state at only about √T of its T steps (see <code>checkpointed()</code>): if what reverse mode would otherwise keep (the compartments at each substep and stage) is large</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.comp_matrices">comp_matrices</a></td>
+<td>For nc compartments: the compartments by flows (-1 where a flow leaves) and by targets (1 where a target not mapped between groups takes people)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.deliver">deliver</a></td>
+<td>The deliveries at time point ti, at the start of the step from it, in order (see <code>ss.kernels.apply_shifts()</code>): each moves some of the people in each group to another, or (a move between states) into another state</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.derivs">derivs</a></td>
+<td>The rate of change of each compartment, and of each transition and mover</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.evaluate">evaluate</a></td>
+<td>The value of the operations a to b-1 of the program, by group, with the compartments at ys (as <code>ss.kernels.step()</code> works out a rate)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.function">function</a></td>
+<td>The run, as a function of a dict of its numbers (see <code>capture()</code>): returns the compartments at the end, at the end of each step, the flows over each step, and the most substeps a step needed</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.get">get</a></td>
+<td>The compiled run: ‘run’ for one, ‘many’ for a batch, ‘jvp’ for its derivative along a batch of directions</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.key">key</a></td>
+<td>What a compiled run depends on, apart from the numbers in it</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.layout">layout</a></td>
+<td>Work out, once, the matrices that put the flows together</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.prepare">prepare</a></td>
+<td>The numbers of a run, with what is worked out from them once a run: the time share as a matrix from place to</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.rates">rates</a></td>
+<td>The rate of every flow, by group, with the compartments at ys and the program’s values in vals: as <code>ss.kernels.step()</code> works them out</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.Run.share">share</a></td>
+<td>The time share between places times values by place and level (as <code>ss.kernels.share()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.Run.stepper">stepper</a></td>
+<td>One step of the run, as a function of the compartments at its start and its number: returns the compartments at its end, the flows over it, and the substeps it needed</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.gradients.Run.checkpoint" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.checkpoint">checkpoint</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.checkpoint(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a run differentiated in reverse mode keeps the state at only about √T of its T steps (see <code>checkpointed()</code>): if what reverse mode would otherwise keep (the compartments at each substep and stage) is large</p>
+</section>
+<section id="starsim.internals.gradients.Run.comp_matrices" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.comp_matrices">comp_matrices</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.comp_matrices(nc)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For nc compartments: the compartments by flows (-1 where a flow leaves) and by targets (1 where a target not mapped between groups takes people)</p>
+</section>
+<section id="starsim.internals.gradients.Run.deliver" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.deliver">deliver</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.deliver(y, X, ti)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The deliveries at time point ti, at the start of the step from it, in order (see <code>ss.kernels.apply_shifts()</code>): each moves some of the people in each group to another, or (a move between states) into another state</p>
+</section>
+<section id="starsim.internals.gradients.Run.derivs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.derivs">derivs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.derivs(ys, rates, X, h)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The rate of change of each compartment, and of each transition and mover</p>
+</section>
+<section id="starsim.internals.gradients.Run.evaluate" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.evaluate">evaluate</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.evaluate(ys, a, b, consts, exposures, local_n, regs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The value of the operations a to b-1 of the program, by group, with the compartments at ys (as <code>ss.kernels.step()</code> works out a rate)</p>
+</section>
+<section id="starsim.internals.gradients.Run.function" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.function">function</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.function(clamp<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The run, as a function of a dict of its numbers (see <code>capture()</code>): returns the compartments at the end, at the end of each step, the flows over each step, and the most substeps a step needed</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 23%">
+<col style="width: 25%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>clamp</td>
+<td><code>bool</code></td>
+<td>see <code>stepper()</code></td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.gradients.Run.get" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.get">get</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.get(kind<span class="op">=</span><span class="st">'run'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The compiled run: ‘run’ for one, ‘many’ for a batch, ‘jvp’ for its derivative along a batch of directions</p>
+</section>
+<section id="starsim.internals.gradients.Run.key" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.key">key</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.key(program, dt, npts, solver, n_sub)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>What a compiled run depends on, apart from the numbers in it</p>
+</section>
+<section id="starsim.internals.gradients.Run.layout" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.layout">layout</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out, once, the matrices that put the flows together</p>
+</section>
+<section id="starsim.internals.gradients.Run.prepare" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.prepare">prepare</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.prepare(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The numbers of a run, with what is worked out from them once a run: the time share as a matrix from place to place, if it is dense (a product with it is much faster in XLA than adding into an array at indices: 4x for 50 places), and its transpose (since XLA transposes a matrix that is an input again at every step: 10x slower for 260 places)</p>
+</section>
+<section id="starsim.internals.gradients.Run.rates" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.rates">rates</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.rates(ys, vals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The rate of every flow, by group, with the compartments at ys and the program’s values in vals: as <code>ss.kernels.step()</code> works them out</p>
+</section>
+<section id="starsim.internals.gradients.Run.share" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.share">share</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.share(v, block, X, by_columns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The time share between places times values by place and level (as <code>ss.kernels.share()</code>)</p>
+</section>
+<section id="starsim.internals.gradients.Run.stepper" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.gradients.Run.stepper">stepper</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Run.stepper(X, clamp<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>One step of the run, as a function of the compartments at its start and its number: returns the compartments at its end, the flows over it, and the substeps it needed</p>
+<section id="parameters-4" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 79%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>X</td>
+<td><code>dict</code></td>
+<td>the numbers in the run (see <code>capture()</code>)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>clamp</td>
+<td><code>bool</code></td>
+<td>if True, a step takes at most <code>n_max</code> substeps, so that the run is the same function everywhere (for sampling, where it cannot be taken again with more)</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.gradients.Unsupported" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.Unsupported">Unsupported</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.Unsupported()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Something in the model that the log-density in JAX does not cover yet</p>
+<p>It exists so that the reason can be given to the user rather than a JAX error.</p>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.gradient">gradient</a></td>
+<td>The value of something read from a sim’s run, and its derivative with respect to each of a set of values</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.jax">jax</a></td>
+<td>Import JAX (imported only when first used, since it takes a few tenths of a second)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.of_results">of_results</a></td>
+<td>The derivative of results, or of a function of the run sim, with respect to parameters: see <a href="../api/sim.html#starsim.sim.Sim.gradient" title="0"><code>ss.Sim.gradient()</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.gradients.run">run</a></td>
+<td>Take a whole run of an engine in JAX: returns what <code>ss.kernels.run()</code> does</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.gradients.run_sets">run_sets</a></td>
+<td>Run a sim with many sets of parameter values, taking the runs in one call to JAX</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.gradients.gradient" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.gradient">gradient</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.gradient(sim, set_pars, x0, read, rel_step<span class="op">=</span><span class="fl">1e-05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The value of something read from a sim’s run, and its derivative with respect to each of a set of values</p>
+<p>The run is differentiated by JAX (forward mode, one direction per value); see the module docstring for the rest.</p>
+<section id="parameters-5" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a></td>
+<td>an initialized sim that <code>ss.solvers.why_not(sim, 'jax')</code> allows, which is left as its run at x0</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>set_pars</td>
+<td><code>func</code></td>
+<td>called with an array of values; restarts the sim with them (e.g.&nbsp;<code>lambda x: sim.restart(pars=dict(beta=x[0]))</code>)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>x0</td>
+<td><code>array</code></td>
+<td>the values to work out the derivative at</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>read</td>
+<td><code>func</code></td>
+<td>called with the sim after its run; returns a number or an array (or an <code>sc.obj</code> of arrays)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>rel_step</td>
+<td><code>float</code></td>
+<td>the step for the central differences, relative to each value (or absolute, for a value of 0)</td>
+<td><code>1e-05</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 88%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>value, derivative: what <code>read()</code> returned at x0, and its derivative with respect to each value (a list, one per value, of the same type as the value)</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.gradients.jax" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.jax">jax</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.jax()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Import JAX (imported only when first used, since it takes a few tenths of a second)</p>
+<p>If JAX has not been imported yet, it is given a device for each core of the CPU (as <code>numpyro.set_host_device_count()</code> does), so that the chains of a posterior run on cores of their own; everything else runs on the first, as before. The platform it runs on is <code>ss.options.jax</code> (e.g.&nbsp;“cpu”), if not “auto”. The first time, its devices are started here, so that a GPU that fails to start (e.g.&nbsp;with a CUDA plugin of another version than jaxlib) says what to do.</p>
+</section>
+<section id="starsim.internals.gradients.of_results" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.of_results">of_results</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.of_results(sim, results<span class="op">=</span><span class="va">None</span>, pars<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The derivative of results, or of a function of the run sim, with respect to parameters: see <a href="../api/sim.html#starsim.sim.Sim.gradient" title="0"><code>ss.Sim.gradient()</code></a></p>
+</section>
+<section id="starsim.internals.gradients.run" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.run">run</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.run(engine)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Take a whole run of an engine in JAX: returns what <code>ss.kernels.run()</code> does</p>
+</section>
+<section id="starsim.internals.gradients.run_sets" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.gradients.run_sets">run_sets</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>internals.gradients.run_sets(sim, par_sets)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run a sim with many sets of parameter values, taking the runs in one call to JAX</p>
+<p>Each set is a dict of values by name, as for <code>sim.restart(pars=...)</code>. Only for a sim that <code>ss.solvers.why_not(sim, 'jax')</code> allows: an ODE that the kernels run from start to finish.</p>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a></td>
+<td>an initialized sim</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>par_sets</td>
+<td><code>list</code></td>
+<td>the values of each run</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p>Returns, for each declared module, its results over the runs, as <code>ss.solvers.Compartmental.run_many()</code> does.</p>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/internals.debugtools.html" class="pagination-link" aria-label="internals.debugtools">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">internals.debugtools</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/solvers.agents.html" class="pagination-link" aria-label="solvers.agents">
+        <span class="nav-page-text">solvers.agents</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

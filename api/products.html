@@ -1,0 +1,2833 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>products – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/analyzers.html" rel="next">
+<link href="../api/interventions.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.modules.html"><strong>Modules</strong></a></li><li class="breadcrumb-item"><a href="../api/products.html">products</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.products" id="toc-starsim.products" class="nav-link active" data-scroll-target="#starsim.products">products</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.products.Diagnostic" id="toc-starsim.products.Diagnostic" class="nav-link" data-scroll-target="#starsim.products.Diagnostic">Diagnostic</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.Diagnostic.delays" id="toc-starsim.products.Diagnostic.delays" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.delays">delays</a></li>
+  <li><a href="#starsim.products.Diagnostic.key_by" id="toc-starsim.products.Diagnostic.key_by" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.key_by">key_by</a></li>
+  <li><a href="#starsim.products.Diagnostic.key_ref" id="toc-starsim.products.Diagnostic.key_ref" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.key_ref">key_ref</a></li>
+  <li><a href="#starsim.products.Diagnostic.layout" id="toc-starsim.products.Diagnostic.layout" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.layout">layout</a></li>
+  <li><a href="#starsim.products.Diagnostic.refs" id="toc-starsim.products.Diagnostic.refs" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.refs">refs</a></li>
+  <li><a href="#starsim.products.Diagnostic.severity" id="toc-starsim.products.Diagnostic.severity" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.severity">severity</a></li>
+  <li><a href="#starsim.products.Diagnostic.state_keys" id="toc-starsim.products.Diagnostic.state_keys" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.state_keys">state_keys</a></li>
+  <li><a href="#starsim.products.Diagnostic.tables" id="toc-starsim.products.Diagnostic.tables" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.tables">tables</a></li>
+  <li><a href="#starsim.products.Diagnostic.tails" id="toc-starsim.products.Diagnostic.tails" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.tails">tails</a></li>
+  <li><a href="#starsim.products.Diagnostic.test_together" id="toc-starsim.products.Diagnostic.test_together" class="nav-link" data-scroll-target="#starsim.products.Diagnostic.test_together">test_together</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.Effect" id="toc-starsim.products.Effect" class="nav-link" data-scroll-target="#starsim.products.Effect">Effect</a>
+  <ul class="collapse">
+  <li><a href="#parameters-2" id="toc-parameters-2" class="nav-link" data-scroll-target="#parameters-2">Parameters</a></li>
+  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1">Attributes</a></li>
+  </ul></li>
+  <li><a href="#starsim.products.EventSource" id="toc-starsim.products.EventSource" class="nav-link" data-scroll-target="#starsim.products.EventSource">EventSource</a>
+  <ul class="collapse">
+  <li><a href="#attributes-2" id="toc-attributes-2" class="nav-link" data-scroll-target="#attributes-2">Attributes</a></li>
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.EventSource.current" id="toc-starsim.products.EventSource.current" class="nav-link" data-scroll-target="#starsim.products.EventSource.current">current</a></li>
+  <li><a href="#starsim.products.EventSource.fire" id="toc-starsim.products.EventSource.fire" class="nav-link" data-scroll-target="#starsim.products.EventSource.fire">fire</a></li>
+  <li><a href="#starsim.products.EventSource.flush" id="toc-starsim.products.EventSource.flush" class="nav-link" data-scroll-target="#starsim.products.EventSource.flush">flush</a></li>
+  <li><a href="#starsim.products.EventSource.init_events" id="toc-starsim.products.EventSource.init_events" class="nav-link" data-scroll-target="#starsim.products.EventSource.init_events">init_events</a></li>
+  <li><a href="#starsim.products.EventSource.no_outcome" id="toc-starsim.products.EventSource.no_outcome" class="nav-link" data-scroll-target="#starsim.products.EventSource.no_outcome">no_outcome</a></li>
+  <li><a href="#starsim.products.EventSource.outcome_attr" id="toc-starsim.products.EventSource.outcome_attr" class="nav-link" data-scroll-target="#starsim.products.EventSource.outcome_attr">outcome_attr</a></li>
+  <li><a href="#starsim.products.EventSource.outcome_names" id="toc-starsim.products.EventSource.outcome_names" class="nav-link" data-scroll-target="#starsim.products.EventSource.outcome_names">outcome_names</a></li>
+  <li><a href="#starsim.products.EventSource.reached" id="toc-starsim.products.EventSource.reached" class="nav-link" data-scroll-target="#starsim.products.EventSource.reached">reached</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.Held" id="toc-starsim.products.Held" class="nav-link" data-scroll-target="#starsim.products.Held">Held</a>
+  <ul class="collapse">
+  <li><a href="#parameters-4" id="toc-parameters-4" class="nav-link" data-scroll-target="#parameters-4">Parameters</a></li>
+  <li><a href="#attributes-3" id="toc-attributes-3" class="nav-link" data-scroll-target="#attributes-3">Attributes</a></li>
+  <li><a href="#methods-2" id="toc-methods-2" class="nav-link" data-scroll-target="#methods-2">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.Held.by_strain" id="toc-starsim.products.Held.by_strain" class="nav-link" data-scroll-target="#starsim.products.Held.by_strain">by_strain</a></li>
+  <li><a href="#starsim.products.Held.check_dims" id="toc-starsim.products.Held.check_dims" class="nav-link" data-scroll-target="#starsim.products.Held.check_dims">check_dims</a></li>
+  <li><a href="#starsim.products.Held.disease_effects" id="toc-starsim.products.Held.disease_effects" class="nav-link" data-scroll-target="#starsim.products.Held.disease_effects">disease_effects</a></li>
+  <li><a href="#starsim.products.Held.init_pre" id="toc-starsim.products.Held.init_pre" class="nav-link" data-scroll-target="#starsim.products.Held.init_pre">init_pre</a></li>
+  <li><a href="#starsim.products.Held.key_by" id="toc-starsim.products.Held.key_by" class="nav-link" data-scroll-target="#starsim.products.Held.key_by">key_by</a></li>
+  <li><a href="#starsim.products.Held.remaining" id="toc-starsim.products.Held.remaining" class="nav-link" data-scroll-target="#starsim.products.Held.remaining">remaining</a></li>
+  <li><a href="#starsim.products.Held.step_waning" id="toc-starsim.products.Held.step_waning" class="nav-link" data-scroll-target="#starsim.products.Held.step_waning">step_waning</a></li>
+  <li><a href="#starsim.products.Held.waning_for" id="toc-starsim.products.Held.waning_for" class="nav-link" data-scroll-target="#starsim.products.Held.waning_for">waning_for</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.Product" id="toc-starsim.products.Product" class="nav-link" data-scroll-target="#starsim.products.Product">Product</a>
+  <ul class="collapse">
+  <li><a href="#methods-3" id="toc-methods-3" class="nav-link" data-scroll-target="#methods-3">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.Product.administer" id="toc-starsim.products.Product.administer" class="nav-link" data-scroll-target="#starsim.products.Product.administer">administer</a></li>
+  <li><a href="#starsim.products.Product.agent_reasons" id="toc-starsim.products.Product.agent_reasons" class="nav-link" data-scroll-target="#starsim.products.Product.agent_reasons">agent_reasons</a></li>
+  <li><a href="#starsim.products.Product.init_pre" id="toc-starsim.products.Product.init_pre" class="nav-link" data-scroll-target="#starsim.products.Product.init_pre">init_pre</a></li>
+  <li><a href="#starsim.products.Product.key_by" id="toc-starsim.products.Product.key_by" class="nav-link" data-scroll-target="#starsim.products.Product.key_by">key_by</a></li>
+  <li><a href="#starsim.products.Product.keyed_by" id="toc-starsim.products.Product.keyed_by" class="nav-link" data-scroll-target="#starsim.products.Product.keyed_by">keyed_by</a></li>
+  <li><a href="#starsim.products.Product.step_waning" id="toc-starsim.products.Product.step_waning" class="nav-link" data-scroll-target="#starsim.products.Product.step_waning">step_waning</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.StrainEffect" id="toc-starsim.products.StrainEffect" class="nav-link" data-scroll-target="#starsim.products.StrainEffect">StrainEffect</a>
+  <ul class="collapse">
+  <li><a href="#methods-4" id="toc-methods-4" class="nav-link" data-scroll-target="#methods-4">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.StrainEffect.for_strain" id="toc-starsim.products.StrainEffect.for_strain" class="nav-link" data-scroll-target="#starsim.products.StrainEffect.for_strain">for_strain</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.Treatment" id="toc-starsim.products.Treatment" class="nav-link" data-scroll-target="#starsim.products.Treatment">Treatment</a>
+  <ul class="collapse">
+  <li><a href="#parameters-9" id="toc-parameters-9" class="nav-link" data-scroll-target="#parameters-9">Parameters</a></li>
+  <li><a href="#examples-2" id="toc-examples-2" class="nav-link" data-scroll-target="#examples-2">Examples</a></li>
+  <li><a href="#attributes-4" id="toc-attributes-4" class="nav-link" data-scroll-target="#attributes-4">Attributes</a></li>
+  <li><a href="#methods-5" id="toc-methods-5" class="nav-link" data-scroll-target="#methods-5">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.Treatment.edge_disease" id="toc-starsim.products.Treatment.edge_disease" class="nav-link" data-scroll-target="#starsim.products.Treatment.edge_disease">edge_disease</a></li>
+  <li><a href="#starsim.products.Treatment.edge_specs" id="toc-starsim.products.Treatment.edge_specs" class="nav-link" data-scroll-target="#starsim.products.Treatment.edge_specs">edge_specs</a></li>
+  <li><a href="#starsim.products.Treatment.key_by" id="toc-starsim.products.Treatment.key_by" class="nav-link" data-scroll-target="#starsim.products.Treatment.key_by">key_by</a></li>
+  <li><a href="#starsim.products.Treatment.recovery" id="toc-starsim.products.Treatment.recovery" class="nav-link" data-scroll-target="#starsim.products.Treatment.recovery">recovery</a></li>
+  <li><a href="#starsim.products.Treatment.refs" id="toc-starsim.products.Treatment.refs" class="nav-link" data-scroll-target="#starsim.products.Treatment.refs">refs</a></li>
+  <li><a href="#starsim.products.Treatment.resolve" id="toc-starsim.products.Treatment.resolve" class="nav-link" data-scroll-target="#starsim.products.Treatment.resolve">resolve</a></li>
+  <li><a href="#starsim.products.Treatment.resolve_each" id="toc-starsim.products.Treatment.resolve_each" class="nav-link" data-scroll-target="#starsim.products.Treatment.resolve_each">resolve_each</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.Vaccine" id="toc-starsim.products.Vaccine" class="nav-link" data-scroll-target="#starsim.products.Vaccine">Vaccine</a>
+  <ul class="collapse">
+  <li><a href="#parameters-11" id="toc-parameters-11" class="nav-link" data-scroll-target="#parameters-11">Parameters</a></li>
+  <li><a href="#examples-3" id="toc-examples-3" class="nav-link" data-scroll-target="#examples-3">Examples</a></li>
+  </ul></li>
+  <li><a href="#starsim.products.box" id="toc-starsim.products.box" class="nav-link" data-scroll-target="#starsim.products.box">box</a>
+  <ul class="collapse">
+  <li><a href="#parameters-12" id="toc-parameters-12" class="nav-link" data-scroll-target="#parameters-12">Parameters</a></li>
+  <li><a href="#examples-4" id="toc-examples-4" class="nav-link" data-scroll-target="#examples-4">Examples</a></li>
+  <li><a href="#methods-6" id="toc-methods-6" class="nav-link" data-scroll-target="#methods-6">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.products.box.levels" id="toc-starsim.products.box.levels" class="nav-link" data-scroll-target="#starsim.products.box.levels">levels</a></li>
+  <li><a href="#starsim.products.box.moves" id="toc-starsim.products.box.moves" class="nav-link" data-scroll-target="#starsim.products.box.moves">moves</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.products.held_cond" id="toc-starsim.products.held_cond" class="nav-link" data-scroll-target="#starsim.products.held_cond">held_cond</a></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.products.coded_states" id="toc-starsim.products.coded_states" class="nav-link" data-scroll-target="#starsim.products.coded_states">coded_states</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.modules.html"><strong>Modules</strong></a></li><li class="breadcrumb-item"><a href="../api/products.html">products</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.products" class="level1">
+<h1>products</h1>
+<p><a href="../api/products.html#starsim.products" title="0"><code>products</code></a></p>
+<p>Products: vaccines, treatments, and diagnostics, and the protection people hold from them</p>
+<p>A product says what something does (e.g.&nbsp;its efficacy), and a delivery (<a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>) says who gets it and when. They are kept apart so that one product can be delivered in several ways. A product written as code (<code>administer()</code>) runs as agents.</p>
+<p>Used with: agents and compartments; declared and coded modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic">Diagnostic</a></td>
+<td>A diagnostic test: what <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a> delivers</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Effect">Effect</a></td>
+<td>The effect of a product on one quantity, for the people who hold it: a multiplier of <code>1 - efficacy</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource">EventSource</a></td>
+<td>What a delivery and a product share as events: the people it reached on the step (<code>screening</code>), its outcomes (<code>screening.positive</code>), and their memory</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held">Held</a></td>
+<td>Base class for products that change rates for the people who hold them</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Product">Product</a></td>
+<td>Generic product base class: see <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>, <a href="../api/products.html#starsim.products.Diagnostic" title="0"><code>ss.Diagnostic</code></a>, and <a href="../api/products.html#starsim.products.Treatment" title="0"><code>ss.Treatment</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.StrainEffect">StrainEffect</a></td>
+<td>The effect of a product against acquiring each strain of a disease with shared states, for the people who hold it: on each strain’s force of infection (see <code>ss.solvers.Engine.strain_effect()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment">Treatment</a></td>
+<td>A treatment: what <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a> delivers</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Vaccine">Vaccine</a></td>
+<td>A vaccine: what <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a> delivers</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.box">box</a></td>
+<td>Protection that is full for a time, then lost at once, or (with <code>decay=</code>) fading exponentially: the <code>waning=</code> of a product</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.held_cond">held_cond</a></td>
+<td>The condition <code>vx.held</code> (whether each person holds this product), which on a class is whether they hold any product of that kind (<code>where=ss.Vaccine.held</code>), for a model built before its products</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.Diagnostic" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Diagnostic">Diagnostic</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    sensitivity<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    specificity<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    results<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    delay<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    detects<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    cost<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A diagnostic test: what <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a> delivers</p>
+<p>A test gives each person one of its results: by default <code>positive</code> or <code>negative</code>, from <code>sensitivity</code> and <code>specificity</code>; or one of <code>results=</code>, each with its probability given the state a person is in. Each result is a result of each delivery of it, and an event (<code>screening.positive</code> for one delivery, <code>hiv_rdt.positive</code> for any delivery of the product), which triggers the steps that follow.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sensitivity</td>
+<td><code>float</code> / <code>dict</code></td>
+<td>the probability that someone with the condition tests positive; a dict gives one for each state (each a number or an <code>ss.by</code>), and the test then detects being in those states. The states can be of several diseases (<code>{hpv16.I: 0.9, 'hpv18.CIN': 0.95}</code>), and the boolean states of a disease written as code (<code>'hpv16.cin'</code>); delivered with <code>disease=[...]</code>, a state with no disease (<code>'cin'</code>) is that state of each</td>
+<td><code>1.0</code></td>
+</tr>
+<tr class="even">
+<td>specificity</td>
+<td><code>float</code></td>
+<td>the probability that someone without it tests negative</td>
+<td><code>1.0</code></td>
+</tr>
+<tr class="odd">
+<td>results</td>
+<td><code>dict</code></td>
+<td>instead of sensitivity and specificity, the results in order of severity, most severe first, each with its probability for people in each state (a dict by state, of any disease, as for <code>sensitivity</code>; a number is for those with what <code>detects=</code> says); the last is <code>None</code>, everyone the others do not take. A key <code>None</code> in a result’s dict is for people in none of the states keyed in any result (of any disease the test is keyed by), e.g.&nbsp;a false positive: it is counted once, whereas a result for a state (<code>susceptible=0.1</code>) is one for each disease. For someone in states of several diseases, there is a result for each disease, and the most severe of them is theirs (for a positive and a negative result, each disease is detected independently)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>delay</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <code>dict</code></td>
+<td>the time from the test to the result (agents only); a dict gives one for each result</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>detects</td>
+<td><code>Cond</code> / <code>func</code></td>
+<td>the condition the test detects (default: being in an infected state of the disease)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>cost</td>
+<td><code>float</code></td>
+<td>the cost of each delivery</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name; if not given, taken from the variable the test is assigned to</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td><code>str</code></td>
+<td>the label, for plots and printing</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td><code>dict</code></td>
+<td>passed to <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pcr <span class="op">=</span> ss.Diagnostic(sensitivity<span class="op">=</span><span class="fl">0.9</span>, specificity<span class="op">=</span><span class="fl">0.98</span>, cost<span class="op">=</span><span class="fl">4.00</span>, delay<span class="op">=</span>ss.days(<span class="dv">2</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>xpert <span class="op">=</span> ss.Diagnostic(sensitivity<span class="op">=</span><span class="bu">dict</span>(symptomatic<span class="op">=</span><span class="fl">0.91</span>, asymptomatic<span class="op">=</span>ss.by(age<span class="op">=</span>[<span class="fl">0.73</span>, <span class="fl">0.78</span>]))) <span class="co"># By state, and by age group within a state</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>hpv_dna <span class="op">=</span> ss.Diagnostic(sensitivity<span class="op">=</span>{hpv16.I: <span class="fl">0.9</span>, hpv16.CIN: <span class="fl">0.95</span>, hpv18.I: <span class="fl">0.9</span>}, specificity<span class="op">=</span><span class="fl">0.97</span>) <span class="co"># Across diseases</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cytology <span class="op">=</span> ss.Diagnostic(results<span class="op">=</span><span class="bu">dict</span>(high_grade<span class="op">=</span><span class="bu">dict</span>(cin<span class="op">=</span><span class="fl">0.9</span>, cancer<span class="op">=</span><span class="fl">1.0</span>), ascus<span class="op">=</span>{<span class="st">'cin'</span>: <span class="fl">0.1</span>, <span class="va">None</span>: <span class="fl">0.1</span>}, normal<span class="op">=</span><span class="va">None</span>)) <span class="co"># ASCUS for 10% of people with neither CIN nor cancer</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.diseases">diseases</a></td>
+<td>The names of the diseases whose states it is keyed by</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.result_names">result_names</a></td>
+<td>The names of its results from the least severe to the most (the order of <code>tails()</code>): for a positive and a negative result, negative first</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.tabulated">tabulated</a></td>
+<td>A test has no step of its own (its deliveries give it), so it does not stop a whole run in the kernels</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.delays">delays</a></td>
+<td>The delay of each result, from the least severe to the most (None for none)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.key_by">key_by</a></td>
+<td>Each disease’s states: a value for its infected (or for detects=) becomes one for the infected of each, and one by state, for that state of each that has it; a person’s result is the worst over the diseases</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.key_ref">key_ref</a></td>
+<td>A key of a dict by state, as (disease name, or None for the delivery’s; state name): a declared state, a state of a disease written as code (<code>hpv16.cin</code>, an <code>ss.BoolState</code>), or text (<code>'hpv16.cin'</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.layout">layout</a></td>
+<td>The probability of each result but the least severe, as rows that each hold for some people: grouped by disease, whose</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.refs">refs</a></td>
+<td>The states of named diseases it is keyed by, as (disease, state), for tracking diseases jointly (see <code>ss.solvers.Crossing</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.severity">severity</a></td>
+<td>How severe the results of a row are, for ordering: the probability of each result or a more severe one, summed</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.state_keys">state_keys</a></td>
+<td>The states it is keyed by, as given</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.tables">tables</a></td>
+<td>The probability of each result but the least severe, from the next to the most severe, as {key: value}: a key is a state, None (people in none of the states), or ‘detects’ (people with what <code>detects=</code> says)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Diagnostic.tails">tails</a></td>
+<td>The probability that each person’s result is each one or a more severe one, for each but the least severe (so for a</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Diagnostic.test_together">test_together</a></td>
+<td>Diseases written as code that one delivery gives the test for (<code>together</code>, e.g.&nbsp;HPVsim’s genotypes, HP70), given the same values by</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.Diagnostic.delays" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.delays">delays</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.delays()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The delay of each result, from the least severe to the most (None for none)</p>
+</section>
+<section id="starsim.products.Diagnostic.key_by" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.key_by">key_by</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.key_by(mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each disease’s states: a value for its infected (or for detects=) becomes one for the infected of each, and one by state, for that state of each that has it; a person’s result is the worst over the diseases</p>
+</section>
+<section id="starsim.products.Diagnostic.key_ref" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.key_ref">key_ref</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.key_ref(key)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A key of a dict by state, as (disease name, or None for the delivery’s; state name): a declared state, a state of a disease written as code (<code>hpv16.cin</code>, an <code>ss.BoolState</code>), or text (<code>'hpv16.cin'</code>)</p>
+</section>
+<section id="starsim.products.Diagnostic.layout" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.layout">layout</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.layout(sim, home)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The probability of each result but the least severe, as rows that each hold for some people: grouped by disease, whose states are exclusive, as {disease: [(state, [values])]} (and ‘detects’: [(None, [values])]); and the values for people in none of them. A state with no disease is one of <code>home</code></p>
+</section>
+<section id="starsim.products.Diagnostic.refs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.refs">refs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.refs()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states of named diseases it is keyed by, as (disease, state), for tracking diseases jointly (see <code>ss.solvers.Crossing</code>)</p>
+</section>
+<section id="starsim.products.Diagnostic.severity" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.severity">severity</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.severity(vals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>How severe the results of a row are, for ordering: the probability of each result or a more severe one, summed</p>
+</section>
+<section id="starsim.products.Diagnostic.state_keys" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.state_keys">state_keys</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.state_keys()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states it is keyed by, as given</p>
+</section>
+<section id="starsim.products.Diagnostic.tables" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.tables">tables</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.tables()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The probability of each result but the least severe, from the next to the most severe, as {key: value}: a key is a state, None (people in none of the states), or ‘detects’ (people with what <code>detects=</code> says)</p>
+</section>
+<section id="starsim.products.Diagnostic.tails" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.tails">tails</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.tails(selector, home, infected, together<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The probability that each person’s result is each one or a more severe one, for each but the least severe (so for a positive and a negative result, the probability of a positive one). For each disease, from the state they are in; combined over diseases as the worst result (P(worst ≥ k) = 1 − ∏(1 − P_d(≥ k)))</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 14%">
+<col style="width: 72%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>selector</td>
+<td><code>ss.conditions.Selector</code></td>
+<td>the selector of the delivery’s disease</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>home</td>
+<td><code>str</code></td>
+<td>the delivery’s disease, for states given without one</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>infected</td>
+<td><code>func</code></td>
+<td>returns the infected states of <code>home</code>, which a test with no <code>detects=</code> detects</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>together</td>
+<td><code>list</code></td>
+<td>the names of diseases written as code that a delivery gives it for (<code>disease=[...]</code>), which are tested together (see <code>test_together()</code>)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.Diagnostic.test_together" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Diagnostic.test_together">test_together</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>products.Diagnostic.test_together(groups, together<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Diseases written as code that one delivery gives the test for (<code>together</code>, e.g.&nbsp;HPVsim’s genotypes, HP70), given the same values by state (a test keyed by a state’s name, e.g.&nbsp;<code>{'CIN': 0.9}</code>), are one group, keyed by their names: a person is tested once, in the state that gives the most severe results (a woman with CIN of one genotype and susceptible to the others is tested as with CIN), rather than once for each disease</p>
+</section>
+</section>
+</section>
+<section id="starsim.products.Effect" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Effect">Effect</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>products.Effect(product, key, efficacy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The effect of a product on one quantity, for the people who hold it: a multiplier of <code>1 - efficacy</code></p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>product</td>
+<td><a href="../api/products.html#starsim.products.Product">Product</a></td>
+<td>the product</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>key</td>
+<td><code>str</code></td>
+<td>what it acts on, e.g.&nbsp;<code>'acquisition'</code></td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>efficacy</td>
+<td><code>float</code></td>
+<td>the share of the quantity it removes</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes-1" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-1">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Effect.constant">constant</a></td>
+<td>Whether the effect is the same at every step (so the tables need not be worked out step by step): a number for each group</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Effect.tabulated">tabulated</a></td>
+<td>Whether the engines can work out the effect for every step before a run (see <code>ss.solvers.Compartmental.tables()</code>): unless the efficacy is a function of the sim</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.EventSource" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.EventSource">EventSource</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>products.EventSource()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>What a delivery and a product share as events: the people it reached on the step (<code>screening</code>), its outcomes (<code>screening.positive</code>), and their memory</p>
+<p>Each is a condition that triggers a delivery (<code>ss.treat(who=screening.positive)</code>), and remembers per person whether (<code>.ever</code>), how often (<code>.count</code>), and how long ago (<code>.since</code>) it happened, including on the current step once the delivery that fired it has run. As agents, the memory of every event of a delivery is kept (two numbers per agent each), so it can be read after a run too, e.g.&nbsp;<code>sim.interventions.screening.ever.uids</code>; a product’s, and in a compartmental run (only <code>.ever</code>) any event’s, only if something in the sim reads it.</p>
+<section id="attributes-2" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-2">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.count">count</a></td>
+<td>How many times it has happened to each person</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.EventSource.ever">ever</a></td>
+<td>Whether it has happened to each person, as a condition</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.since">since</a></td>
+<td>The time since it last happened to each person (infinite if never)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.current">current</a></td>
+<td>The people an event happened to on this step, as a selection for a module’s selector</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.EventSource.fire">fire</a></td>
+<td>Record that an event happened to some people now: a boolean per agent, or the share of each state and group (as they were in <code>before</code>, if given)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.flush">flush</a></td>
+<td>Put the people events happened to, up to and including time index ti, into the memory</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.EventSource.init_events">init_events</a></td>
+<td>Before a run: the people of each event on the current step, and the memory the sim needs (as agents, arrays of each person’s last time and count)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.no_outcome">no_outcome</a></td>
+<td>The error for a misspelled outcome</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.EventSource.outcome_attr">outcome_attr</a></td>
+<td>An outcome as an event, e.g.&nbsp;<code>screening.positive</code>; called for an attribute that is not otherwise found</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.EventSource.outcome_names">outcome_names</a></td>
+<td>The names of its outcomes, e.g.&nbsp;[‘positive’, ‘negative’] for a test</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.EventSource.reached">reached</a></td>
+<td>The UIDs of the people it reached on its last step (agents only), or of those with one of its outcomes (e.g.&nbsp;<code>screening.reached('positive')</code>)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.EventSource.current" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.current">current</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.current(outcome, selector)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The people an event happened to on this step, as a selection for a module’s selector</p>
+</section>
+<section id="starsim.products.EventSource.fire" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.fire">fire</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.fire(outcome, sel, eng<span class="op">=</span><span class="va">None</span>, before<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record that an event happened to some people now: a boolean per agent, or the share of each state and group (as they were in <code>before</code>, if given)</p>
+</section>
+<section id="starsim.products.EventSource.flush" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.flush">flush</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.flush(ti)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Put the people events happened to, up to and including time index ti, into the memory</p>
+</section>
+<section id="starsim.products.EventSource.init_events" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.init_events">init_events</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.init_events(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Before a run: the people of each event on the current step, and the memory the sim needs (as agents, arrays of each person’s last time and count)</p>
+</section>
+<section id="starsim.products.EventSource.no_outcome" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.no_outcome">no_outcome</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.no_outcome(attr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The error for a misspelled outcome</p>
+</section>
+<section id="starsim.products.EventSource.outcome_attr" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.outcome_attr">outcome_attr</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.outcome_attr(attr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An outcome as an event, e.g.&nbsp;<code>screening.positive</code>; called for an attribute that is not otherwise found</p>
+</section>
+<section id="starsim.products.EventSource.outcome_names" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.outcome_names">outcome_names</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.outcome_names()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The names of its outcomes, e.g.&nbsp;[‘positive’, ‘negative’] for a test</p>
+</section>
+<section id="starsim.products.EventSource.reached" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.EventSource.reached">reached</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>products.EventSource.reached(outcome<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The UIDs of the people it reached on its last step (agents only), or of those with one of its outcomes (e.g.&nbsp;<code>screening.reached('positive')</code>)</p>
+<p>Its last step is the current one once it has run in it, and otherwise the one before: so code that runs after the interventions (a disease or an analyzer) reads the people of the step just taken, as for an event.</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 18%">
+<col style="width: 51%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>outcome</td>
+<td><code>str</code></td>
+<td>the outcome (default: everyone reached)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.products.Held" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Held">Held</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>products.Held(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    efficacy<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    waning<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    doses<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    during<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    cost<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Base class for products that change rates for the people who hold them</p>
+<p>Holding the product is a property of people, named after the product (e.g.&nbsp;<code>has_bcg</code>): a boolean per agent in an agent-based run, and a stratification in a compartmental one.</p>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>efficacy</td>
+<td><code>float</code> / <code>dict</code></td>
+<td>protection; see <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>waning</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <a href="../api/products.html#starsim.products.box">box</a> / <code>func</code> / <code>dict</code></td>
+<td>how protection is lost; see <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a></td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>doses</td>
+<td><code>list</code></td>
+<td>the relative efficacy after each dose; see <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>during</td>
+<td><code>Cond</code></td>
+<td>if given, it is held only while people are in these states</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>cost</td>
+<td><code>float</code></td>
+<td>the cost of each delivery</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name; if not given, taken from the variable it is assigned to</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>label</td>
+<td><code>str</code></td>
+<td>the label, for plots and printing</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>kwargs</td>
+<td><code>dict</code></td>
+<td>passed to <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes-3" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-3">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Held.box_form">box_form</a></td>
+<td>The <a href="../api/products.html#starsim.products.box" title="0"><code>ss.box</code></a> that holding the product follows in a compartmental run (its waning, or the one waning of every effect that fades), or None</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.coverage">coverage</a></td>
+<td>Its coverage, as a quantity in a rate: the share of the people in the same place who hold it, each by the protection they have left, e.g.&nbsp;<code>itn.coverage</code>, or <code>itn.coverage(fn)</code> by a function of the time since delivery (see <code>ss.expressions.Coverage</code>, MS4)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.dim">dim</a></td>
+<td>The name of the property of people that says whether they hold the product</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.diseases">diseases</a></td>
+<td>The names of the diseases the efficacy is keyed by, where they are given as modules (by name, they are known only in a sim: see <code>disease_effects()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.effects">effects</a></td>
+<td>The efficacy against each thing, as a dict</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.fades">fades</a></td>
+<td>Whether protection fades by a function of the time since delivery (or one for each effect)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.holds">holds</a></td>
+<td>Whether people hold this product, as opposed to it acting once when delivered</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.loses">loses</a></td>
+<td>Whether protection is lost at a random time (exponential waning, given as a duration), as opposed to fading by a function of time</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.tabulated">tabulated</a></td>
+<td>In a compartmental run, a product has no step of its own (its deliveries move people between levels of holding it), so it does not stop a whole run in the kernels</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Held.by_strain">by_strain</a></td>
+<td>An efficacy against acquisition by the strains of a disease with shared states (<code>ss.by(strain=[...])</code>, one per strain, or a dict by name): one for each strain, or None (for anything else)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.check_dims">check_dims</a></td>
+<td>An efficacy by a dimension (<code>ss.by(genotype=...)</code>) that the people it acts on have no level of, such as a strain, which susceptibles do not carry, is an error</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.disease_effects">disease_effects</a></td>
+<td>The efficacy against each thing, for each disease it acts on, as {disease name: {key: efficacy}}</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.init_pre">init_pre</a></td>
+<td>Work out what the product acts on, once: both the sim and its deliveries initialize it</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.key_by">key_by</a></td>
+<td>The same efficacy against each disease, e.g.&nbsp;a bivalent vaccine delivered with disease=[hpv16, hpv18]</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.remaining">remaining</a></td>
+<td>As agents: the share of protection left for each agent (by UID) who holds the product, by a function of the time since</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Held.step_waning">step_waning</a></td>
+<td>In an agent-based run: holders lose their protection at a constant rate, and (with <code>during=</code>) once they are no longer in those states. Called by the deliveries; acts once per step</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Held.waning_for">waning_for</a></td>
+<td>The function of the time since delivery by which the protection of one effect fades, or None</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.Held.by_strain" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.by_strain">by_strain</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>products.Held.by_strain(eff, key, dis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An efficacy against acquisition by the strains of a disease with shared states (<code>ss.by(strain=[...])</code>, one per strain, or a dict by name): one for each strain, or None (for anything else)</p>
+</section>
+<section id="starsim.products.Held.check_dims" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.check_dims">check_dims</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>products.Held.check_dims(eff, key, dis, states)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An efficacy by a dimension (<code>ss.by(genotype=...)</code>) that the people it acts on have no level of, such as a strain, which susceptibles do not carry, is an error</p>
+</section>
+<section id="starsim.products.Held.disease_effects" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.disease_effects">disease_effects</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>products.Held.disease_effects(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The efficacy against each thing, for each disease it acts on, as {disease name: {key: efficacy}}</p>
+<p>The efficacy is keyed by disease (<code>dict(hpv16=0.95, hpv18=dict(cin=0.5))</code>, each a number or a dict as for one disease), or is for the delivery’s disease.</p>
+</section>
+<section id="starsim.products.Held.init_pre" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.init_pre">init_pre</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>products.Held.init_pre(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out what the product acts on, once: both the sim and its deliveries initialize it</p>
+<section id="parameters-5" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim">Sim</a></td>
+<td>the sim being initialized</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.Held.key_by" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.key_by">key_by</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>products.Held.key_by(mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The same efficacy against each disease, e.g.&nbsp;a bivalent vaccine delivered with disease=[hpv16, hpv18]</p>
+</section>
+<section id="starsim.products.Held.remaining" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.remaining">remaining</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>products.Held.remaining(fn, holds, engine)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>As agents: the share of protection left for each agent (by UID) who holds the product, by a function of the time since delivery: <code>fn(t)</code> or <code>fn(t, sim, uids)</code>, with <code>t</code> a duration in the sim’s unit (e.g.&nbsp;<code>ss.days</code>, so <code>t &lt; ss.days(180)</code> and <code>t.years</code> read the same in any sim), for the agents <code>uids</code> who hold it (so <code>sim.people.age[uids] - t.years</code> is their age when it was given)</p>
+<section id="parameters-6" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 24%">
+<col style="width: 48%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>fn</td>
+<td><code>func</code></td>
+<td>the function of the time since delivery</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>holds</td>
+<td><code>array</code></td>
+<td>whether each agent holds the product</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>engine</td>
+<td><code>Engine</code></td>
+<td>the engine running the disease</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.Held.step_waning" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.step_waning">step_waning</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>products.Held.step_waning()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In an agent-based run: holders lose their protection at a constant rate, and (with <code>during=</code>) once they are no longer in those states. Called by the deliveries; acts once per step</p>
+</section>
+<section id="starsim.products.Held.waning_for" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Held.waning_for">waning_for</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>products.Held.waning_for(key)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The function of the time since delivery by which the protection of one effect fades, or None</p>
+</section>
+</section>
+</section>
+<section id="starsim.products.Product" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Product">Product</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>products.Product(name<span class="op">=</span><span class="va">None</span>, label<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generic product base class: see <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>, <a href="../api/products.html#starsim.products.Diagnostic" title="0"><code>ss.Diagnostic</code></a>, and <a href="../api/products.html#starsim.products.Treatment" title="0"><code>ss.Treatment</code></a></p>
+<p>Products represent diagnostic tests, treatments, or vaccines, delivered by <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a>. A product is an event too: the people any delivery of it reached on the step (<code>cytology</code>), with its outcomes (<code>cytology.positive</code>), and their memory (<code>cytology.since</code>): see <a href="../api/products.html#starsim.products.EventSource" title="0"><code>ss.products.EventSource</code></a>. A product whose effect is code of your own defines <code>administer()</code>.</p>
+<section id="methods-3" class="level4">
+<h4 class="anchored" data-anchor-id="methods-3">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Product.administer">administer</a></td>
+<td>The effect of a product written as code: called with the UIDs of the people a delivery gave it to on the step, after</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Product.agent_reasons">agent_reasons</a></td>
+<td>The reasons, if any, that this product needs agents</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Product.init_pre">init_pre</a></td>
+<td>Initialize the product, and its events, once: both the sim and its deliveries initialize it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Product.key_by">key_by</a></td>
+<td>For a delivery with <code>disease=</code> several diseases (a list or an <a href="../api/strains.html#starsim.strains.Strains" title="0"><code>ss.Strains</code></a>, HP7): the product’s values as keyed by each, if they are not already (see the subclasses)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Product.keyed_by">keyed_by</a></td>
+<td>Whether a dict of values is keyed by diseases</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Product.step_waning">step_waning</a></td>
+<td>Called by its deliveries at the start of each step, before anyone is offered it: see <a href="../api/products.html#starsim.products.Held" title="0"><code>ss.products.Held</code></a></td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.Product.administer" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.administer">administer</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>products.Product.administer(uids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The effect of a product written as code: called with the UIDs of the people a delivery gave it to on the step, after what a product of its kind does (agents only). Override it in a subclass of <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a> (or of <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a> etc.).</p>
+<p>It may return the UIDs with each of its outcomes, as a dict (e.g.&nbsp;<code>dict(positive=uids)</code>): they are then results and events of the delivery, as a test’s are, which can trigger the steps that follow. The outcomes are those that <code>outcome_names()</code> lists.</p>
+<section id="parameters-7" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 22%">
+<col style="width: 48%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>uids</td>
+<td><code>array</code></td>
+<td>the people who were given the product</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-1" class="level6 doc-section doc-section-examples">
+<h6 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h6>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Bednet(ss.Product):</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> administer(<span class="va">self</span>, uids):</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.sim.diseases.malaria.rel_sus[uids] <span class="op">*=</span> <span class="fl">0.5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="starsim.products.Product.agent_reasons" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.agent_reasons">agent_reasons</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>products.Product.agent_reasons(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The reasons, if any, that this product needs agents</p>
+</section>
+<section id="starsim.products.Product.init_pre" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.init_pre">init_pre</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>products.Product.init_pre(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Initialize the product, and its events, once: both the sim and its deliveries initialize it</p>
+<section id="parameters-8" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim">Sim</a></td>
+<td>the sim being initialized</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.Product.key_by" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.key_by">key_by</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>products.Product.key_by(mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For a delivery with <code>disease=</code> several diseases (a list or an <a href="../api/strains.html#starsim.strains.Strains" title="0"><code>ss.Strains</code></a>, HP7): the product’s values as keyed by each, if they are not already (see the subclasses)</p>
+</section>
+<section id="starsim.products.Product.keyed_by" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.keyed_by">keyed_by</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>products.Product.keyed_by(vals, mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a dict of values is keyed by diseases</p>
+</section>
+<section id="starsim.products.Product.step_waning" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Product.step_waning">step_waning</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>products.Product.step_waning()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Called by its deliveries at the start of each step, before anyone is offered it: see <a href="../api/products.html#starsim.products.Held" title="0"><code>ss.products.Held</code></a></p>
+</section>
+</section>
+</section>
+<section id="starsim.products.StrainEffect" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.StrainEffect">StrainEffect</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>products.StrainEffect(product, key, efficacy)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The effect of a product against acquiring each strain of a disease with shared states, for the people who hold it: on each strain’s force of infection (see <code>ss.solvers.Engine.strain_effect()</code>)</p>
+<section id="methods-4" class="level4">
+<h4 class="anchored" data-anchor-id="methods-4">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.StrainEffect.for_strain">for_strain</a></td>
+<td>The effect against one strain, as for any product</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.StrainEffect.for_strain" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.StrainEffect.for_strain">for_strain</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>products.StrainEffect.for_strain(strain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The effect against one strain, as for any product</p>
+</section>
+</section>
+</section>
+<section id="starsim.products.Treatment" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Treatment">Treatment</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>products.Treatment(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    cure<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    efficacy<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    transition<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    to<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    moves<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A treatment: what <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a> delivers</p>
+<p>A treatment can cure (<code>cure=</code>, once, when it is given), change rates for as long as it is held (<code>efficacy=</code>), or both. By default it is given to the people who are infected. A treatment that cures has the outcomes <code>cured</code>, <code>failed</code> (infected, and not cured), and <code>unneeded</code> (not infected), which are results and events of its deliveries.</p>
+<p>A treatment can instead name the transitions it moves people along (<code>moves=</code>), usually undriven ones (<code>cure = A + C &gt;&gt; S</code>, with no <code>@</code>). Each person treated who is in a source of one of them moves along it with its probability (cured), or does not (failed); one in no source is unneeded. The transitions can be of several diseases, and the probability for each can differ; a modifier of an undriven transition (<code>ss.modify(ng.cure, multiply=0.5, where=...)</code>) multiplies the probability for the people it applies to. It is then given to the people in their sources. What happens at failure (resistance) is a transition of the disease triggered by the outcome: <code>ss.Transition(I, R_res, where=drug.failed, p=0.05)</code>.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters-9" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cure</td>
+<td><code>float</code> / <code>dict</code></td>
+<td>the probability that treatment cures: the person leaves whichever infected state they are in for the state the disease’s recovery leads to (or <code>to=</code>, or the destination of <code>transition=</code>); 1 if neither <code>cure</code> nor <code>efficacy</code> is given. A dict gives one for each state (each a number or an <code>ss.by</code>), and people in other states are not cured; for a disease written as code, its boolean states (e.g.&nbsp;<code>dict(precin=0.9, cin=0.9)</code>), each cured by its <code>clear_infection()</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>efficacy</td>
+<td><code>dict</code></td>
+<td>the effects while it is held, as for <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a> (e.g.&nbsp;<code>dict(transmission=0.96, mortality=0.9)</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>transition</td>
+<td><code>str</code></td>
+<td>the transition a cured person leaves by (its flow counts them), if the disease has recoveries to more than one state</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>to</td>
+<td><code>str</code></td>
+<td>the state cured people go to, if the disease has recoveries to more than one state</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>moves</td>
+<td><a href="../api/transitions.html#starsim.transitions.Transition">Transition</a> / <code>str</code> / <code>list</code> / <code>dict</code></td>
+<td>instead, the transitions people move along, or a dict of the probability for each (a number, <code>ss.by</code>, a time series, or a function of the sim; otherwise <code>cure</code>); a person must not be in the sources of two of one disease’s</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>waning</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <a href="../api/products.html#starsim.products.box">box</a> / <code>func</code> / <code>dict</code></td>
+<td>as for <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>, for the effects while held</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>during</td>
+<td><code>Cond</code></td>
+<td>as for <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>: held (and its effects acting) only while people are in these states, e.g.&nbsp;<code>during=typhoid.acute</code></td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>cost</td>
+<td><code>float</code></td>
+<td>the cost of each delivery</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name; if not given, taken from the variable the treatment is assigned to</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-2" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>drug <span class="op">=</span> ss.Treatment(cure<span class="op">=</span><span class="fl">0.95</span>, cost<span class="op">=</span><span class="fl">120.0</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>ablation <span class="op">=</span> ss.Treatment(cure<span class="op">=</span><span class="bu">dict</span>(infected<span class="op">=</span><span class="fl">0.936</span>, cin<span class="op">=</span><span class="fl">0.936</span>)) <span class="co"># By state</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>drug <span class="op">=</span> ss.Treatment(efficacy<span class="op">=</span><span class="bu">dict</span>(transmission<span class="op">=</span><span class="fl">0.5</span>), during<span class="op">=</span>typhoid.acute) <span class="co"># Half as infectious while acute</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>art <span class="op">=</span> ss.Treatment(efficacy<span class="op">=</span><span class="bu">dict</span>(transmission<span class="op">=</span><span class="fl">0.96</span>, mortality<span class="op">=</span><span class="fl">0.9</span>))</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>both <span class="op">=</span> ss.Treatment(cure<span class="op">=</span><span class="fl">0.3</span>, efficacy<span class="op">=</span><span class="bu">dict</span>(transmission<span class="op">=</span><span class="fl">0.9</span>))</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>bpg <span class="op">=</span> ss.Treatment(moves<span class="op">=</span>{syph.cure_early: <span class="fl">0.98</span>, syph.cure_late: <span class="fl">0.95</span>}) <span class="co"># A destination for each stage</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>kit <span class="op">=</span> ss.Treatment(moves<span class="op">=</span>{ng.cure: <span class="fl">0.95</span>, ct.cure: <span class="fl">0.95</span>}) <span class="co"># Two diseases, one product</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes-4" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-4">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment.curing">curing</a></td>
+<td>Whether it moves people out of a state when given (a cure, or moves=), and so has the outcomes cured, failed, and unneeded</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Treatment.diseases">diseases</a></td>
+<td>The names of the diseases whose transitions the treatment names (or, for one that changes rates, that its efficacy is keyed by)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-5" class="level4">
+<h4 class="anchored" data-anchor-id="methods-5">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment.edge_disease">edge_disease</a></td>
+<td>The name of the disease a transition (as given) belongs to, if it says</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Treatment.edge_specs">edge_specs</a></td>
+<td>The transitions of moves= as given, each with its probability: (transition or name, probability)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment.key_by">key_by</a></td>
+<td>A cure of each disease’s infected (and an efficacy against each, if it is held)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Treatment.recovery">recovery</a></td>
+<td>How a cured person leaves: the transition whose flow counts them (or None), the state they go to, and the states they leave</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment.refs">refs</a></td>
+<td>The source states of the transitions it moves people along, as (disease, state), for tracking diseases jointly (see <code>ss.solvers.Crossing</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.Treatment.resolve">resolve</a></td>
+<td>What a treatment that cures moves people along in a sim: for each move, its disease, transition (or None, if no flow</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.products.Treatment.resolve_each">resolve_each</a></td>
+<td>The cure of each of the diseases a delivery gives (disease=[…])</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.Treatment.edge_disease" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.edge_disease">edge_disease</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.edge_disease(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The name of the disease a transition (as given) belongs to, if it says</p>
+</section>
+<section id="starsim.products.Treatment.edge_specs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.edge_specs">edge_specs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.edge_specs()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The transitions of moves= as given, each with its probability: (transition or name, probability)</p>
+</section>
+<section id="starsim.products.Treatment.key_by" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.key_by">key_by</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.key_by(mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A cure of each disease’s infected (and an efficacy against each, if it is held)</p>
+</section>
+<section id="starsim.products.Treatment.recovery" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.recovery">recovery</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.recovery(dis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>How a cured person leaves: the transition whose flow counts them (or None), the state they go to, and the states they leave</p>
+<p>A cure takes people out of whichever infected state they are in (the states counted in prevalence, and those that people infected reach on the way to the state cured people go to), never only the sources of one transition (unless <code>transition=</code> names one out of states that are not infected, which people are then moved along).</p>
+</section>
+<section id="starsim.products.Treatment.refs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.refs">refs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.refs()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The source states of the transitions it moves people along, as (disease, state), for tracking diseases jointly (see <code>ss.solvers.Crossing</code>)</p>
+</section>
+<section id="starsim.products.Treatment.resolve" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.resolve">resolve</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.resolve(sim, disease)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>What a treatment that cures moves people along in a sim: for each move, its disease, transition (or None, if no flow counts it), destination, source states, and probability (a number, or a dict by state). Empty for one that does not cure.</p>
+<section id="parameters-10" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a></td>
+<td>the sim</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>disease</td>
+<td><code>str</code></td>
+<td>the disease of a transition given by name alone, and of the cure if <code>moves=</code> is not given</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.products.Treatment.resolve_each" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.Treatment.resolve_each">resolve_each</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>products.Treatment.resolve_each(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The cure of each of the diseases a delivery gives (disease=[…])</p>
+</section>
+</section>
+</section>
+<section id="starsim.products.Vaccine" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.Vaccine">Vaccine</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>products.Vaccine(efficacy<span class="op">=</span><span class="va">None</span>, leaky<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A vaccine: what <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a> delivers</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>efficacy</td>
+<td><code>float</code> / <code>dict</code></td>
+<td>protection against acquisition (required); or a dict of efficacy against each of ‘acquisition’ (scales <code>rel_sus</code>), ‘transmission’ (scales <code>rel_trans</code>), ‘mortality’ (scales the death transitions), or any named transition</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>waning</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <a href="../api/products.html#starsim.products.box">box</a> / <code>func</code> / <code>dict</code></td>
+<td>a duration, for protection that is lost after an exponentially distributed time with that mean; <code>ss.box(dur=..., decay=...)</code>, full protection for a time and then (optionally) an exponential decline, under every solver; or a function of the time since delivery returning the share of protection that remains, <code>fn(t)</code> or <code>fn(t, sim, uids)</code>, with <code>t</code> a duration (e.g.&nbsp;<code>t &lt; ss.days(180)</code>, <code>t.years</code>) and <code>uids</code> the agents who hold it (e.g.&nbsp;<code>sim.people.age[uids] - t.years</code>, their age when it was given; agents only). A delivery gives a product that fades by a shape or function again to those who hold it, restarting it. A dict gives each effect its own (e.g.&nbsp;<code>dict(acquisition=ss.box(dur=ss.years(1)), transmission=None)</code>). For other shapes under every solver (two rates in turn), write the protection as states and move people into them: see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a>’s <code>move=</code></td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>doses</td>
+<td><code>list</code></td>
+<td>for a vaccine given in doses, the relative efficacy after each (e.g.&nbsp;<code>[0.85, 1.0]</code>); holding it then has a level per dose, and each delivery to someone who holds it gives them the next dose</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>leaky</td>
+<td><code>bool</code></td>
+<td>if True (the default), everyone who receives it is partly protected (by <code>efficacy</code>); if False, a share <code>efficacy</code> of them are fully protected and the rest not at all (“all or nothing”)</td>
+<td><code>True</code></td>
+</tr>
+<tr class="odd">
+<td>during</td>
+<td><code>Cond</code></td>
+<td>if given, it is held only while people are in these states (e.g.&nbsp;<code>during=sir.I</code>): they stop holding it when they leave them</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>cost</td>
+<td><code>float</code></td>
+<td>the cost of each delivery</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name; if not given, taken from the variable the vaccine is assigned to</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-3" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>bcg <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.85</span>, waning<span class="op">=</span>ss.years(<span class="dv">5</span>), cost<span class="op">=</span><span class="fl">12.50</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>ss.Vaccine(efficacy<span class="op">=</span><span class="bu">dict</span>(acquisition<span class="op">=</span><span class="fl">0.85</span>, transmission<span class="op">=</span><span class="fl">0.3</span>))</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>mcv <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.85</span>, leaky<span class="op">=</span><span class="va">False</span>) <span class="co"># 85% fully protected</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>hpv <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.95</span>, doses<span class="op">=</span>[<span class="fl">0.85</span>, <span class="fl">1.0</span>]) <span class="co"># The first dose gives 85% of the protection of two</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>bivalent <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="bu">dict</span>(hpv16<span class="op">=</span><span class="fl">0.9975</span>, hpv18<span class="op">=</span><span class="fl">0.9975</span>)) <span class="co"># Against two diseases</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>rtss <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.8</span>, waning<span class="op">=</span>ss.box(dur<span class="op">=</span>ss.days(<span class="dv">180</span>), decay<span class="op">=</span>ss.days(<span class="dv">730</span>))) <span class="co"># Full for 180 days, then declining</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>linear <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.9</span>, waning<span class="op">=</span><span class="kw">lambda</span> t: np.clip(<span class="dv">1</span> <span class="op">-</span> t.years<span class="op">/</span><span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">1</span>)) <span class="co"># Fading to nothing over 5 years</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="starsim.products.box" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.box">box</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>products.box(dur, decay<span class="op">=</span><span class="va">None</span>, stages<span class="op">=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Protection that is full for a time, then lost at once, or (with <code>decay=</code>) fading exponentially: the <code>waning=</code> of a product</p>
+<p>As agents, it is the share of protection left, <code>t</code> after delivery (1 for <code>t &lt; dur</code>, then <code>exp(-(t - dur)/decay)</code>, or 0). In a compartmental run, holding the product has levels: the box, as <code>stages</code> levels each left at <code>stages/dur</code> (Erlang stages, so the end of the box is spread over about <code>dur/sqrt(stages)</code>), then a level left at the rate <code>1/decay</code>, so the share holding it falls as the protection of agents does.</p>
+<section id="parameters-12" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 21%">
+<col style="width: 63%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dur</td>
+<td><code>dur</code></td>
+<td>how long protection is full</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>decay</td>
+<td><code>dur</code></td>
+<td>the mean time it then lasts, decaying exponentially; None (the default) for none: it ends with the box</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>stages</td>
+<td><code>int</code></td>
+<td>the number of levels of the box in a compartmental run</td>
+<td><code>10</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-4" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-4">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>rtss <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.8</span>, waning<span class="op">=</span>ss.box(dur<span class="op">=</span>ss.days(<span class="dv">180</span>), decay<span class="op">=</span>ss.days(<span class="dv">730</span>)))</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> ss.Vaccine(efficacy<span class="op">=</span><span class="fl">0.9</span>, waning<span class="op">=</span>ss.box(dur<span class="op">=</span>ss.years(<span class="dv">3</span>))) <span class="co"># Full for three years, then none</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods-6" class="level4">
+<h4 class="anchored" data-anchor-id="methods-6">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.box.levels">levels</a></td>
+<td>The levels of holding the product in a compartmental run, after “False”: the stages of the box, then decaying (if it does)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.products.box.moves">moves</a></td>
+<td>The moves between those levels, each at a rate (as <code>dur=</code>, the mean time at a level)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.box.levels" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.box.levels">levels</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>products.box.levels()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The levels of holding the product in a compartmental run, after “False”: the stages of the box, then decaying (if it does)</p>
+</section>
+<section id="starsim.products.box.moves" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.products.box.moves">moves</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>products.box.moves(dim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The moves between those levels, each at a rate (as <code>dur=</code>, the mean time at a level)</p>
+</section>
+</section>
+</section>
+<section id="starsim.products.held_cond" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.held_cond">held_cond</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>products.held_cond()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The condition <code>vx.held</code> (whether each person holds this product), which on a class is whether they hold any product of that kind (<code>where=ss.Vaccine.held</code>), for a model built before its products</p>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.products.coded_states">coded_states</a></td>
+<td>The states of a disease written as code, by name: its boolean states (<code>ss.BoolState</code>), e.g.&nbsp;<code>cin</code> (HP70)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.products.coded_states" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.products.coded_states">coded_states</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>products.coded_states(dis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states of a disease written as code, by name: its boolean states (<code>ss.BoolState</code>), e.g.&nbsp;<code>cin</code> (HP70)</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/interventions.html" class="pagination-link" aria-label="interventions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">interventions</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/analyzers.html" class="pagination-link" aria-label="analyzers">
+        <span class="nav-page-text">analyzers</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

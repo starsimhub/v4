@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>solvers.deliveries – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/solvers.engine.html" rel="next">
+<link href="../api/solvers.crossing.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/solvers.agents.html"><strong>Solvers</strong></a></li><li class="breadcrumb-item"><a href="../api/solvers.deliveries.html">solvers.deliveries</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.solvers.deliveries" id="toc-starsim.solvers.deliveries" class="nav-link active" data-scroll-target="#starsim.solvers.deliveries">solvers.deliveries</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery" id="toc-starsim.solvers.deliveries.CompartmentalDelivery" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery">CompartmentalDelivery</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.arrived" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.arrived" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.arrived">arrived</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.carry_events" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.carry_events" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.carry_events">carry_events</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.cure" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.cure">cure</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed">cure_crossed</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure_groups" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.cure_groups" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.cure_groups">cure_groups</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.delivered" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.delivered" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.delivered">delivered</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.follow" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.follow" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.follow">follow</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.force_part" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.force_part" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.force_part">force_part</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.give" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.give" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.give">give</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.hold" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.hold" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.hold">hold</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.many_shifts" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.many_shifts" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.many_shifts">many_shifts</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.n_selected" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.n_selected" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.n_selected">n_selected</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.plain_move" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.plain_move" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.plain_move">plain_move</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.relocate" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.relocate" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.relocate">relocate</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.relocated" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.relocated" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.relocated">relocated</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.respell" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.respell" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.respell">respell</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.same_people" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.same_people" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.same_people">same_people</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.shift" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.shift" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.shift">shift</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.shifts" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.shifts" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.shifts">shifts</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.store_shifts" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.store_shifts" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.store_shifts">store_shifts</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.tabulated" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.tabulated" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.tabulated">tabulated</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.take" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.take" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.take">take</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.tally" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.tally" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.tally">tally</a></li>
+  <li><a href="#starsim.solvers.deliveries.CompartmentalDelivery.test" id="toc-starsim.solvers.deliveries.CompartmentalDelivery.test" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.CompartmentalDelivery.test">test</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.solvers.deliveries.carry_moved" id="toc-starsim.solvers.deliveries.carry_moved" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.carry_moved">carry_moved</a></li>
+  <li><a href="#starsim.solvers.deliveries.current_groups" id="toc-starsim.solvers.deliveries.current_groups" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.current_groups">current_groups</a></li>
+  <li><a href="#starsim.solvers.deliveries.memory_layout" id="toc-starsim.solvers.deliveries.memory_layout" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.memory_layout">memory_layout</a></li>
+  <li><a href="#starsim.solvers.deliveries.memory_strats" id="toc-starsim.solvers.deliveries.memory_strats" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.memory_strats">memory_strats</a></li>
+  <li><a href="#starsim.solvers.deliveries.remember_levels" id="toc-starsim.solvers.deliveries.remember_levels" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.remember_levels">remember_levels</a></li>
+  <li><a href="#starsim.solvers.deliveries.trigger_groups" id="toc-starsim.solvers.deliveries.trigger_groups" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.trigger_groups">trigger_groups</a></li>
+  <li><a href="#starsim.solvers.deliveries.water_fill" id="toc-starsim.solvers.deliveries.water_fill" class="nav-link" data-scroll-target="#starsim.solvers.deliveries.water_fill">water_fill</a>
+  <ul class="collapse">
+  <li><a href="#parameters-3" id="toc-parameters-3" class="nav-link" data-scroll-target="#parameters-3">Parameters</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/solvers.agents.html"><strong>Solvers</strong></a></li><li class="breadcrumb-item"><a href="../api/solvers.deliveries.html">solvers.deliveries</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.solvers.deliveries" class="level1">
+<h1>solvers.deliveries</h1>
+<p><a href="../api/solvers.deliveries.html#starsim.solvers.deliveries" title="0"><code>solvers.deliveries</code></a></p>
+<p>Not for the user: deliveries in a compartmental run</p>
+<p><a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> is the one class for deliveries, and its methods are how it runs as agents. In a compartmental run, a delivery also makes a <code>CompartmentalDelivery</code> (<code>delivery.in_compartments</code>), which holds what only that needs: a selection is the share of the people in each state and group, so who is reached, served, moved, cured, or tested is a share of each, and moving them moves shares of the engine’s compartments between groups, carrying the events of the step along. The schedule, coverage, capacity, conditions, products, and results stay the delivery’s.</p>
+<p>Used with: compartments; declared modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery">CompartmentalDelivery</a></td>
+<td>A delivery in a compartmental run (<code>delivery.in_compartments</code>): what differs from agents, where a selection is the share of the people in each state and group</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery">CompartmentalDelivery</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery(delivery)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A delivery in a compartmental run (<code>delivery.in_compartments</code>): what differs from agents, where a selection is the share of the people in each state and group</p>
+<p>Made by <a href="../api/interventions.html#starsim.interventions.Delivery.init_pre" title="0"><code>ss.Delivery.init_pre()</code></a> when the sim is compartmental; the delivery’s own methods call it where they differ.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>delivery</td>
+<td><a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a></td>
+<td>the delivery</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.arrived">arrived</a></td>
+<td>The people who have just moved into a state (a number per group), as a share of those in it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.carry_events">carry_events</a></td>
+<td>Carry the events of this step (see <a href="../api/interventions.html#starsim.interventions.Delivery.fire" title="0"><code>ss.Delivery.fire()</code></a>) along a move the delivery has just made, between groups (to</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure">cure</a></td>
+<td>Move the people treated along the transitions of the treatment; returns those treated as they now are, in parts (see <a href="../api/interventions.html#starsim.interventions.Delivery.cure" title="0"><code>ss.Delivery.cure()</code></a>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed">cure_crossed</a></td>
+<td>The treatment of several diseases: the people chosen in each compartment and group are moved as a population of their</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.cure_groups">cure_groups</a></td>
+<td>The treatment of one disease: each move in turn, from those in its sources</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.delivered">delivered</a></td>
+<td>Who a deliver= function says receives the product, given as a number of people per group</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.follow">follow</a></td>
+<td>Move the selected people to other levels of some dimensions; returns those chosen among them, as they now are</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.force_part">force_part</a></td>
+<td>Move some of the people of an engine (<code>C</code>, by compartment and group) along transitions, with their probability; returns them after, and of them, the cured (where they are now) and those who failed</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.give">give</a></td>
+<td>Give what is delivered to the people chosen, and record them (and the outcomes) as its events; see <a href="../api/interventions.html#starsim.interventions.Delivery.give" title="0"><code>ss.Delivery.give()</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.hold">hold</a></td>
+<td>Those chosen now hold the product: at level 1, or with doses (<code>doses=</code>), the next dose; returns them, as they now are</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.many_shifts">many_shifts</a></td>
+<td>The results of many runs, as <code>store_shifts()</code> but with runs first: each series as runs by time points, and (as <code>out.groups</code>) by group too, if kept</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.n_selected">n_selected</a></td>
+<td>The number of people selected</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.plain_move">plain_move</a></td>
+<td>Whether a move between states (<code>move=S &gt;&gt; I</code>) keeps everyone in their group, so the kernels can take it: no strain to arrive with, no record of who was offered it, and states of the same dimensions</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.relocate">relocate</a></td>
+<td>Move some people (by state and group) to other levels; returns where they are now</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.relocated">relocated</a></td>
+<td>Move the chosen up one level of some dimensions (the last kept); returns them, as a fraction of where they now are</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.respell">respell</a></td>
+<td>For routine delivery that records who has been offered it: the share of the people in each state and group who start a new</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.same_people">same_people</a></td>
+<td>A selection made from the people in each state and group as they were (<code>before</code>), as a fraction of them as they are now that some have moved</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.shift">shift</a></td>
+<td>Move the selected people to other levels of some dimensions, in every declared disease (<code>mover</code> is the event they are, if known: see <code>carry_events()</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.shifts">shifts</a></td>
+<td>The delivery as the kernels take it (see <code>ss.kernels.Shifts</code>): the steps it happens on; the share of the people in each state and group</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.store_shifts">store_shifts</a></td>
+<td>The results of a whole run, from the number reached and eligible in each group at each time point</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.tabulated">tabulated</a></td>
+<td>Whether the kernels can take the delivery in a whole run: see <a href="../api/interventions.html#starsim.interventions.Delivery.tabulated" title="0"><code>ss.Delivery.tabulated</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.take">take</a></td>
+<td>Choose <code>n</code> people from the candidates: whole cells in the order of the priority (<code>key</code>) and how long they have waited, and pro rata within a tie (see <a href="../api/interventions.html#starsim.interventions.Delivery.take" title="0"><code>ss.Delivery.take()</code></a>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.tally">tally</a></td>
+<td>Add the people selected to a result, in total and by group; returns the total</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.CompartmentalDelivery.test">test</a></td>
+<td>The results of a test, every one now (a delay is agents only): the share of those tested with each, from the probability of each result or a more severe one (<code>tails</code>)</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.arrived" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.arrived">arrived</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.arrived(dst, total)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The people who have just moved into a state (a number per group), as a share of those in it</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.carry_events" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.carry_events">carry_events</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.carry_events(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    frac,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    before,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    mover<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    target<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    dst<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Carry the events of this step (see <a href="../api/interventions.html#starsim.interventions.Delivery.fire" title="0"><code>ss.Delivery.fire()</code></a>) along a move the delivery has just made, between groups (to <code>target</code>) or into a state (<code>dst</code>), so that the steps that read them later in the step find their people where they now are. Of the people of an event, those moved are: all the movers, if the movers are within the event (e.g.&nbsp;a step it triggered, <code>mover</code>); none, if they are disjoint from it; and otherwise the same share as of everyone in their state and group.</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.cure" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.cure">cure</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.cure(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the people treated along the transitions of the treatment; returns those treated as they now are, in parts (see <a href="../api/interventions.html#starsim.interventions.Delivery.cure" title="0"><code>ss.Delivery.cure()</code></a>)</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.cure_crossed">cure_crossed</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.cure_crossed(chosen, diseases)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The treatment of several diseases: the people chosen in each compartment and group are moved as a population of their own (with <code>force()</code>), so the share forced is chosen × probability in each, and the rest of them have failed. Diseases tracked jointly (see <code>ss.solvers.Crossing</code>) pass the same people on, by way of the joint array, so each sees those the others treated. Its outcomes are events as shares of this disease’s states and groups; someone cured of one disease and failed for another counts in both, and anyone in both outcomes for two diseases counts twice (clipped at all)</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.cure_groups" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.cure_groups">cure_groups</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.cure_groups(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The treatment of one disease: each move in turn, from those in its sources</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.delivered" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.delivered">delivered</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.delivered(out)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who a deliver= function says receives the product, given as a number of people per group</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.follow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.follow">follow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.follow(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    sel,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    chosen,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    changes,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    mover<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the selected people to other levels of some dimensions; returns those chosen among them, as they now are</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.force_part" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.force_part">force_part</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.force_part(eng, C, edges)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move some of the people of an engine (<code>C</code>, by compartment and group) along transitions, with their probability; returns them after, and of them, the cured (where they are now) and those who failed</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.give" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.give">give</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.give(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Give what is delivered to the people chosen, and record them (and the outcomes) as its events; see <a href="../api/interventions.html#starsim.interventions.Delivery.give" title="0"><code>ss.Delivery.give()</code></a></p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.hold" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.hold">hold</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.hold(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Those chosen now hold the product: at level 1, or with doses (<code>doses=</code>), the next dose; returns them, as they now are</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.many_shifts" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.many_shifts">many_shifts</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.many_shifts(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    tally,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    tally_g<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    group_ti<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The results of many runs, as <code>store_shifts()</code> but with runs first: each series as runs by time points, and (as <code>out.groups</code>) by group too, if kept</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 12%">
+<col style="width: 70%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>tally</td>
+<td><code>array</code></td>
+<td>runs by time points by 2 by groups (or by one group, the total)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>tally_g</td>
+<td><code>array</code></td>
+<td>the same by group, as runs by rows by 2 by groups, if they are kept apart from the totals</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>group_ti</td>
+<td><code>array</code></td>
+<td>the time point of each row of <code>tally_g</code>, if they are not every time point (see <code>ss.solvers.group_rows()</code>)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.n_selected" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.n_selected">n_selected</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.n_selected(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of people selected</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.plain_move" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.plain_move">plain_move</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.plain_move()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a move between states (<code>move=S &gt;&gt; I</code>) keeps everyone in their group, so the kernels can take it: no strain to arrive with, no record of who was offered it, and states of the same dimensions</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.relocate" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.relocate">relocate</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.relocate(amount, changes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move some people (by state and group) to other levels; returns where they are now</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.relocated" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.relocated">relocated</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.relocated(chosen, bumps)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the chosen up one level of some dimensions (the last kept); returns them, as a fraction of where they now are</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.respell" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.respell">respell</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.respell()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For routine delivery that records who has been offered it: the share of the people in each state and group who start a new spell of being eligible (offered it, and no longer eligible), and the group they go back to (see <a href="../api/interventions.html#starsim.interventions.Delivery.new_spells" title="0"><code>ss.Delivery.new_spells()</code></a>); None for any other. The kernels take it as a delivery of its own that reaches nobody, with everyone eligible going to <code>rest</code>.</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.same_people" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.same_people">same_people</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.same_people(sel, before)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A selection made from the people in each state and group as they were (<code>before</code>), as a fraction of them as they are now that some have moved</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.shift" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.shift">shift</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.shift(sel, changes, mover<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the selected people to other levels of some dimensions, in every declared disease (<code>mover</code> is the event they are, if known: see <code>carry_events()</code>)</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.shifts" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.shifts">shifts</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.shifts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The delivery as the kernels take it (see <code>ss.kernels.Shifts</code>): the steps it happens on; the share of the people in each state and group who are eligible, and of those, who are reached; the group that each group’s people move to if reached, and if not; and for a move between states, the share of those reached who land in each compartment (by compartment and group; otherwise all zero)</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.store_shifts" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.store_shifts">store_shifts</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.store_shifts(tally, start<span class="op">=</span><span class="dv">0</span>, done<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The results of a whole run, from the number reached and eligible in each group at each time point</p>
+<section id="parameters-2" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 72%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>tally</td>
+<td><code>array</code></td>
+<td>time points by 2 by groups</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>start</td>
+<td><code>int</code></td>
+<td>the time point of its first row, for a run stored a part at a time (see <code>ss.solvers.Compartmental.run_parts()</code>)</td>
+<td><code>0</code></td>
+</tr>
+<tr class="odd">
+<td>done</td>
+<td><code>bool</code></td>
+<td>whether this is the last part</td>
+<td><code>True</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.tabulated" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.tabulated">tabulated</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.tabulated()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether the kernels can take the delivery in a whole run: see <a href="../api/interventions.html#starsim.interventions.Delivery.tabulated" title="0"><code>ss.Delivery.tabulated</code></a></p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.take" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.take">take</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.take(cands, n, key<span class="op">=</span><span class="va">None</span>, wait<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Choose <code>n</code> people from the candidates: whole cells in the order of the priority (<code>key</code>) and how long they have waited, and pro rata within a tie (see <a href="../api/interventions.html#starsim.interventions.Delivery.take" title="0"><code>ss.Delivery.take()</code></a>)</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.tally" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.tally">tally</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.tally(key, sel, weight<span class="op">=</span><span class="fl">1.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add the people selected to a result, in total and by group; returns the total</p>
+</section>
+<section id="starsim.solvers.deliveries.CompartmentalDelivery.test" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.solvers.deliveries.CompartmentalDelivery.test">test</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.CompartmentalDelivery.test(chosen, tails)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The results of a test, every one now (a delay is agents only): the share of those tested with each, from the probability of each result or a more severe one (<code>tails</code>)</p>
+</section>
+</section>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.carry_moved">carry_moved</a></td>
+<td>In a compartmental run: carry the events of this step along a move of the people of one of them (by a transition that</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.current_groups">current_groups</a></td>
+<td>In a compartmental run: the people an event happened to on this step (<code>entries</code>, see <a href="../api/products.html#starsim.products.EventSource.fire" title="0"><code>ss.products.EventSource.fire()</code></a>), as a share of each state and group of a module’s selector</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.memory_layout">memory_layout</a></td>
+<td>In a compartmental run: the stratification that keeps whether an event happened (<code>.ever</code>, the only memory with a compartmental form: see <code>ss.solvers.init_capabilities()</code>), or None if nothing reads it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.memory_strats">memory_strats</a></td>
+<td>In a compartmental run: the properties of people that keep whether the events of a delivery, and of its product (by its first delivery), happened, if something reads it</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.remember_levels">remember_levels</a></td>
+<td>In a compartmental run: move the people an event happened to (a share of the people in each state and group of <code>eng</code> as they were in <code>before</code>) to the level of its memory that says it happened</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.solvers.deliveries.trigger_groups">trigger_groups</a></td>
+<td>In a compartmental run: the transition <code>tr</code> of <code>mod</code>, triggered by an event of a delivery or product, moves the share of the people it happened to who are in its sources (see <a href="../api/interventions.html#starsim.interventions.trigger_moves" title="0"><code>ss.interventions.trigger_moves()</code></a>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.solvers.deliveries.water_fill">water_fill</a></td>
+<td>Take <code>n</code> people from cells holding <code>amount</code> each: whole cells in the order of their keys (lowest first, the first key before the second), and pro rata within a tie</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.solvers.deliveries.carry_moved" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.carry_moved">carry_moved</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.carry_moved(owner, outcome, eng, before)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: carry the events of this step along a move of the people of one of them (by a transition that event triggered: see <code>trigger_groups()</code>), from the people it took out of each state and group to those it put in, so a step that reads them later in the step finds them where they are now. An event with the same people (e.g.&nbsp;a delivery’s outcome, and its product’s) moves as they did; any other, the same share as of everyone in their state and group</p>
+</section>
+<section id="starsim.solvers.deliveries.current_groups" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.current_groups">current_groups</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.current_groups(owner, outcome, entries, selector)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: the people an event happened to on this step (<code>entries</code>, see <a href="../api/products.html#starsim.products.EventSource.fire" title="0"><code>ss.products.EventSource.fire()</code></a>), as a share of each state and group of a module’s selector</p>
+</section>
+<section id="starsim.solvers.deliveries.memory_layout" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.memory_layout">memory_layout</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.memory_layout(sim, key)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: the stratification that keeps whether an event happened (<code>.ever</code>, the only memory with a compartmental form: see <code>ss.solvers.init_capabilities()</code>), or None if nothing reads it</p>
+</section>
+<section id="starsim.solvers.deliveries.memory_strats" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.memory_strats">memory_strats</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.memory_strats(delivery, sim<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: the properties of people that keep whether the events of a delivery, and of its product (by its first delivery), happened, if something reads it</p>
+</section>
+<section id="starsim.solvers.deliveries.remember_levels" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.remember_levels">remember_levels</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.remember_levels(owner, outcome, sel, before, eng)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: move the people an event happened to (a share of the people in each state and group of <code>eng</code> as they were in <code>before</code>) to the level of its memory that says it happened</p>
+</section>
+<section id="starsim.solvers.deliveries.trigger_groups" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.trigger_groups">trigger_groups</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.trigger_groups(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    owner,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    outcome,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    mod,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    tr,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    event,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    cond,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    sel,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    eng,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    before,</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>In a compartmental run: the transition <code>tr</code> of <code>mod</code>, triggered by an event of a delivery or product, moves the share of the people it happened to who are in its sources (see <a href="../api/interventions.html#starsim.interventions.trigger_moves" title="0"><code>ss.interventions.trigger_moves()</code></a>)</p>
+</section>
+<section id="starsim.solvers.deliveries.water_fill" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.solvers.deliveries.water_fill">water_fill</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>solvers.deliveries.water_fill(amount, n, keys)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Take <code>n</code> people from cells holding <code>amount</code> each: whole cells in the order of their keys (lowest first, the first key before the second), and pro rata within a tie</p>
+<section id="parameters-3" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 17%">
+<col style="width: 60%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>amount</td>
+<td><code>array</code></td>
+<td>the people that can be taken from each cell</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>n</td>
+<td><code>float</code></td>
+<td>the number to take</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>keys</td>
+<td><code>list</code></td>
+<td>arrays of the same shape as <code>amount</code> (or that broadcast to it)</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/solvers.crossing.html" class="pagination-link" aria-label="solvers.crossing">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">solvers.crossing</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/solvers.engine.html" class="pagination-link" aria-label="solvers.engine">
+        <span class="nav-page-text">solvers.engine</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

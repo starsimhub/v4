@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>internals.time – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/internals.dates.html" rel="next">
+<link href="../api/internals.arrays.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Utilities</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.time.html">internals.time</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.internals.time" id="toc-starsim.internals.time" class="nav-link active" data-scroll-target="#starsim.internals.time">internals.time</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.internals.time.DateConverter" id="toc-starsim.internals.time.DateConverter" class="nav-link" data-scroll-target="#starsim.internals.time.DateConverter">DateConverter</a>
+  <ul class="collapse">
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.DateConverter.axisinfo" id="toc-starsim.internals.time.DateConverter.axisinfo" class="nav-link" data-scroll-target="#starsim.internals.time.DateConverter.axisinfo">axisinfo</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.FloatYearFormatter" id="toc-starsim.internals.time.FloatYearFormatter" class="nav-link" data-scroll-target="#starsim.internals.time.FloatYearFormatter">FloatYearFormatter</a></li>
+  <li><a href="#starsim.internals.time.FloatYearLocator" id="toc-starsim.internals.time.FloatYearLocator" class="nav-link" data-scroll-target="#starsim.internals.time.FloatYearLocator">FloatYearLocator</a></li>
+  <li><a href="#starsim.internals.time.MockAxis" id="toc-starsim.internals.time.MockAxis" class="nav-link" data-scroll-target="#starsim.internals.time.MockAxis">MockAxis</a>
+  <ul class="collapse">
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.MockAxis.get_view_interval" id="toc-starsim.internals.time.MockAxis.get_view_interval" class="nav-link" data-scroll-target="#starsim.internals.time.MockAxis.get_view_interval">get_view_interval</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.Rate" id="toc-starsim.internals.time.Rate" class="nav-link" data-scroll-target="#starsim.internals.time.Rate">Rate</a>
+  <ul class="collapse">
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods-2" id="toc-methods-2" class="nav-link" data-scroll-target="#methods-2">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.Rate.to" id="toc-starsim.internals.time.Rate.to" class="nav-link" data-scroll-target="#starsim.internals.time.Rate.to">to</a></li>
+  <li><a href="#starsim.internals.time.Rate.to_dt" id="toc-starsim.internals.time.Rate.to_dt" class="nav-link" data-scroll-target="#starsim.internals.time.Rate.to_dt">to_dt</a></li>
+  <li><a href="#starsim.internals.time.Rate.to_events" id="toc-starsim.internals.time.Rate.to_events" class="nav-link" data-scroll-target="#starsim.internals.time.Rate.to_events">to_events</a></li>
+  <li><a href="#starsim.internals.time.Rate.to_prob" id="toc-starsim.internals.time.Rate.to_prob" class="nav-link" data-scroll-target="#starsim.internals.time.Rate.to_prob">to_prob</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.TimePar" id="toc-starsim.internals.time.TimePar" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar">TimePar</a>
+  <ul class="collapse">
+  <li><a href="#methods-3" id="toc-methods-3" class="nav-link" data-scroll-target="#methods-3">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.TimePar.replace" id="toc-starsim.internals.time.TimePar.replace" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.replace">replace</a></li>
+  <li><a href="#starsim.internals.time.TimePar.set_default_dur" id="toc-starsim.internals.time.TimePar.set_default_dur" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.set_default_dur">set_default_dur</a></li>
+  <li><a href="#starsim.internals.time.TimePar.to" id="toc-starsim.internals.time.TimePar.to" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.to">to</a></li>
+  <li><a href="#starsim.internals.time.TimePar.to_array" id="toc-starsim.internals.time.TimePar.to_array" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.to_array">to_array</a></li>
+  <li><a href="#starsim.internals.time.TimePar.to_base" id="toc-starsim.internals.time.TimePar.to_base" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.to_base">to_base</a></li>
+  <li><a href="#starsim.internals.time.TimePar.to_dt" id="toc-starsim.internals.time.TimePar.to_dt" class="nav-link" data-scroll-target="#starsim.internals.time.TimePar.to_dt">to_dt</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.days" id="toc-starsim.internals.time.days" class="nav-link" data-scroll-target="#starsim.internals.time.days">days</a></li>
+  <li><a href="#starsim.internals.time.dimless" id="toc-starsim.internals.time.dimless" class="nav-link" data-scroll-target="#starsim.internals.time.dimless">dimless</a></li>
+  <li><a href="#starsim.internals.time.dur" id="toc-starsim.internals.time.dur" class="nav-link" data-scroll-target="#starsim.internals.time.dur">dur</a>
+  <ul class="collapse">
+  <li><a href="#methods-4" id="toc-methods-4" class="nav-link" data-scroll-target="#methods-4">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.dur.arange" id="toc-starsim.internals.time.dur.arange" class="nav-link" data-scroll-target="#starsim.internals.time.dur.arange">arange</a></li>
+  <li><a href="#starsim.internals.time.dur.to_dt" id="toc-starsim.internals.time.dur.to_dt" class="nav-link" data-scroll-target="#starsim.internals.time.dur.to_dt">to_dt</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.freq" id="toc-starsim.internals.time.freq" class="nav-link" data-scroll-target="#starsim.internals.time.freq">freq</a></li>
+  <li><a href="#starsim.internals.time.freqperday" id="toc-starsim.internals.time.freqperday" class="nav-link" data-scroll-target="#starsim.internals.time.freqperday">freqperday</a></li>
+  <li><a href="#starsim.internals.time.freqpermonth" id="toc-starsim.internals.time.freqpermonth" class="nav-link" data-scroll-target="#starsim.internals.time.freqpermonth">freqpermonth</a></li>
+  <li><a href="#starsim.internals.time.freqperweek" id="toc-starsim.internals.time.freqperweek" class="nav-link" data-scroll-target="#starsim.internals.time.freqperweek">freqperweek</a></li>
+  <li><a href="#starsim.internals.time.freqperyear" id="toc-starsim.internals.time.freqperyear" class="nav-link" data-scroll-target="#starsim.internals.time.freqperyear">freqperyear</a></li>
+  <li><a href="#starsim.internals.time.months" id="toc-starsim.internals.time.months" class="nav-link" data-scroll-target="#starsim.internals.time.months">months</a></li>
+  <li><a href="#starsim.internals.time.per" id="toc-starsim.internals.time.per" class="nav-link" data-scroll-target="#starsim.internals.time.per">per</a></li>
+  <li><a href="#starsim.internals.time.peract" id="toc-starsim.internals.time.peract" class="nav-link" data-scroll-target="#starsim.internals.time.peract">peract</a>
+  <ul class="collapse">
+  <li><a href="#parameters-11" id="toc-parameters-11" class="nav-link" data-scroll-target="#parameters-11">Parameters</a></li>
+  <li><a href="#examples-1" id="toc-examples-1" class="nav-link" data-scroll-target="#examples-1">Examples</a></li>
+  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1">Attributes</a></li>
+  <li><a href="#methods-5" id="toc-methods-5" class="nav-link" data-scroll-target="#methods-5">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.time.peract.check" id="toc-starsim.internals.time.peract.check" class="nav-link" data-scroll-target="#starsim.internals.time.peract.check">check</a></li>
+  <li><a href="#starsim.internals.time.peract.resolve" id="toc-starsim.internals.time.peract.resolve" class="nav-link" data-scroll-target="#starsim.internals.time.peract.resolve">resolve</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.perday" id="toc-starsim.internals.time.perday" class="nav-link" data-scroll-target="#starsim.internals.time.perday">perday</a></li>
+  <li><a href="#starsim.internals.time.permonth" id="toc-starsim.internals.time.permonth" class="nav-link" data-scroll-target="#starsim.internals.time.permonth">permonth</a></li>
+  <li><a href="#starsim.internals.time.perweek" id="toc-starsim.internals.time.perweek" class="nav-link" data-scroll-target="#starsim.internals.time.perweek">perweek</a></li>
+  <li><a href="#starsim.internals.time.peryear" id="toc-starsim.internals.time.peryear" class="nav-link" data-scroll-target="#starsim.internals.time.peryear">peryear</a></li>
+  <li><a href="#starsim.internals.time.prob" id="toc-starsim.internals.time.prob" class="nav-link" data-scroll-target="#starsim.internals.time.prob">prob</a></li>
+  <li><a href="#starsim.internals.time.probperday" id="toc-starsim.internals.time.probperday" class="nav-link" data-scroll-target="#starsim.internals.time.probperday">probperday</a></li>
+  <li><a href="#starsim.internals.time.probpermonth" id="toc-starsim.internals.time.probpermonth" class="nav-link" data-scroll-target="#starsim.internals.time.probpermonth">probpermonth</a></li>
+  <li><a href="#starsim.internals.time.probperweek" id="toc-starsim.internals.time.probperweek" class="nav-link" data-scroll-target="#starsim.internals.time.probperweek">probperweek</a></li>
+  <li><a href="#starsim.internals.time.probperyear" id="toc-starsim.internals.time.probperyear" class="nav-link" data-scroll-target="#starsim.internals.time.probperyear">probperyear</a></li>
+  <li><a href="#starsim.internals.time.weeks" id="toc-starsim.internals.time.weeks" class="nav-link" data-scroll-target="#starsim.internals.time.weeks">weeks</a></li>
+  <li><a href="#starsim.internals.time.years" id="toc-starsim.internals.time.years" class="nav-link" data-scroll-target="#starsim.internals.time.years">years</a></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.internals.time.assume_cal_year" id="toc-starsim.internals.time.assume_cal_year" class="nav-link" data-scroll-target="#starsim.internals.time.assume_cal_year">assume_cal_year</a>
+  <ul class="collapse">
+  <li><a href="#parameters-13" id="toc-parameters-13" class="nav-link" data-scroll-target="#parameters-13">Parameters</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.get_dur_class" id="toc-starsim.internals.time.get_dur_class" class="nav-link" data-scroll-target="#starsim.internals.time.get_dur_class">get_dur_class</a>
+  <ul class="collapse">
+  <li><a href="#parameters-14" id="toc-parameters-14" class="nav-link" data-scroll-target="#parameters-14">Parameters</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.get_rate_class" id="toc-starsim.internals.time.get_rate_class" class="nav-link" data-scroll-target="#starsim.internals.time.get_rate_class">get_rate_class</a>
+  <ul class="collapse">
+  <li><a href="#parameters-15" id="toc-parameters-15" class="nav-link" data-scroll-target="#parameters-15">Parameters</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.get_unit_class" id="toc-starsim.internals.time.get_unit_class" class="nav-link" data-scroll-target="#starsim.internals.time.get_unit_class">get_unit_class</a>
+  <ul class="collapse">
+  <li><a href="#parameters-16" id="toc-parameters-16" class="nav-link" data-scroll-target="#parameters-16">Parameters</a></li>
+  </ul></li>
+  <li><a href="#starsim.internals.time.incompatible" id="toc-starsim.internals.time.incompatible" class="nav-link" data-scroll-target="#starsim.internals.time.incompatible">incompatible</a></li>
+  <li><a href="#starsim.internals.time.is_number" id="toc-starsim.internals.time.is_number" class="nav-link" data-scroll-target="#starsim.internals.time.is_number">is_number</a></li>
+  <li><a href="#starsim.internals.time.normalize_unit" id="toc-starsim.internals.time.normalize_unit" class="nav-link" data-scroll-target="#starsim.internals.time.normalize_unit">normalize_unit</a></li>
+  <li><a href="#starsim.internals.time.type_str" id="toc-starsim.internals.time.type_str" class="nav-link" data-scroll-target="#starsim.internals.time.type_str">type_str</a></li>
+  <li><a href="#starsim.internals.time.wrong_dimension" id="toc-starsim.internals.time.wrong_dimension" class="nav-link" data-scroll-target="#starsim.internals.time.wrong_dimension">wrong_dimension</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Utilities</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.time.html">internals.time</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.internals.time" class="level1">
+<h1>internals.time</h1>
+<p><a href="../api/internals.time.html#starsim.internals.time" title="0"><code>internals.time</code></a></p>
+<p>Durations and rates, each with its unit (<code>ss.days</code>, <code>ss.peryear</code>, <code>ss.probperyear</code>, …), and plotting dates and durations with Matplotlib</p>
+<p>Units are kept with the values so that a module, whatever its timestep, reads a parameter correctly, and mistakes such as adding a rate to a duration raise an error.</p>
+<p>Hierarchy of TimePars:</p>
+<pre><code>TimePar  # All time parameters
+├── dur  # All durations, units of *time*
+│   ├── days  # Duration with units of days
+│   ├── weeks
+│   ├── months
+│   ├── years
+│   └── datedur  # Calendar durations (in dates.py, with ss.date and ss.DateArray)
+└── Rate  # All rates, units of *per* (e.g. per time or per event)
+    ├── per  # Probability rates over time (e.g., death rate per year)
+    │   ├── perday
+    │   ├── perweek
+    │   ├── permonth
+    │   └── peryear
+    ├── prob  # Unitless probability (e.g., probability of death per infection)
+    │   ├── probperday
+    │   ├── probperweek
+    │   ├── probpermonth
+    │   └── probperyear
+    └── freq  # Number of events (e.g., number of acts per year)
+        ├── freqperday
+        ├── freqperweek
+        ├── freqpermonth
+        └── freqperyear</code></pre>
+<p>Used with: agents and compartments; declared and coded modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.DateConverter">DateConverter</a></td>
+<td>Starsim date conversion interface for matplotlib</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.FloatYearFormatter">FloatYearFormatter</a></td>
+<td>Formatter that renders float years as calendar dates</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.FloatYearLocator">FloatYearLocator</a></td>
+<td>Locator to calculate tick positions for float year axes</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.MockAxis">MockAxis</a></td>
+<td>Emulator for Axis.get_view_internal() to return converted values</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.Rate">Rate</a></td>
+<td>Store a value per unit time e.g., 2 per day</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.TimePar">TimePar</a></td>
+<td>Parent class for all TimePars – dur, Rate, etc.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.days">days</a></td>
+<td>A duration in days, e.g.&nbsp;<code>ss.days(6)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.dimless">dimless</a></td>
+<td>A plain number that came from multiplying a rate by a duration, e.g.&nbsp;<code>ss.peryear(0.1) * ss.days(3)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.dur">dur</a></td>
+<td>Base class for durations</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.freq">freq</a></td>
+<td>Class for the number of events (rather than probability) in a specified period</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.freqperday">freqperday</a></td>
+<td>A number of events per day, e.g.&nbsp;<code>ss.freqperday(2)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.freqpermonth">freqpermonth</a></td>
+<td>A number of events per month, e.g.&nbsp;<code>ss.freqpermonth(2)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.freqperweek">freqperweek</a></td>
+<td>A number of events per week, e.g.&nbsp;<code>ss.freqperweek(2)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.freqperyear">freqperyear</a></td>
+<td>A number of events per year, e.g.&nbsp;<code>ss.freqperyear(2)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.months">months</a></td>
+<td>A duration in months, e.g.&nbsp;<code>ss.months(6)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.per">per</a></td>
+<td>A <code>per</code> represents an instantaneous rate of an event occurring. Rates</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.peract">peract</a></td>
+<td>A probability per act, for a transmission over a network that defines acts (e.g.&nbsp;<a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.perday">perday</a></td>
+<td>An instantaneous rate per day, e.g.&nbsp;<code>ss.perday(0.1)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.permonth">permonth</a></td>
+<td>An instantaneous rate per month, e.g.&nbsp;<code>ss.permonth(0.1)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.perweek">perweek</a></td>
+<td>An instantaneous rate per week, e.g.&nbsp;<code>ss.perweek(0.1)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.peryear">peryear</a></td>
+<td>An instantaneous rate per year, e.g.&nbsp;<code>ss.peryear(0.1)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.prob">prob</a></td>
+<td><code>prob</code> represents the probability of an event occurring during a</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.probperday">probperday</a></td>
+<td>A probability per day, e.g.&nbsp;<code>ss.probperday(0.1)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.probpermonth">probpermonth</a></td>
+<td>A probability per month, e.g.&nbsp;<code>ss.probpermonth(0.1)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.probperweek">probperweek</a></td>
+<td>A probability per week, e.g.&nbsp;<code>ss.probperweek(0.1)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.probperyear">probperyear</a></td>
+<td>A probability per year, e.g.&nbsp;<code>ss.probperyear(0.1)</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.weeks">weeks</a></td>
+<td>A duration in weeks, e.g.&nbsp;<code>ss.weeks(6)</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.years">years</a></td>
+<td>A duration in years, e.g.&nbsp;<code>ss.years(5)</code>; the default unit, which also reads a date as a decimal year</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.DateConverter" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.DateConverter">DateConverter</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>internals.time.DateConverter()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Starsim date conversion interface for matplotlib</p>
+<p>It exists so that Matplotlib can plot <code>ss.date</code> and <code>ss.dur</code> values directly.</p>
+<p>This class gets registered with matplotlib as the converter for Starsim date and DateArray types, allowing them to be used directly as axis values. This achieves two outcomes</p>
+<ol type="1">
+<li>When Starsim date or DateArray values are plotted, the x-axis values are automatically converted to float years for plotting. If this class is not used, matplotlib will instead convert them to days since 1970-01-01, which is the default behavior for pd.Timestamp.</li>
+<li>If the first plotting command used on an axis has date/DateArray as the x-axis, our standard custom date locators and formatters will be used, so that the float years will automatically be labeled with dates.</li>
+</ol>
+<p>Together, this means that users can freely plot both Starsim date/DateArray values and plain float years on the same axis without needing any conversions, and they’ll also automatically get date-based ticks without needing to set the locator, even if they are using custom plotting code rather than ss.Result.plot().</p>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.DateConverter.axisinfo">axisinfo</a></td>
+<td>Specify which locators and formatters should be used if an instance of a registered class is the first one plotted</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.DateConverter.axisinfo" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.DateConverter.axisinfo">axisinfo</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>internals.time.DateConverter.axisinfo(unit, axis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Specify which locators and formatters should be used if an instance of a registered class is the first one plotted</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.FloatYearFormatter" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.FloatYearFormatter">FloatYearFormatter</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>internals.time.FloatYearFormatter()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Formatter that renders float years as calendar dates</p>
+<p>It exists so that a plot against decimal years shows dates on its axis.</p>
+<p>This class provides the same formatting as sc.ScirisDateFormatter, but works with axis values that are float years, rather than matplotlib date values (days since 1970-01-01)</p>
+</section>
+<section id="starsim.internals.time.FloatYearLocator" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.FloatYearLocator">FloatYearLocator</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>internals.time.FloatYearLocator(unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Locator to calculate tick positions for float year axes</p>
+<p>It exists so that a plot against decimal years gets tick marks at sensible dates.</p>
+<p>Matplotlib’s AutoDateLocator is the standard way to calculating date-based tick positions, incorporating a lot of functionality around sensibly setting the tick intervals e.g., to whole months. This class wraps AutoDateLocator to allow it to be used with float year axis values, by converting the float year values to matplotlib date values before calling the locator, and then converting the calculated tick positions back to float years before returning them.</p>
+</section>
+<section id="starsim.internals.time.MockAxis" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.MockAxis">MockAxis</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>internals.time.MockAxis(axis)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Emulator for Axis.get_view_internal() to return converted values</p>
+<p>Matplotlib’s date locators (AutoDateLocator, YearLocator, MonthLocator etc.) call Axis.get_view_internal() to get the current axis limits. These locators all expect the values to be returned in matplotlib dates (i.e., days since 1970-01-01). This helper class is bound to the actual axis, and emulates <code>Axis.get_view_interval()</code> performing the conversion to return the values in the expected units. That way, the Locator instances can be used directly without needing any other changes.</p>
+<p>When this class is instantiated, it is bound to an actual Axis instance. The axis instance would have our custom date units and values in floating point years. Then <code>MockAxis.get_view_interval()</code> converts these years to standard matplotlib date values before they get passed to the Matplotlib locators.</p>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.MockAxis.get_view_interval">get_view_interval</a></td>
+<td>Return converted axis limits</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.MockAxis.get_view_interval" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.MockAxis.get_view_interval">get_view_interval</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>internals.time.MockAxis.get_view_interval()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return converted axis limits</p>
+<p>:return: Tuple with (min, max) axis limits in matplotlib date units (days since 1970-01-01)</p>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.Rate" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.Rate">Rate</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>internals.time.Rate(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Store a value per unit time e.g., 2 per day - self.value - the numerator (e.g., 2) - a scalar float - self.unit - the denominator (e.g., 1 day) - a dur object</p>
+<p>It exists so that a rate converts correctly to a different unit or timestep.</p>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.Rate.rate">rate</a></td>
+<td>The instantaneous rate; an alias to <code>self.value</code>, except for <code>ss.prob</code>, where it is <code>-log(1-value)</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.Rate.to">to</a></td>
+<td>Convert this rate to one with a different denominator</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.Rate.to_dt">to_dt</a></td>
+<td>Convert this rate to its per-timestep value; see <code>TimePar.to_dt()</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.Rate.to_events">to_events</a></td>
+<td>Simple multiplication: calculate the number of events over the time period</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.Rate.to_prob">to_prob</a></td>
+<td>Convert from one time probability to another</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.Rate.to" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.Rate.to">to</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>internals.time.Rate.to(unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert this rate to one with a different denominator</p>
+<p>As well as the rate classes (e.g.&nbsp;<code>ss.permonth</code>), a duration unit can be supplied (e.g.&nbsp;<code>'month'</code> or <code>ss.months</code>), in which case the matching rate class of the same subtype is used – so <code>ss.peryear(1).to('month')</code> gives <code>permonth(0.0833)</code>, while <code>ss.probperyear(1).to('month')</code> gives <code>probpermonth(...)</code>.</p>
+<p>Note that for <code>ss.prob</code> the conversion is not linear, since a probability has to be converted via the underlying rate: <code>ss.probperyear(0.5).to(ss.probpermonth)</code> gives <code>probpermonth(0.0561)</code>, not <code>probpermonth(0.0417)</code>. This matches <code>prob.to_prob()</code>.</p>
+<section id="parameters" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 23%">
+<col style="width: 58%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>unit</td>
+<td><code>str</code> / <code>type</code></td>
+<td>the rate class or duration unit to convert to, e.g.&nbsp;<code>ss.permonth</code> or ‘month’</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.Rate.to_dt" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.Rate.to_dt">to_dt</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>internals.time.Rate.to_dt(dt<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert this rate to its per-timestep value; see <code>TimePar.to_dt()</code></p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 14%">
+<col style="width: 55%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dt</td>
+<td><code>ss.dur</code></td>
+<td>the timestep; if None, the module’s <code>dt</code></td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.Rate.to_events" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.Rate.to_events">to_events</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>internals.time.Rate.to_events(dur<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Simple multiplication: calculate the number of events over the time period</p>
+<section id="parameters-2" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 52%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dur</td>
+<td><code>ss.dur</code>/float</td>
+<td>the period; if None, the default duration</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.Rate.to_prob" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.Rate.to_prob">to_prob</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>internals.time.Rate.to_prob(dur<span class="op">=</span><span class="va">None</span>, scale<span class="op">=</span><span class="fl">1.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert from one time probability to another</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 14%">
+<col style="width: 67%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dur</td>
+<td><code>ss.dur</code></td>
+<td>the duration over which to convert the probability to</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>scale</td>
+<td><code>float</code></td>
+<td>an optional additional mutliplicative scale factor to incorporate in the calculation</td>
+<td><code>1.0</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level6 doc-section doc-section-examples">
+<h6 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h6>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p_month <span class="op">=</span> ss.probpermonth(<span class="fl">0.05</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>p_year <span class="op">=</span> p_month.to_prob(ss.year) <span class="co"># Slightly less than 0.05*12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.TimePar" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.TimePar">TimePar</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Parent class for all TimePars – dur, Rate, etc.</p>
+<p>It holds what durations and rates share: a value, a unit, conversion, and arithmetic.</p>
+<section id="methods-3" class="level4">
+<h4 class="anchored" data-anchor-id="methods-3">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.TimePar.replace">replace</a></td>
+<td>Return a copy of this TimePar with a different value</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.TimePar.set_default_dur">set_default_dur</a></td>
+<td>Set the default duration, e.g.&nbsp;<code>module.dt</code>, so <code>.to_dt()</code> and <code>.to_prob()</code> can be used with no input</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.TimePar.to">to</a></td>
+<td>Convert this TimePar to one of a different class</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.TimePar.to_array">to_array</a></td>
+<td>Force conversion to an array</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.TimePar.to_base">to_base</a></td>
+<td>Class method to convert another TimePar object to this TimePar’s base units; in most cases</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.TimePar.to_dt">to_dt</a></td>
+<td>Resolve this timepar against the timestep, returning a plain number of timesteps</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.TimePar.replace" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.replace">replace</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.replace(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return a copy of this TimePar with a different value</p>
+<p>Copying rather than constructing a new object preserves the base as well as the class, so <code>ss.perweek(0.1).replace(0.2)</code> is a rate per week, not per year. Analogous to <code>ss.date.replace()</code>.</p>
+<section id="parameters-4" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 46%">
+<col style="width: 23%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>value</td>
+<td><code>float</code> / <code>array</code></td>
+<td>the value to use</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:</p>
+<pre><code>ss.years(5).replace(6) # Returns ss.years(6)</code></pre>
+</section>
+</section>
+<section id="starsim.internals.time.TimePar.set_default_dur" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.set_default_dur">set_default_dur</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.set_default_dur(dur)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Set the default duration, e.g.&nbsp;<code>module.dt</code>, so <code>.to_dt()</code> and <code>.to_prob()</code> can be used with no input</p>
+<section id="parameters-5" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dur</td>
+<td><code>ss.dur</code></td>
+<td>the default duration</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.TimePar.to" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.to">to</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.to(unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert this TimePar to one of a different class</p>
+<section id="parameters-6" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 29%">
+<col style="width: 48%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>unit</td>
+<td><code>str</code> / <code>type</code></td>
+<td>the unit to convert to, e.g.&nbsp;‘year’ or <code>ss.years</code></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.TimePar.to_array" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.to_array">to_array</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.to_array(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Force conversion to an array</p>
+</section>
+<section id="starsim.internals.time.TimePar.to_base" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.to_base">to_base</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.to_base(other)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Class method to convert another TimePar object to this TimePar’s base units; in most cases</p>
+<section id="parameters-7" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 31%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>other</td>
+<td><code>ss.TimePar</code></td>
+<td>the value to convert</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.TimePar.to_dt" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.TimePar.to_dt">to_dt</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>internals.time.TimePar.to_dt(dt<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resolve this timepar against the timestep, returning a plain number of timesteps (for a duration) or the per-timestep value (for a rate)</p>
+<p>This is the conversion that must happen before a timepar can be used in timestep arithmetic, e.g.&nbsp;when scheduling a future event in a state array. Without it, the unit is silently discarded and the value is interpreted as a number of timesteps regardless of its units.</p>
+<section id="parameters-8" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 75%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dt</td>
+<td><code>ss.dur</code></td>
+<td>the timestep to resolve against; if not supplied, use the module’s <code>dt</code> (set during initialization)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples</strong>:</p>
+<pre><code>```python
+# Inside a module with dt = ss.months(1)
+self.ti_clearance[uids] = self.ti_infected[uids] + self.pars.dur_persist.to_dt() # ✓ Right
+self.ti_clearance[uids] = self.ti_infected[uids] + self.pars.dur_persist # × WRONG -- discards the unit
+
+# Standalone, with an explicit timestep
+ss.years(100).to_dt(ss.months(1)) # 1200.0
+ss.peryear(0.1).to_dt(ss.months(1)) # 0.00830...  (a per-timestep probability)
+```</code></pre>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.days" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.days">days</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>internals.time.days(value<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A duration in days, e.g.&nbsp;<code>ss.days(6)</code></p>
+</section>
+<section id="starsim.internals.time.dimless" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.dimless">dimless</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>internals.time.dimless()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A plain number that came from multiplying a rate by a duration, e.g.&nbsp;<code>ss.peryear(0.1) * ss.days(3)</code></p>
+<p>It behaves exactly as a NumPy float (and any arithmetic on it gives one), but remembers the two values it came from, so that a <code>rate=</code> or <code>dur=</code> slot can refuse it with a <code>TypeError</code> rather than taking it as a rate or a duration.</p>
+</section>
+<section id="starsim.internals.time.dur" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.dur">dur</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>internals.time.dur(value<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Base class for durations</p>
+<p>Note: this class should not be used by the user directly; instead, use ss.years(), ss.days(), etc. These classes can be interconverted using <code>.to()</code>, e.g.&nbsp;<code>ss.years(3).to('days')</code>.</p>
+<section id="methods-4" class="level4">
+<h4 class="anchored" data-anchor-id="methods-4">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.dur.arange">arange</a></td>
+<td>Construct an array of dur instances</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.dur.to_dt">to_dt</a></td>
+<td>Convert this duration to a number of timesteps; see <code>TimePar.to_dt()</code></td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.dur.arange" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.dur.arange">arange</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>internals.time.dur.arange(start, stop, step<span class="op">=</span><span class="fl">1.0</span>, inclusive<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Construct an array of dur instances</p>
+<section id="parameters-9" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 49%">
+<col style="width: 30%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>start</td>
+<td><code>float</code> / <code>ss</code>.<code>dur</code></td>
+<td>Starting point, e.g., ss.years(0)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>stop</td>
+<td><code>float</code> / <code>ss</code>.<code>dur</code></td>
+<td>Ending point, e.g.&nbsp;ss.years(20)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>step</td>
+<td><code>float</code> / <code>ss</code>.<code>dur</code></td>
+<td>Step size, e.g.&nbsp;ss.years(2)</td>
+<td><code>1.0</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.dur.to_dt" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.dur.to_dt">to_dt</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>internals.time.dur.to_dt(dt<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert this duration to a number of timesteps; see <code>TimePar.to_dt()</code></p>
+<section id="parameters-10" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 14%">
+<col style="width: 55%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dt</td>
+<td><code>ss.dur</code></td>
+<td>the timestep; if None, the module’s <code>dt</code></td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.freq" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.freq">freq</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>internals.time.freq(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Class for the number of events (rather than probability) in a specified period</p>
+<p>Identical to <code>ss.per</code>, except by default multiplication returns a number of events rather than a probability. Use <code>ss.freq</code> for events (e.g., number of acts per year) and <code>ss.per</code> for probabilities (e.g., probability of death per year).</p>
+</section>
+<section id="starsim.internals.time.freqperday" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.freqperday">freqperday</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>internals.time.freqperday(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A number of events per day, e.g.&nbsp;<code>ss.freqperday(2)</code></p>
+</section>
+<section id="starsim.internals.time.freqpermonth" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.freqpermonth">freqpermonth</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>internals.time.freqpermonth(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A number of events per month, e.g.&nbsp;<code>ss.freqpermonth(2)</code></p>
+</section>
+<section id="starsim.internals.time.freqperweek" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.freqperweek">freqperweek</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>internals.time.freqperweek(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A number of events per week, e.g.&nbsp;<code>ss.freqperweek(2)</code></p>
+</section>
+<section id="starsim.internals.time.freqperyear" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.freqperyear">freqperyear</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>internals.time.freqperyear(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A number of events per year, e.g.&nbsp;<code>ss.freqperyear(2)</code></p>
+</section>
+<section id="starsim.internals.time.months" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.months">months</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>internals.time.months(value<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A duration in months, e.g.&nbsp;<code>ss.months(6)</code></p>
+</section>
+<section id="starsim.internals.time.per" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.per">per</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>internals.time.per(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A <code>per</code> represents an instantaneous rate of an event occurring. Rates must be non-negative, but need not be less than 1.</p>
+<p>Through multiplication, rate can be modified or converted to a probability, depending on the data type of the object being multiplied.</p>
+<p>When a <code>per</code> is multiplied by a scalar or array, the rate is simply scaled. Such multiplication occurs frequently in epidemiological models, where the base rate is multiplied by “rate ratio” or “relative rate” to represent agents experiencing higher (multiplier &gt; 1) or lower (multiplier &lt; 1) event rates.</p>
+<p>Alternatively, when a <code>per</code> is multiplied by a duration (type ss.dur), a probability is calculated. The conversion from rate to probability on multiplication by a duration is <code>1 - np.exp(-rate/factor)</code>, where <code>factor</code> is the ratio of the multiplied duration to the original period (denominator).</p>
+<p>For example, consider &gt;&gt;&gt; p = ss.per(0.8, ss.years(1)) When multiplied by a duration of 1 year, the calculated probability is <code>1 - np.exp(-0.8)</code>, which is approximately 55%. &gt;&gt;&gt; p*ss.years(1)</p>
+<p>When multiplied by a scalar, the rate is simply scaled. &gt;&gt;&gt; p*2</p>
+<p>The difference between <code>prob</code> and <code>per</code> is subtle, but important. <code>per</code> works directly with the instantaneous rate of an event occurring. In contrast, <code>prob</code> starts with a probability and a duration, and the underlying rate is calculated. On multiplication by a duration, * per: rate -&gt; probability * prob: probability -&gt; rate -&gt; probability</p>
+<p>The behavior of both classes is depending on the data type of the object being multiplied.</p>
+<p><code>ss.per</code> is identical to <code>ss.freq</code>, except by default multiplication returns a probability rather than a number of events. Use <code>ss.per</code> for probabilities (e.g., probability of death per year), and <code>ss.freq</code> for events (e.g., number of acts per year).</p>
+</section>
+<section id="starsim.internals.time.peract" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.peract">peract</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>internals.time.peract(value<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>directions)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per act, for a transmission over a network that defines acts (e.g.&nbsp;<a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>)</p>
+<p>It is not a time value: it has no unit and no conversion, so it means the same at any timestep. A partnership with <code>a</code> acts per unit time transmits over a step <code>dt</code> with probability <code>1 − (1 − p)^(a·dt)</code>. Modifiers, <code>rel_trans</code>, <code>rel_sus</code>, and source weights multiply the per-act hazard <code>−ln(1 − p)</code>, so <code>beta=0.03</code> with <code>rel_trans=10</code> is <code>1 − 0.97^10 = 0.263</code> per act.</p>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>value</td>
+<td><code>float</code> / <a href="../api/internals.expressions.html#starsim.internals.expressions.par">par</a> / <code>dict</code></td>
+<td>one probability for every direction of the network; or a dict of a value for each direction, keyed as below</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>**directions</td>
+<td></td>
+<td>a value for each direction of the network, named <code>&lt;side&gt;2&lt;side&gt;</code> from the network’s sides (<code>net.directions</code>), e.g.&nbsp;<code>m2f</code> and <code>f2m</code> on <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each value is a number in [0, 1], an <code>ss.par</code>, an expression of them, an <code>ss.timeseries</code>, or an <code>ss.by</code> over a dimension of the susceptible. A direction can also be written as a pair of sides, <code>{('m', 'f'): 0.3}</code>, which is the same as <code>m2f=0.3</code>. Every direction of the network needs a value (unless one is given for all), and a direction it does not have raises; both are checked when the sim is initialized. On a route without acts (<a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a>, mixing pools), it raises a <code>ValueError</code>.</p>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>S, I <span class="op">=</span> ss.states(<span class="dv">2</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>hiv <span class="op">=</span> ss.Disease(infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="bu">dict</span>(sexualnet<span class="op">=</span>ss.peract(m2f<span class="op">=</span><span class="fl">0.001</span>, f2m<span class="op">=</span><span class="fl">0.0005</span>), needles<span class="op">=</span>ss.peract(<span class="fl">0.006</span>))<span class="op">*</span>I)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>syph <span class="op">=</span> ss.Disease(infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.peract({(<span class="st">'m'</span>, <span class="st">'f'</span>): <span class="fl">0.3</span>, (<span class="st">'f'</span>, <span class="st">'m'</span>): <span class="fl">0.15</span>})<span class="op">*</span>I)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes-1" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-1">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.peract.pars">pars</a></td>
+<td>The parameters in its values, so they can be fitted</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.peract.values">values</a></td>
+<td>The values, one or one for each direction</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-5" class="level4">
+<h4 class="anchored" data-anchor-id="methods-5">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.peract.check">check</a></td>
+<td>A probability per act must be in [0, 1]</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.peract.resolve">resolve</a></td>
+<td>The value for each direction of a network, in the order of <code>net.directions</code>; checks the keys against them</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.peract.check" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.peract.check">check</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>internals.time.peract.check(val, where<span class="op">=</span><span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per act must be in [0, 1]</p>
+</section>
+<section id="starsim.internals.time.peract.resolve" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.time.peract.resolve">resolve</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>internals.time.peract.resolve(net)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The value for each direction of a network, in the order of <code>net.directions</code>; checks the keys against them</p>
+<section id="parameters-12" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-12">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>net</td>
+<td><a href="../api/networks.html#starsim.networks.Network" title="0"><code>ss.Network</code></a></td>
+<td>the network</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.internals.time.perday" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.perday">perday</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>internals.time.perday(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An instantaneous rate per day, e.g.&nbsp;<code>ss.perday(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.permonth" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.permonth">permonth</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>internals.time.permonth(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An instantaneous rate per month, e.g.&nbsp;<code>ss.permonth(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.perweek" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.perweek">perweek</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>internals.time.perweek(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An instantaneous rate per week, e.g.&nbsp;<code>ss.perweek(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.peryear" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.peryear">peryear</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>internals.time.peryear(value, unit<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An instantaneous rate per year, e.g.&nbsp;<code>ss.peryear(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.prob" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.prob">prob</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>internals.time.prob(value<span class="op">=</span><span class="va">None</span>, unit<span class="op">=</span><span class="va">None</span>, rate<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>prob</code> represents the probability of an event occurring during a specified period of time.</p>
+<p>The class is designed to allow conversion of a probability from one duration to another through multiplication. However, the behavior of this conversion depends on the data type of the the object being multiplied.</p>
+<p>When multiplied by a duration (type ss.dur), the underlying constant rate is calculated as <code>rate = -np.log(1 - self.value)</code>. Then, the probability over the new duration is <code>p = 1 - np.exp(-rate/factor)</code>, where <code>factor</code> is the ratio of the new duration to the original duration.</p>
+<p>For example, &gt;&gt;&gt; p = ss.prob(0.8, ss.years(1)) indicates a 80% chance of an event occurring in one year.</p>
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<p>p*ss.years(1) When multiplied by the original denominator, 1 year in this case, the probability remains unchanged, 80%.</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<p>p * ss.years(2) Multiplying <code>p</code> by <code>ss.years(2)</code> does not simply double the probability to 160% (which is not possible), but rather returns a new probability of 96% representing the chance of the event occurring at least once over the new duration of two years.</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>When a <code>prob</code> object is multiplied by a number, the underlying rate is scaled, not the probability, so the result is always a valid probability: &gt;&gt;&gt; p * 2 is <code>ss.prob(0.96, ss.years(1))</code>, the same as <code>p + p</code> (two competing hazards), and <code>p * 0.2</code> is 0.275, not 0.16. A probability of 1 is an infinite rate, so it stays 1 whatever it is multiplied by; as the rate of a declared transition, it moves everyone in the step (as agents, those who arrive in the step too; in compartments, the whole compartment at the start of each step or substep).</p>
+<p>Use <code>per</code> instead if <code>prob</code> if you would prefer to directly specify the instantaneous rate.</p>
+</section>
+<section id="starsim.internals.time.probperday" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.probperday">probperday</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>internals.time.probperday(value<span class="op">=</span><span class="va">None</span>, unit<span class="op">=</span><span class="va">None</span>, rate<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per day, e.g.&nbsp;<code>ss.probperday(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.probpermonth" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.probpermonth">probpermonth</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>internals.time.probpermonth(value<span class="op">=</span><span class="va">None</span>, unit<span class="op">=</span><span class="va">None</span>, rate<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per month, e.g.&nbsp;<code>ss.probpermonth(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.probperweek" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.probperweek">probperweek</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>internals.time.probperweek(value<span class="op">=</span><span class="va">None</span>, unit<span class="op">=</span><span class="va">None</span>, rate<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per week, e.g.&nbsp;<code>ss.probperweek(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.probperyear" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.probperyear">probperyear</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>internals.time.probperyear(value<span class="op">=</span><span class="va">None</span>, unit<span class="op">=</span><span class="va">None</span>, rate<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A probability per year, e.g.&nbsp;<code>ss.probperyear(0.1)</code></p>
+</section>
+<section id="starsim.internals.time.weeks" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.weeks">weeks</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>internals.time.weeks(value<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A duration in weeks, e.g.&nbsp;<code>ss.weeks(6)</code></p>
+</section>
+<section id="starsim.internals.time.years" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.years">years</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>internals.time.years(value<span class="op">=</span><span class="dv">1</span>, base<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A duration in years, e.g.&nbsp;<code>ss.years(5)</code>; the default unit, which also reads a date as a decimal year</p>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.time.assume_cal_year">assume_cal_year</a></td>
+<td>Whether a value should be interpreted as a calendar year – by default, a number greater than 1900</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.get_dur_class">get_dur_class</a></td>
+<td>Helper function to get a Dur class</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.get_rate_class">get_rate_class</a></td>
+<td>Helper function to get a Rate class</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.get_unit_class">get_unit_class</a></td>
+<td>Take a string or class and return the corresponding TimePar class; which is ‘dur’, ‘rate’, or ‘full’ (either)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.incompatible">incompatible</a></td>
+<td>Raise a <code>TypeError</code> for two values that cannot be combined, e.g.&nbsp;<code>ss.perday(0.1) + ss.prob(0.1, 'day')</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.is_number">is_number</a></td>
+<td>Whether a value is a plain number or an array of them, not e.g.&nbsp;an array of durations</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.normalize_unit">normalize_unit</a></td>
+<td>Allow either e.g.&nbsp;‘year’ or ‘years’ as input – i.e.&nbsp;add an ‘s’</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.time.type_str">type_str</a></td>
+<td>A short description of a value’s type, for error messages, e.g.&nbsp;“a rate (ss.perday)”</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.time.wrong_dimension">wrong_dimension</a></td>
+<td>Raise a <code>TypeError</code> for arithmetic whose result has a time dimension that no type has, e.g.&nbsp;a rate times a rate</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.time.assume_cal_year" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.assume_cal_year">assume_cal_year</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>internals.time.assume_cal_year(val)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a value should be interpreted as a calendar year – by default, a number greater than 1900</p>
+<section id="parameters-13" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-13">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 37%">
+<col style="width: 22%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>val</td>
+<td>float/<code>ss.date</code>/<code>ss.dur</code></td>
+<td>the value</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.get_dur_class" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.get_dur_class">get_dur_class</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>internals.time.get_dur_class(unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Helper function to get a Dur class</p>
+<section id="parameters-14" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-14">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 34%">
+<col style="width: 40%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>unit</td>
+<td><code>str</code> / <code>type</code></td>
+<td>the unit, e.g.&nbsp;‘year’ or <code>ss.years</code></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.get_rate_class" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.get_rate_class">get_rate_class</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>internals.time.get_rate_class(unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Helper function to get a Rate class</p>
+<section id="parameters-15" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-15">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 32%">
+<col style="width: 43%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>unit</td>
+<td><code>str</code> / <code>type</code></td>
+<td>the unit, e.g.&nbsp;‘peryear’ or <code>ss.peryear</code></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.get_unit_class" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.get_unit_class">get_unit_class</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>internals.time.get_unit_class(which, unit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Take a string or class and return the corresponding TimePar class; which is ‘dur’, ‘rate’, or ‘full’ (either)</p>
+<section id="parameters-16" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-16">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 27%">
+<col style="width: 44%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>which</td>
+<td><code>str</code></td>
+<td>‘dur’, ‘rate’, or ‘full’ (either)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>unit</td>
+<td>str/type/<code>ss.TimePar</code></td>
+<td>the unit, e.g.&nbsp;‘year’ or <code>ss.years</code></td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.internals.time.incompatible" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.incompatible">incompatible</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>internals.time.incompatible(a, op, b, hint<span class="op">=</span><span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Raise a <code>TypeError</code> for two values that cannot be combined, e.g.&nbsp;<code>ss.perday(0.1) + ss.prob(0.1, 'day')</code></p>
+</section>
+<section id="starsim.internals.time.is_number" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.is_number">is_number</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>internals.time.is_number(val)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a value is a plain number or an array of them, not e.g.&nbsp;an array of durations</p>
+</section>
+<section id="starsim.internals.time.normalize_unit" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.normalize_unit">normalize_unit</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>internals.time.normalize_unit(base)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Allow either e.g.&nbsp;‘year’ or ‘years’ as input – i.e.&nbsp;add an ‘s’</p>
+</section>
+<section id="starsim.internals.time.type_str" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.type_str">type_str</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>internals.time.type_str(obj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A short description of a value’s type, for error messages, e.g.&nbsp;“a rate (ss.perday)”</p>
+</section>
+<section id="starsim.internals.time.wrong_dimension" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.time.wrong_dimension">wrong_dimension</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>internals.time.wrong_dimension(a, op, b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Raise a <code>TypeError</code> for arithmetic whose result has a time dimension that no type has, e.g.&nbsp;a rate times a rate</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/internals.arrays.html" class="pagination-link" aria-label="internals.arrays">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">internals.arrays</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/internals.dates.html" class="pagination-link" aria-label="internals.dates">
+        <span class="nav-page-text">internals.dates</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

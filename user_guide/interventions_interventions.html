@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Interventions – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../user_guide/interventions_analyzers.html" rel="next">
+<link href="../user_guide/interventions_products.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../user_guide.html" aria-current="page"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide/interventions_products.html">Interventions and analyzers</a></li><li class="breadcrumb-item"><a href="../user_guide/interventions_interventions.html">Interventions</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>User guide</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Introduction</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_starsim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What is Starsim?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Starsim models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conceptual overview</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Building models</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_stratification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stratification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_outcomes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plotting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Custom modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Populations and data</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People and agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Population data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_geography.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Geography</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Interventions and analyzers</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_interventions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Connectors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_costs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Costs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Running models</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running sims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_solvers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solvers and backends</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_branching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Branching and rescaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_debugging.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Profiling and debugging</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_deploy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Deployment</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Calibration</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting a model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fit diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_identification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parameter identification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Model library</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_landscape.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modeling landscape</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Library</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Maternal-child health</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-9-label">Conversion</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Import/export</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/starsim3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Starsim v3</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/atomica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Atomica</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/camdl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">camdl</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/emulsion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EMULSION</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epimodel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">EpiModel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epipack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epipack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epydemix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epydemix</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/epymorph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">epymorph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/flepimop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">flepiMoP</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/laser.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LASER</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/memilio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MEmilio</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/numpy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NumPy</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/odin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">odin</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/siminf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SimInf</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/conversion/summer2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">summer2</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-10-label">Mechanics</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_indexing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Array indexing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random numbers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_nonstandard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Nonstandard usage</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide/architecture_index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-11-label">Architecture</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="false" aria-label="Toggle section: Architecture">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_declaration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model declaration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_execution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model execution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_solvers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solvers and backends</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_transmission.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transmission</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_randomness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Randomness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#delivering-products" id="toc-delivering-products" class="nav-link active" data-scroll-target="#delivering-products">Delivering products</a>
+  <ul>
+  <li><a href="#rounds-and-routine-delivery" id="toc-rounds-and-routine-delivery" class="nav-link" data-scroll-target="#rounds-and-routine-delivery">Rounds and routine delivery</a></li>
+  <li><a href="#coverage-and-capacity" id="toc-coverage-and-capacity" class="nav-link" data-scroll-target="#coverage-and-capacity">Coverage and capacity</a></li>
+  <li><a href="#who-is-eligible" id="toc-who-is-eligible" class="nav-link" data-scroll-target="#who-is-eligible">Who is eligible</a></li>
+  <li><a href="#delivery-when-something-happens" id="toc-delivery-when-something-happens" class="nav-link" data-scroll-target="#delivery-when-something-happens">Delivery when something happens</a></li>
+  <li><a href="#delivery-by-a-function" id="toc-delivery-by-a-function" class="nav-link" data-scroll-target="#delivery-by-a-function">Delivery by a function</a></li>
+  </ul></li>
+  <li><a href="#changing-parameters" id="toc-changing-parameters" class="nav-link" data-scroll-target="#changing-parameters">Changing parameters</a>
+  <ul>
+  <li><a href="#masks-and-distancing" id="toc-masks-and-distancing" class="nav-link" data-scroll-target="#masks-and-distancing">Masks and distancing</a></li>
+  <li><a href="#changes-at-given-times-ss.timeseries" id="toc-changes-at-given-times-ss.timeseries" class="nav-link" data-scroll-target="#changes-at-given-times-ss.timeseries">Changes at given times: <code>ss.timeseries()</code></a></li>
+  <li><a href="#changes-while-a-condition-holds-ss.modify" id="toc-changes-while-a-condition-holds-ss.modify" class="nav-link" data-scroll-target="#changes-while-a-condition-holds-ss.modify">Changes while a condition holds: <code>ss.modify()</code></a>
+  <ul>
+  <li><a href="#what-can-be-changed" id="toc-what-can-be-changed" class="nav-link" data-scroll-target="#what-can-be-changed">What can be changed</a></li>
+  <li><a href="#who-it-applies-to" id="toc-who-it-applies-to" class="nav-link" data-scroll-target="#who-it-applies-to">Who it applies to</a></li>
+  </ul></li>
+  <li><a href="#changes-triggered-by-the-epidemic" id="toc-changes-triggered-by-the-epidemic" class="nav-link" data-scroll-target="#changes-triggered-by-the-epidemic">Changes triggered by the epidemic</a></li>
+  <li><a href="#how-changes-combine" id="toc-how-changes-combine" class="nav-link" data-scroll-target="#how-changes-combine">How changes combine</a></li>
+  <li><a href="#under-compartments-and-agents" id="toc-under-compartments-and-agents" class="nav-link" data-scroll-target="#under-compartments-and-agents">Under compartments and agents</a></li>
+  </ul></li>
+  <li><a href="#writing-an-intervention-as-code" id="toc-writing-an-intervention-as-code" class="nav-link" data-scroll-target="#writing-an-intervention-as-code">Writing an intervention as code</a></li>
+  <li><a href="#comparing-scenarios" id="toc-comparing-scenarios" class="nav-link" data-scroll-target="#comparing-scenarios">Comparing scenarios</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls">Pitfalls</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide/interventions_products.html">Interventions and analyzers</a></li><li class="breadcrumb-item"><a href="../user_guide/interventions_interventions.html">Interventions</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Interventions</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Based on the AI-written v4 drafts on deliveries and on changing parameters, with ideas on eligibility and naming from the Starsim 3 user guide page on interventions; the overview, custom intervention, and advice on comparisons written by AI">🧠5% 🤖95%</div>
+<p>An intervention is anything done to change the course of an epidemic. Most are one of two kinds. Some <strong>deliver a product</strong> to people: a vaccine, a test, or a drug, given to the people who are eligible, at given times or when something happens to them. Others <strong>change a quantity</strong> in the model, giving nothing to anyone: masks, distancing, and school closures change transmission, faster diagnosis shortens the time people are infectious. This page covers both: how products are delivered (who, when, and how many), and how parameters are changed (when, for whom, and how changes combine), and then interventions written as code, for anything else.</p>
+<p>What a vaccine, test, or treatment does is on <a href="../user_guide/interventions_products.html">Products</a>, and what interventions cost on <a href="../user_guide/interventions_costs.html">Costs</a>. The same <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> that changes parameters is how one module changes another, on <a href="../user_guide/interventions_connectors.html">Connectors</a>. The tutorial <a href="../tutorials/t5_interventions.html">T5 – Interventions and scenarios</a> compares interventions against measles, and <a href="../tutorials/a4_interventions.html">A4 – Interventions</a> uses deliveries that need agents; running the scenarios of a comparison is on <a href="../user_guide/running_scenarios.html">Scenarios</a>.</p>
+<p>Here are the two kinds side by side, against measles in a town of 100,000: a vaccination campaign that reaches 90% of people on day 5, and distancing that halves transmission from day 5 to day 30:</p>
+<div id="ff193347" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I        <span class="co"># β = 1.9 per day</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">8</span>)   <span class="co"># Infectious for 8 days on average</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.Disease(infection, recovery, init_prev<span class="op">=</span><span class="fl">0.0001</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>vaccination <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.95</span>, leaky<span class="op">=</span><span class="va">False</span>, coverage<span class="op">=</span><span class="fl">0.9</span>, at<span class="op">=</span>[ss.days(<span class="dv">5</span>)])                 <span class="co"># Delivers a product</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>distancing <span class="op">=</span> ss.modify(measles.pars.beta, multiply<span class="op">=</span><span class="fl">0.5</span>, start<span class="op">=</span>ss.days(<span class="dv">5</span>), stop<span class="op">=</span>ss.days(<span class="dv">30</span>))           <span class="co"># Changes a parameter</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>kw <span class="op">=</span> <span class="bu">dict</span>(total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">60</span>), verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No intervention'</span>: ss.Sim(measles, <span class="op">**</span>kw),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Vaccination'</span>:     ss.Sim(measles, interventions<span class="op">=</span>vaccination, <span class="op">**</span>kw),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Distancing'</span>:      ss.Sim(measles, interventions<span class="op">=</span>distancing, <span class="op">**</span>kw),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'measles.I'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>msim.summarize().loc[<span class="st">'measles_infection'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Starsim kernels: Rust, OUT OF DATE (built before its source last changed, so results may be wrong): run "./build" in starsim/solvers/rust/</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-2-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">scenario</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>99989.974541</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vaccination</th>
+<td>51053.731226</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Distancing</th>
+<td>99963.735147</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The campaign (with an all-or-nothing vaccine, <code>leaky=False</code>, as measles vaccine roughly is) protects those it reaches for good, and halves the number infected; by day 5, measles is already spreading fast, and many are infected before it starts. Halving transmission of a disease with an R0 of 15 hardly helps: R0 is still above 7, and when distancing ends, the people it protected are still susceptible. A disease with an R0 of 2, as in the examples below, responds very differently.</p>
+<section id="delivering-products" class="level2">
+<h2 class="anchored" data-anchor-id="delivering-products">Delivering products</h2>
+<p>A delivery says who can receive the product, when, and how many. There is one delivery for each kind of product, <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a>, and each takes the product, or the product’s own keywords, as well as how it is delivered. A delivery takes its name from the variable it is assigned to, and has results of its own: the number <code>delivered</code> on each step, the number <code>eligible</code>, and the <code>coverage</code> reached. Its keywords are the same for every product:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Keyword</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>start=</code>, <code>stop=</code></td>
+<td>When delivery starts and stops: dates, or times in the sim’s unit</td>
+</tr>
+<tr class="even">
+<td><code>at=</code></td>
+<td>Deliver in rounds at these times (a campaign)</td>
+</tr>
+<tr class="odd">
+<td><code>interval=</code></td>
+<td>Deliver in rounds this far apart, between <code>start</code> and <code>stop</code></td>
+</tr>
+<tr class="even">
+<td><code>at_age=</code></td>
+<td>Routine delivery to people as they reach an age, e.g.&nbsp;<code>at_age=ss.months(9)</code></td>
+</tr>
+<tr class="odd">
+<td><code>where=</code></td>
+<td>Who can receive it: a condition, or a function of the sim</td>
+</tr>
+<tr class="even">
+<td><code>who=</code></td>
+<td>Who receives it: an event (such as <code>screening.positive</code> or <code>sis.infection</code>), a condition, or both, joined with <code>&amp;</code></td>
+</tr>
+<tr class="odd">
+<td><code>coverage=</code></td>
+<td>The share of eligible people reached</td>
+</tr>
+<tr class="even">
+<td><code>capacity=</code></td>
+<td>The number that can be delivered (per round, per step, or as a rate)</td>
+</tr>
+<tr class="odd">
+<td><code>priority=</code></td>
+<td>Who is served first when capacity runs short</td>
+</tr>
+<tr class="even">
+<td><code>queue=</code></td>
+<td>Whether those not served wait their turn (agents only)</td>
+</tr>
+<tr class="odd">
+<td><code>delay=</code></td>
+<td>The time from a trigger to delivery (agents only)</td>
+</tr>
+<tr class="even">
+<td><code>trace=</code></td>
+<td>Deliver to the contacts of those selected, on a network (agents only)</td>
+</tr>
+<tr class="odd">
+<td><code>when=</code></td>
+<td>Deliver only on steps where a function of the timeline returns <code>True</code>, e.g.&nbsp;<code>lambda t: t.ti % 7 == 0</code></td>
+</tr>
+<tr class="even">
+<td><code>deliver=</code></td>
+<td>A function of the sim that returns who receives it, instead of <code>where=</code>, <code>coverage=</code>, and the rounds</td>
+</tr>
+<tr class="odd">
+<td><code>disease=</code></td>
+<td>The disease the product acts on, if there is more than one</td>
+</tr>
+</tbody>
+</table>
+<p>The examples in this section use a curable infection with no lasting immunity, over 20 years, as an SIS model run as agents (since some of what follows depends on each person’s own history):</p>
+<div id="0a7bc08e" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>S, I <span class="op">=</span> ss.states(<span class="st">'S I'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.peryear(<span class="dv">2</span>)<span class="op">*</span>I  <span class="co"># β = 2 per year</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> S <span class="op">@</span> ss.years(<span class="dv">1</span>)      <span class="co"># Infected for a year on average, then susceptible again</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sis <span class="op">=</span> ss.Disease(infection, recovery, init_prev<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>kw <span class="op">=</span> <span class="bu">dict</span>(n_agents<span class="op">=</span><span class="dv">5000</span>, start<span class="op">=</span><span class="dv">2000</span>, stop<span class="op">=</span><span class="dv">2020</span>, dt<span class="op">=</span>ss.months(<span class="dv">1</span>), verbose<span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="rounds-and-routine-delivery" class="level3">
+<h3 class="anchored" data-anchor-id="rounds-and-routine-delivery">Rounds and routine delivery</h3>
+<p>With <code>at=</code> or <code>interval=</code>, delivery is in <strong>rounds</strong>: in each round, every eligible person is offered the product once. With neither, delivery is <strong>routine</strong>: each person is offered it once, at the first step on which they are eligible. <code>at_age=</code> is routine delivery as people reach an age: <code>at_age=ss.months(9)</code> vaccinates children as they turn 9 months old, and not everyone older on the first day.</p>
+<div id="8a4a38e1" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>routine  <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.8</span>, start<span class="op">=</span><span class="st">'2005'</span>)                         <span class="co"># Once per person, when first eligible</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>yearly   <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.2</span>, interval<span class="op">=</span>ss.years(<span class="dv">1</span>), start<span class="op">=</span><span class="st">'2005'</span>)   <span class="co"># A round every year</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>campaign <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.6</span>, at<span class="op">=</span>[<span class="st">'2005'</span>, <span class="st">'2010'</span>])                  <span class="co"># Two rounds</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>scenarios <span class="op">=</span> {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No vaccination'</span>:       ss.Sim(sis, <span class="op">**</span>kw),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Routine, 80%'</span>:         ss.Sim(sis, interventions<span class="op">=</span>routine, <span class="op">**</span>kw),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Yearly rounds, 20%'</span>:   ss.Sim(sis, interventions<span class="op">=</span>yearly, <span class="op">**</span>kw),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Two campaigns, 60%'</span>:   ss.Sim(sis, interventions<span class="op">=</span>campaign, <span class="op">**</span>kw),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel(scenarios)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'sis.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-4-output-1.png" width="774" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As agents, each person has an age, so <code>at_age=</code> can be any age. As compartments, people have only an age group, and reach an age by aging from the group below it into the one it starts, so <code>at_age=</code> needs age groups with an edge at that age; otherwise it is an error (it never runs the model as agents instead). To compare several ages of delivery with the same compartments, give fine age groups once, with an edge at each age to try:</p>
+<div id="b1fd59f3" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.Disease(S, I, R, infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.peryear(<span class="dv">500</span>)<span class="op">*</span>I, recovery<span class="op">=</span>I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">8</span>), births<span class="op">=</span>ss.birth(S, rate<span class="op">=</span>ss.peryear(<span class="fl">0.03</span>)), init<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span><span class="fl">0.001</span>, R<span class="op">=</span><span class="fl">0.85</span>), name<span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>measles.stratify(age<span class="op">=</span>[<span class="dv">0</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="dv">1</span>, <span class="fl">1.25</span>, <span class="fl">1.5</span>, <span class="dv">5</span>, <span class="dv">15</span>]) <span class="co"># Edges every 3 months up to 18 months</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {}</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> months <span class="kw">in</span> [<span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">12</span>, <span class="dv">15</span>]:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    mcv1 <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.85</span>, coverage<span class="op">=</span><span class="fl">0.8</span>, at_age<span class="op">=</span>ss.months(months), name<span class="op">=</span><span class="st">'mcv1'</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    sims[<span class="ss">f'At </span><span class="sc">{</span>months<span class="sc">}</span><span class="ss"> months'</span>] <span class="op">=</span> ss.Sim(measles, interventions<span class="op">=</span>mcv1, total_pop<span class="op">=</span><span class="fl">1e6</span>, start<span class="op">=</span><span class="dv">2000</span>, stop<span class="op">=</span><span class="dv">2005</span>, dt<span class="op">=</span>ss.weeks(<span class="dv">1</span>), verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel(sims)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label <span class="kw">in</span> sims:</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>msim<span class="sc">.</span>sims[label]<span class="sc">.</span>results<span class="sc">.</span>measles<span class="sc">.</span>infection<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:,.0f}</span><span class="ss"> infections'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>At 6 months: 106,247 infections
+At 9 months: 106,431 infections
+At 12 months: 106,468 infections
+At 15 months: 106,476 infections</code></pre>
+</div>
+</div>
+</section>
+<section id="coverage-and-capacity" class="level3">
+<h3 class="anchored" data-anchor-id="coverage-and-capacity">Coverage and capacity</h3>
+<p><code>coverage=0.7</code> is a share of the eligible people. A typed rate or probability, such as <code>coverage=ss.perday(0.1)</code>, is the chance of being reached over the step (or over the round, with <code>interval=</code>), and routine delivery then offers it at every step to those eligible: a rate of seeking care, for example. <code>capacity=</code> is a number available: a bare number is per round for campaigns (or per step, for delivery on events or by a function), and a rate, such as <code>ss.peryear(500)</code>, is per unit time, which routine delivery needs. When fewer are available than people who would receive one, those who do are chosen at random, unless <code>priority=</code> says who comes first (e.g.&nbsp;<code>priority=ss.ppl.age</code>, the oldest first). Given together, coverage is applied first, and capacity caps the result:</p>
+<div id="e66ee14d" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>limited <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.6</span>, at<span class="op">=</span>[<span class="st">'2005'</span>, <span class="st">'2010'</span>], capacity<span class="op">=</span><span class="dv">500</span>) <span class="co"># At most 500 doses a round</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sis, interventions<span class="op">=</span>limited, <span class="op">**</span>kw)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Doses delivered:'</span>, sim.results.limited.delivered.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Doses delivered: 1000.0</code></pre>
+</div>
+</div>
+<p>With <code>queue=True</code>, those not served for lack of capacity wait, longest first, until they are served or are no longer eligible; a duration, such as <code>queue=ss.months(6)</code>, limits the wait.</p>
+</section>
+<section id="who-is-eligible" class="level3">
+<h3 class="anchored" data-anchor-id="who-is-eligible">Who is eligible</h3>
+<p><code>where=</code> says who can receive the product. It is a condition on people or on the states of a module, written before the sim exists, such as <code>ss.ppl.age &lt; 15</code> (people under 15), <code>sis.I</code> (people infected), or a combination with <code>&amp;</code>, <code>|</code>, and <code>~</code> (and, or, not). A condition is not worked out when it is written, but each time it is needed, in the sim it runs in, so the same condition works in every copy of a sim. Anything else is a function of the sim, returning a boolean array or the UIDs of people:</p>
+<div id="4e74fe75" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>children <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.9</span>, at<span class="op">=</span>[<span class="st">'2005'</span>], where<span class="op">=</span>ss.ppl.age <span class="op">&lt;</span> <span class="dv">15</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>adults <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.9</span>, at<span class="op">=</span>[<span class="st">'2005'</span>], where<span class="op">=</span><span class="kw">lambda</span> sim: sim.people.age <span class="op">&gt;=</span> <span class="dv">15</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sis, interventions<span class="op">=</span>[children, adults], <span class="op">**</span>kw)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Children vaccinated:'</span>, sim.results.children.delivered.<span class="bu">sum</span>())</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Adults vaccinated:'</span>, sim.results.adults.delivered.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Children vaccinated: 1067.0
+Adults vaccinated: 3408.0</code></pre>
+</div>
+</div>
+<p>Each of these deliveries makes its own vaccine. The first is named <code>vaccine</code>; since that name is taken, the second is named after its delivery, <code>adults_product</code>.</p>
+</section>
+<section id="delivery-when-something-happens" class="level3">
+<h3 class="anchored" data-anchor-id="delivery-when-something-happens">Delivery when something happens</h3>
+<p>An event in <code>where=</code> delivers to the people something has just happened to, instead of on a schedule: a transition (the people who went through it on this step), or the outcome of another delivery. A transition can also be given by its path, <code>where='sis.infection'</code>. Here half of people are treated when they are infected, up to 30 treatments a month:</p>
+<div id="58b745b2" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>on_infection <span class="op">=</span> ss.treat(cure<span class="op">=</span><span class="fl">0.9</span>, where<span class="op">=</span>sis.infection, coverage<span class="op">=</span><span class="fl">0.5</span>, capacity<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sis, interventions<span class="op">=</span>on_infection, <span class="op">**</span>kw)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sim.plot(<span class="st">'sis'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-8-output-1.png" width="756" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A condition can also be read on someone’s mother: <code>ss.mother(cond, born=True)</code> holds for a person whose mother meets <code>cond</code>. Each event remembers, per person, whether it ever happened (<code>.ever</code>), how often (<code>.count</code>), and how long ago (<code>.since</code>). Here newborns are tested if their mother tested positive at antenatal care within the past year:</p>
+<div id="3d284b0d" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pregnancy <span class="op">=</span> ss.Pregnancy(fertility_rate<span class="op">=</span>ss.freqperyear(<span class="dv">100</span>)) <span class="co"># Births a year per 1,000 women</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>anc <span class="op">=</span> ss.screen(sensitivity<span class="op">=</span><span class="fl">0.9</span>, specificity<span class="op">=</span><span class="fl">0.98</span>, where<span class="op">=</span>pregnancy.P, coverage<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>newborn <span class="op">=</span> ss.screen(sensitivity<span class="op">=</span><span class="fl">0.9</span>, specificity<span class="op">=</span><span class="fl">0.98</span>, who<span class="op">=</span>pregnancy.birth <span class="op">&amp;</span> ss.mother(anc.positive.since <span class="op">&lt;=</span> ss.years(<span class="dv">1</span>), born<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sis, demographics<span class="op">=</span>pregnancy, interventions<span class="op">=</span>[anc, newborn], <span class="op">**</span>kw)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Newborns tested:'</span>, sim.results.newborn.delivered.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Newborns tested: 1270.0</code></pre>
+</div>
+</div>
+<p>As agents, every delivery keeps the memory of its events (who it reached, and each outcome), so it can be read after a run: <code>sim.interventions.screening.ever.uids</code> is everyone ever screened, and <code>(sim.interventions.screening.positive.since &lt;= ss.years(1)).uids</code> everyone positive within the past year.</p>
+<p><code>trace=</code> is contact tracing: it delivers to the contacts, on a network, of the people that the event in <code>who=</code> selects. A network with <code>memory=</code> reaches recent past partners too (see <a href="../user_guide/populations_networks.html#working-with-edges">Contact networks</a>).</p>
+</section>
+<section id="delivery-by-a-function" class="level3">
+<h3 class="anchored" data-anchor-id="delivery-by-a-function">Delivery by a function</h3>
+<p>When who, when, and how many depend on each other (“treat the 200 oldest people who are infected”), one function says it. It is called every step (within <code>start</code> and <code>stop</code>, if given), and returns the UIDs of the people who receive the product on that step; <code>capacity=</code> may still cap it:</p>
+<div id="49766d65" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> oldest_infected(sim):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" The 200 oldest people who are infected """</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    infected <span class="op">=</span> sim.diseases.sis.I.uids</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    order <span class="op">=</span> np.argsort(sim.people.age[infected])</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> infected[order[<span class="op">-</span><span class="dv">200</span>:]]</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>targeted <span class="op">=</span> ss.treat(cure<span class="op">=</span><span class="fl">0.9</span>, deliver<span class="op">=</span>oldest_infected, start<span class="op">=</span><span class="st">'2005'</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sis, interventions<span class="op">=</span>targeted, <span class="op">**</span>kw)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>sim.plot(<span class="st">'sis'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-10-output-1.png" width="756" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>when=</code> is a condition on time, a function of the timeline that returns <code>True</code> or <code>False</code>, and delivers only on steps where it is <code>True</code>. A function of the sim goes in <code>where=</code>, e.g.&nbsp;once prevalence passes a threshold (see <a href="#changes-triggered-by-the-epidemic">below</a>).</p>
+</section>
+</section>
+<section id="changing-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="changing-parameters">Changing parameters</h2>
+<section id="masks-and-distancing" class="level3">
+<h3 class="anchored" data-anchor-id="masks-and-distancing">Masks and distancing</h3>
+<p>Here is a flu-like epidemic in a town of 100,000, with β = 0.4 per day and an infectious period of 5 days (R0 = 2), and two policies: masks worn from day 20 to day 60, which cut transmission by 40%, and distancing that halves transmission from day 20 and then eases to 80% of its usual level from day 60:</p>
+<div id="2e510e0d" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.4</span><span class="op">*</span>I        <span class="co"># β = 0.4 per day</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">5</span>)   <span class="co"># Infectious for 5 days on average</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>flu <span class="op">=</span> ss.Disease(infection, recovery, init_prev<span class="op">=</span><span class="fl">0.001</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>masks <span class="op">=</span> ss.modify(flu.pars.beta, multiply<span class="op">=</span><span class="fl">0.6</span>, start<span class="op">=</span>ss.days(<span class="dv">20</span>), stop<span class="op">=</span>ss.days(<span class="dv">60</span>))</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>distancing <span class="op">=</span> ss.modify(flu.pars.beta, multiply<span class="op">=</span>ss.timeseries({ss.days(<span class="dv">20</span>): <span class="fl">0.5</span>, ss.days(<span class="dv">60</span>): <span class="fl">0.8</span>}), start<span class="op">=</span>ss.days(<span class="dv">20</span>))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>kw <span class="op">=</span> <span class="bu">dict</span>(total_pop<span class="op">=</span><span class="dv">100_000</span>, stop<span class="op">=</span>ss.days(<span class="dv">150</span>), verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>scenarios <span class="op">=</span> {</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No intervention'</span>: ss.Sim(flu, <span class="op">**</span>kw),</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Masks'</span>: ss.Sim(flu, interventions<span class="op">=</span>masks, <span class="op">**</span>kw),</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Distancing'</span>: ss.Sim(flu, interventions<span class="op">=</span>distancing, <span class="op">**</span>kw),</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel(scenarios)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'flu.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-11-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><code>flu.pars.beta</code> is the β of the transmission, which a declared disease names <code>beta</code>. Masks delay the epidemic, but once they come off, most of it still happens; distancing, which never fully ends, cuts it by more:</p>
+<div id="b302f98f" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>msim.summarize().loc[<span class="st">'flu_infection'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">scenario</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">No intervention</th>
+<td>79615.377937</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Masks</th>
+<td>65736.554255</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Distancing</th>
+<td>49626.920011</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="changes-at-given-times-ss.timeseries" class="level3">
+<h3 class="anchored" data-anchor-id="changes-at-given-times-ss.timeseries">Changes at given times: <code>ss.timeseries()</code></h3>
+<p><code>ss.modify(target, multiply=ss.timeseries({t1: x1, t2: x2}), start=t1)</code> multiplies a quantity by each value from its time until the next; before <code>start=</code>, the quantity has its own value. Each multiplier is relative to the quantity’s own value, not to the one before. <code>set=</code> gives values instead of multipliers, and one change needs no series: <code>ss.modify(flu.pars.beta, set=0.25, start=ss.days(20))</code>. The times are dates in a sim with dates (<code>'2025-03-01'</code>), durations since the start (<code>ss.days(20)</code>), or numbers in the sim’s unit.</p>
+</section>
+<section id="changes-while-a-condition-holds-ss.modify" class="level3">
+<h3 class="anchored" data-anchor-id="changes-while-a-condition-holds-ss.modify">Changes while a condition holds: <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a></h3>
+<p><code>ss.modify(target, multiply=...)</code> changes a quantity for as long as it applies: always, between <code>start=</code> and <code>stop=</code>, on the steps a condition on time says so (<code>when=</code>), or where a condition holds (<code>where=</code>), of people, of the population, or a function of the sim. It takes exactly one of:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Keyword</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>multiply=</code></td>
+<td>Multiplies the quantity</td>
+</tr>
+<tr class="even">
+<td><code>efficacy=</code></td>
+<td>Removes a share of the risk: the same as <code>multiply=1 - efficacy</code>, for protection such as condoms</td>
+</tr>
+<tr class="odd">
+<td><code>add=</code></td>
+<td>Adds to the quantity (parameters only; and an inflow from <code>ss.null</code>, to which it adds an amount per unit time from outside the model, e.g.&nbsp;<code>ss.modify(typhoid.shedding, add=ss.perday(4e6))</code>)</td>
+</tr>
+<tr class="even">
+<td><code>set=</code></td>
+<td>Replaces the quantity (parameters only)</td>
+</tr>
+</tbody>
+</table>
+<p>and any of:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Keyword</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>start=</code>, <code>stop=</code></td>
+<td>When it applies (by default, always)</td>
+</tr>
+<tr class="even">
+<td><code>where=</code></td>
+<td>Who it applies to: a condition, or a function of the sim (by default, everyone)</td>
+</tr>
+<tr class="odd">
+<td><code>when=</code></td>
+<td>A condition on time: a function of the timeline that returns <code>True</code> on the steps it applies</td>
+</tr>
+<tr class="even">
+<td><code>hold=</code></td>
+<td>Once <code>where=</code> or <code>when=</code> selects someone, it stays on for them for at least this long</td>
+</tr>
+<tr class="odd">
+<td><code>share=</code></td>
+<td>With <code>multiply=</code> or <code>efficacy=</code>, the share of acts (or contacts) it applies to, e.g.&nbsp;condom use in 30% of acts</td>
+</tr>
+<tr class="even">
+<td><code>route=</code></td>
+<td>For a change to transmission, the network or networks it applies on (by default, all)</td>
+</tr>
+</tbody>
+</table>
+<p>The amount can itself vary: <code>multiply=</code> takes anything a parameter takes, such as <code>ss.seasonal()</code> or <code>ss.timeseries()</code> (see <a href="../user_guide/building_parameters.html">Parameters</a>).</p>
+<section id="what-can-be-changed" class="level4">
+<h4 class="anchored" data-anchor-id="what-can-be-changed">What can be changed</h4>
+<p>The target of a modifier is any named quantity in the model:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Target</th>
+<th>Example</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A parameter</td>
+<td><code>flu.pars.beta</code></td>
+<td>The parameter, for everyone it applies to</td>
+</tr>
+<tr class="even">
+<td>A transition</td>
+<td><code>flu.recovery</code></td>
+<td>The transition’s rate (or its probability, for a branch with <code>p=</code>)</td>
+</tr>
+<tr class="odd">
+<td>Susceptibility or infectiousness</td>
+<td><code>flu.rel_sus</code>, <code>flu.rel_trans</code></td>
+<td>Each person’s relative chance of infection, or of infecting others (multiply only)</td>
+</tr>
+<tr class="even">
+<td>A network or contact layer</td>
+<td><code>school</code>, from <code>ss.contacts('Kenya', layer=[...])</code></td>
+<td>The contacts on it</td>
+</tr>
+<tr class="odd">
+<td>Any of these by name</td>
+<td><code>'flu.pars.beta'</code>, <code>'school.pars.n_contacts'</code></td>
+<td>The same, written as a path</td>
+</tr>
+</tbody>
+</table>
+<p>Here faster diagnosis from day 30 halves the time that people stay infectious, by doubling the rate of recovery, and susceptibility is halved for people aged 65 and over in an age-structured version of the model:</p>
+<div id="2bd53e32" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>faster <span class="op">=</span> ss.modify(flu.recovery, multiply<span class="op">=</span><span class="dv">2</span>, start<span class="op">=</span>ss.days(<span class="dv">30</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(flu, interventions<span class="op">=</span>faster, <span class="op">**</span>kw)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Infections with faster diagnosis:'</span>, <span class="bu">round</span>(sim.results.flu.infection.<span class="bu">sum</span>()))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>flu_age <span class="op">=</span> ss.Disease(infection, recovery, init_prev<span class="op">=</span><span class="fl">0.001</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>flu_age.stratify(age<span class="op">=</span>{<span class="dv">0</span>: <span class="fl">0.3</span>, <span class="dv">15</span>: <span class="fl">0.6</span>, <span class="dv">65</span>: <span class="fl">0.1</span>})</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>older <span class="op">=</span> ss.modify(flu_age.rel_sus, multiply<span class="op">=</span><span class="fl">0.5</span>, where<span class="op">=</span>ss.ppl.age <span class="op">&gt;=</span> <span class="dv">65</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(flu_age, interventions<span class="op">=</span>older, <span class="op">**</span>kw)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>sim.results.flu_age.I.by(<span class="st">'age'</span>).plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Infections with faster diagnosis: 53684</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-13-output-2.png" width="584" height="461" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Closing schools is a modifier on the school layer of a contact matrix: see <a href="../user_guide/populations_data.html#contact-matrices-by-setting">Population data</a>.</p>
+</section>
+<section id="who-it-applies-to" class="level4">
+<h4 class="anchored" data-anchor-id="who-it-applies-to">Who it applies to</h4>
+<p><code>where=</code> is a condition on people or on the states of modules, written before the sim exists: <code>ss.ppl.age &gt;= 65</code>, <code>flu.I</code>, or a combination with <code>&amp;</code>, <code>|</code>, and <code>~</code> (and, or, not), such as <code>(ss.ppl.age &gt;= 65) &amp; ~flu.R</code>. A condition is worked out each time it is needed, in the sim it runs in, so the same condition works in every copy of a sim made by <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> or by calibration. Anything else is a function of the sim, returning a boolean array or the UIDs of people: <code>where=lambda sim: sim.people.age &gt;= 65</code>. A condition on a property of people, such as age, can be run as compartments only if the model is stratified by that property, as above; otherwise the model runs as agents.</p>
+</section>
+</section>
+<section id="changes-triggered-by-the-epidemic" class="level3">
+<h3 class="anchored" data-anchor-id="changes-triggered-by-the-epidemic">Changes triggered by the epidemic</h3>
+<p>A rule such as “close schools when cases pass a threshold” is a function of the sim, given as <code>where=</code>, which returns <code>True</code> on the steps it applies. It can read any result up to the start of the step (<code>sim.ti - 1</code>, since this step’s results aren’t written yet). It has no memory: the modifier is on exactly when the function says so, so a bare threshold switches on and off as the epidemic crosses it. <code>hold=</code> adds the simplest memory: once on, it stays on for at least that long. Here transmission is halved for at least 30 days whenever more than 5,000 people are infectious:</p>
+<div id="c0f36c1e" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> many_infectious(sim):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> sim.results.flu.I[sim.ti <span class="op">-</span> <span class="dv">1</span>] <span class="op">&gt;</span> <span class="dv">5000</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>reactive <span class="op">=</span> ss.modify(flu.pars.beta, multiply<span class="op">=</span><span class="fl">0.5</span>, where<span class="op">=</span>many_infectious, hold<span class="op">=</span>ss.days(<span class="dv">30</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(flu, interventions<span class="op">=</span>reactive, <span class="op">**</span>kw)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>sim.plot(<span class="st">'flu'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-14-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A condition on a result can also be written with the result itself, which works out the condition for each place (or other group) on its own. Here each of two towns halves its transmission for at least 14 days once its cases over a week pass 200 per 100,000 people:</p>
+<div id="a3c20dc4" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>towns <span class="op">=</span> ss.geo.geography(names<span class="op">=</span>[<span class="st">'North'</span>, <span class="st">'South'</span>], pop<span class="op">=</span>[<span class="dv">50_000</span>, <span class="dv">50_000</span>], x<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">20</span>], y<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span>])</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="st">'S I R'</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.4</span><span class="op">*</span>I</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">5</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>flu_towns <span class="op">=</span> ss.Disease(infection, recovery, init_n<span class="op">=</span><span class="bu">dict</span>(I<span class="op">=</span>ss.by(patch<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">0</span>])))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>flu_towns.stratify(patch<span class="op">=</span>towns, mobility<span class="op">=</span>ss.geo.gravity(away<span class="op">=</span><span class="fl">0.001</span>))</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>weekly <span class="op">=</span> flu_towns.infection.incidence(over<span class="op">=</span>ss.days(<span class="dv">7</span>), by<span class="op">=</span><span class="st">'patch'</span>) <span class="co"># New infections over the past week, as a share of each town</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>local <span class="op">=</span> ss.modify(flu_towns.pars.beta, multiply<span class="op">=</span><span class="fl">0.5</span>, where<span class="op">=</span>weekly <span class="op">&gt;</span> <span class="fl">200e-5</span>, hold<span class="op">=</span>ss.days(<span class="dv">14</span>))</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(flu_towns, interventions<span class="op">=</span>local, stop<span class="op">=</span>ss.days(<span class="dv">150</span>), verbose<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>sim.run()</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>sim.results.flu_towns.I.by(<span class="st">'patch'</span>).plot()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-15-output-1.png" width="565" height="461" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Each town’s measures keep its epidemic near the threshold. Any other rule that remembers what it did (a lockdown that lasts until cases fall below a lower threshold, say) is a module written as code: a subclass of <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a> whose <code>step()</code> decides, and an <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> whose <code>when=</code> reads its decision, so that the base value is never overwritten. See <a href="#writing-an-intervention-as-code">below</a>.</p>
+</section>
+<section id="how-changes-combine" class="level3">
+<h3 class="anchored" data-anchor-id="how-changes-combine">How changes combine</h3>
+<p>A modifier never overwrites the quantity it changes. The quantity keeps its own <strong>base</strong> value, and the modifiers active now are applied on top of it to give the <strong>effective</strong> value, which the model uses:</p>
+<pre><code>effective = (the set value, if any, otherwise the base) × every multiplier + every addition</code></pre>
+<p>that is, set, then multiply, then add, whatever order the modifiers were given in. Two 40% reductions give a 64% reduction (0.6 × 0.6 = 0.36), the usual assumption for independent effects; the efficacies of products (such as a vaccine’s) are multipliers of the same kind. Since the base is never changed, nothing has to be undone when a modifier stops applying, and modifiers from several sources combine instead of erasing each other. The array itself holds the base: as agents, the effective value of each person, with the modifiers and products that apply now, is <code>dis.current_value()</code>, e.g.&nbsp;<code>sim.diseases.flu_age.current_value('rel_sus')</code>, which is what to record or check (<code>rel_sus</code> itself gives the base values). <code>sim.what_modifies()</code> lists the modifiers on a quantity, with their conditions:</p>
+<div id="69a7d0b1" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(flu_age, interventions<span class="op">=</span>older, <span class="op">**</span>kw)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sim.init()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sim.what_modifies(sim.diseases.flu_age.rel_sus)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>flu_age.rel_sus
+  modifiers
+    older            multiply=0.5   where=(people.age &gt;= 65)</code></pre>
+</div>
+</div>
+<p>A modifier can be given to the sim as an intervention (<code>interventions=</code>) or as a connector (<code>connectors=</code>). The two do the same thing, and differ only in where they run in each step; by convention, policies go in <code>interventions=</code> and interactions that are part of the biology (one disease raising the risk of another) in <code>connectors=</code> (see <a href="../user_guide/interventions_connectors.html">Connectors</a>).</p>
+</section>
+<section id="under-compartments-and-agents" class="level3">
+<h3 class="anchored" data-anchor-id="under-compartments-and-agents">Under compartments and agents</h3>
+<p>Changes work the same under every solver. As agents, a change to contacts (such as <code>multiply=0.5</code> on a layer) means each contact happens with that probability in a step; in a compartmental run, the contacts are scaled. <code>where=</code> on a property of people needs either agents, or a model stratified by that property, and a model with neither runs as agents.</p>
+</section>
+</section>
+<section id="writing-an-intervention-as-code" class="level2">
+<h2 class="anchored" data-anchor-id="writing-an-intervention-as-code">Writing an intervention as code</h2>
+<p>Deliveries and modifiers cover the common cases. Anything else is a module written as code: a subclass of <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a> with a <code>step()</code> method, which runs on every step and can read and change anything in the sim (see <a href="../user_guide/building_modules.html">Custom modules</a>, and the tutorial <a href="../tutorials/t9_modules.html">T9 – Custom modules</a>, which writes one for isolating measles cases).</p>
+<p>An intervention written as code is best kept to deciding, leaving the change itself to <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a>, so that the base value is never overwritten and the change combines with others. Here is a lockdown with memory: it starts when more than 5,000 people are infectious, as the reactive measure above does, but is lifted only once fewer than 1,000 are. The intervention keeps the decision, and records it as a result; the modifier reads it:</p>
+<div id="78f18abf" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Lockdown(ss.Intervention):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Lock down when more than `on` people are infectious, and lift it only once fewer than `off` are """</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, on<span class="op">=</span><span class="dv">5000</span>, off<span class="op">=</span><span class="dv">1000</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.define_pars(on<span class="op">=</span>on, off<span class="op">=</span>off)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.update_pars(<span class="op">**</span>kwargs)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.active <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> init_results(<span class="va">self</span>):</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().init_results()</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.define_results(ss.Result(<span class="st">'active'</span>, label<span class="op">=</span><span class="st">'Lockdown in place'</span>))</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> step(<span class="va">self</span>):</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>        infectious <span class="op">=</span> <span class="va">self</span>.sim.results.flu.I[<span class="va">self</span>.sim.ti <span class="op">-</span> <span class="dv">1</span>] <span class="cf">if</span> <span class="va">self</span>.sim.ti <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span> <span class="co"># As of the last step</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> <span class="va">self</span>.active <span class="kw">and</span> infectious <span class="op">&gt;</span> <span class="va">self</span>.pars.on:</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.active <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> <span class="va">self</span>.active <span class="kw">and</span> infectious <span class="op">&lt;</span> <span class="va">self</span>.pars.off:</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.active <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.results.active[<span class="va">self</span>.ti] <span class="op">=</span> <span class="va">self</span>.active</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>lockdown <span class="op">=</span> Lockdown()</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>effect <span class="op">=</span> ss.modify(flu.pars.beta, multiply<span class="op">=</span><span class="fl">0.5</span>, where<span class="op">=</span><span class="kw">lambda</span> sim: sim.interventions.lockdown.active)</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No intervention'</span>: ss.Sim(flu, <span class="op">**</span>kw),</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Lockdown'</span>:        ss.Sim(flu, interventions<span class="op">=</span>[lockdown, effect], <span class="op">**</span>kw),</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>msim.plot(<span class="st">'flu.I'</span>)</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Days of lockdown:'</span>, msim.sims[<span class="dv">1</span>].results.lockdown.active.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="interventions_interventions_files/figure-html/cell-17-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Days of lockdown: 38.0</code></pre>
+</div>
+</div>
+<p>The lockdown stays in place for 38 days, until fewer than 1,000 people are infectious, rather than switching on and off around a single threshold. Once it is lifted, a second wave follows, since most people are still susceptible: the usual result of a measure that ends before immunity has built up, and a reason to run scenarios until their epidemics are over. An intervention that reads results only, as this one does, runs under every solver; one that acts on particular people (e.g.&nbsp;through their states) runs as agents. A product whose effect needs code is a subclass of <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a> instead: see <a href="../user_guide/interventions_products.html#writing-a-product-as-code">Products</a>.</p>
+</section>
+<section id="comparing-scenarios" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-scenarios">Comparing scenarios</h2>
+<p>An intervention’s effect is the difference between a run with it and a run without, so every comparison needs a baseline that shares everything else: the same population, parameters, and, for a stochastic model, random numbers. Make the scenarios from one sim, with <code>sim.new(interventions=...)</code>, and run them together with <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a>, as on this page. Some things to keep in mind:</p>
+<ul>
+<li><strong>Run long enough.</strong> An intervention that delays infections can look like one that prevents them if the run ends too soon; run until the epidemics of all scenarios are over, or long enough to see the endemic level.</li>
+<li><strong>Run more than once.</strong> For a model run as agents or as a stochastic model, the difference between two single runs is partly chance; run each scenario several times (<code>n_runs=</code>), with the same seeds for each, and compare the differences run by run (<code>msim.diff()</code>). See <a href="../user_guide/running_scenarios.html">Scenarios</a>.</li>
+<li><strong>Count the same thing.</strong> Compare the same results in the same units across scenarios: infections in people, not agents, and over the same period.</li>
+</ul>
+</section>
+<section id="pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="pitfalls">Pitfalls</h2>
+<ul>
+<li><strong>Routine is once per person.</strong> Routine delivery offers each person the product once, when they are first eligible; a share of people reached every year is delivery in yearly rounds (<code>interval=ss.years(1)</code>), or routine delivery with a typed coverage (<code>coverage=ss.probperyear(0.5)</code>), a chance at every step for as long as people are eligible.</li>
+<li><strong>Coverage is of the eligible.</strong> <code>coverage=0.8</code> with <code>where=ss.ppl.age &lt; 5</code> reaches 80% of children under 5, not 80% of everyone.</li>
+<li><strong>Routine delivery needs a rate of capacity.</strong> A bare number as <code>capacity=</code> is per round or per step; routine delivery has neither, so it needs a rate, e.g.&nbsp;<code>ss.peryear(500)</code>.</li>
+<li><strong><code>and</code>, <code>or</code>, and <code>not</code> don’t combine conditions.</strong> Use <code>&amp;</code>, <code>|</code>, and <code>~</code>, with brackets: <code>(ss.ppl.age &gt; 15) &amp; ~sis.I</code>.</li>
+<li><strong>A multiplier is relative to the base.</strong> <code>ss.modify(beta, multiply=ss.timeseries({20: 0.5, 60: 0.8}), start=20)</code> sets transmission to 80% of its base from day 60, not to 80% of the 50% before.</li>
+<li><strong>Susceptibility and infectiousness only multiply.</strong> <code>add=</code> and <code>set=</code> are for parameters; on <code>rel_sus</code> and <code>rel_trans</code>, use <code>multiply=</code>.</li>
+<li><strong>A trigger with no memory flickers.</strong> <code>where=</code> on a threshold switches the modifier on and off as the quantity crosses it; give <code>hold=</code> for a measure that stays in place once begun.</li>
+<li><strong>Read results from before this step.</strong> A function given as <code>where=</code> runs before the step’s results are written; read <code>[sim.ti - 1]</code>, not <code>[sim.ti]</code>.</li>
+</ul>
+<p>The API reference for this page: <a href="../api/interventions.html">Interventions</a>, <a href="../api/connectors.html">Connectors</a> (for <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a>).</p>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://docs.covasim.org/tutorials/tut_interventions.html">Covasim: Interventions</a>: changing transmission, testing, tracing, and vaccination in an agent-based model</li>
+<li><a href="https://epydemix.readthedocs.io/en/latest/tutorials/03_Modeling_Interventions.html">epydemix: Modeling interventions</a>: changing contacts over time in a compartmental model</li>
+<li><a href="https://emod.idmod.org/EMOD-Generic/md_model/model-campaign/">EMOD: Creating campaigns</a>: another framework’s approach to events, eligibility, and coverage of interventions</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../user_guide/interventions_products.html" class="pagination-link" aria-label="Products">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Products</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../user_guide/interventions_analyzers.html" class="pagination-link" aria-label="Analyzers">
+        <span class="nav-page-text">Analyzers</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

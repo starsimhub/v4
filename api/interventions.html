@@ -1,0 +1,2750 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>interventions – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/products.html" rel="next">
+<link href="../api/demographics.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.modules.html"><strong>Modules</strong></a></li><li class="breadcrumb-item"><a href="../api/interventions.html">interventions</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Basics</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Models</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Modules</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Workflows</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>I/O</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">library.networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><strong>Utilities</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">internals.gradients</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.crossing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.crossing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">solvers.particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.interventions" id="toc-starsim.interventions" class="nav-link active" data-scroll-target="#starsim.interventions">interventions</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.interventions.Delivery" id="toc-starsim.interventions.Delivery" class="nav-link" data-scroll-target="#starsim.interventions.Delivery">Delivery</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.interventions.Delivery.add" id="toc-starsim.interventions.Delivery.add" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.add">add</a></li>
+  <li><a href="#starsim.interventions.Delivery.age_reason" id="toc-starsim.interventions.Delivery.age_reason" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.age_reason">age_reason</a></li>
+  <li><a href="#starsim.interventions.Delivery.agent_reasons" id="toc-starsim.interventions.Delivery.agent_reasons" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.agent_reasons">agent_reasons</a></li>
+  <li><a href="#starsim.interventions.Delivery.arrivals" id="toc-starsim.interventions.Delivery.arrivals" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.arrivals">arrivals</a></li>
+  <li><a href="#starsim.interventions.Delivery.boxed" id="toc-starsim.interventions.Delivery.boxed" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.boxed">boxed</a></li>
+  <li><a href="#starsim.interventions.Delivery.check_coded" id="toc-starsim.interventions.Delivery.check_coded" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.check_coded">check_coded</a></li>
+  <li><a href="#starsim.interventions.Delivery.convert" id="toc-starsim.interventions.Delivery.convert" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.convert">convert</a></li>
+  <li><a href="#starsim.interventions.Delivery.cure" id="toc-starsim.interventions.Delivery.cure" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.cure">cure</a></li>
+  <li><a href="#starsim.interventions.Delivery.default_eligible" id="toc-starsim.interventions.Delivery.default_eligible" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.default_eligible">default_eligible</a></li>
+  <li><a href="#starsim.interventions.Delivery.delay_steps" id="toc-starsim.interventions.Delivery.delay_steps" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.delay_steps">delay_steps</a></li>
+  <li><a href="#starsim.interventions.Delivery.delayed_arrivals" id="toc-starsim.interventions.Delivery.delayed_arrivals" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.delayed_arrivals">delayed_arrivals</a></li>
+  <li><a href="#starsim.interventions.Delivery.delivered_by_function" id="toc-starsim.interventions.Delivery.delivered_by_function" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.delivered_by_function">delivered_by_function</a></li>
+  <li><a href="#starsim.interventions.Delivery.describe" id="toc-starsim.interventions.Delivery.describe" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.describe">describe</a></li>
+  <li><a href="#starsim.interventions.Delivery.dim_moves" id="toc-starsim.interventions.Delivery.dim_moves" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.dim_moves">dim_moves</a></li>
+  <li><a href="#starsim.interventions.Delivery.dims" id="toc-starsim.interventions.Delivery.dims" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.dims">dims</a></li>
+  <li><a href="#starsim.interventions.Delivery.edge_prob" id="toc-starsim.interventions.Delivery.edge_prob" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.edge_prob">edge_prob</a></li>
+  <li><a href="#starsim.interventions.Delivery.edge_sources" id="toc-starsim.interventions.Delivery.edge_sources" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.edge_sources">edge_sources</a></li>
+  <li><a href="#starsim.interventions.Delivery.eligible_now" id="toc-starsim.interventions.Delivery.eligible_now" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.eligible_now">eligible_now</a></li>
+  <li><a href="#starsim.interventions.Delivery.fire" id="toc-starsim.interventions.Delivery.fire" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.fire">fire</a></li>
+  <li><a href="#starsim.interventions.Delivery.follow" id="toc-starsim.interventions.Delivery.follow" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.follow">follow</a></li>
+  <li><a href="#starsim.interventions.Delivery.give" id="toc-starsim.interventions.Delivery.give" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.give">give</a></li>
+  <li><a href="#starsim.interventions.Delivery.hold" id="toc-starsim.interventions.Delivery.hold" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.hold">hold</a></li>
+  <li><a href="#starsim.interventions.Delivery.infected_states" id="toc-starsim.interventions.Delivery.infected_states" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.infected_states">infected_states</a></li>
+  <li><a href="#starsim.interventions.Delivery.init_pre" id="toc-starsim.interventions.Delivery.init_pre" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.init_pre">init_pre</a></li>
+  <li><a href="#starsim.interventions.Delivery.key" id="toc-starsim.interventions.Delivery.key" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.key">key</a></li>
+  <li><a href="#starsim.interventions.Delivery.key_product" id="toc-starsim.interventions.Delivery.key_product" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.key_product">key_product</a></li>
+  <li><a href="#starsim.interventions.Delivery.limit" id="toc-starsim.interventions.Delivery.limit" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.limit">limit</a></li>
+  <li><a href="#starsim.interventions.Delivery.mark_offered" id="toc-starsim.interventions.Delivery.mark_offered" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.mark_offered">mark_offered</a></li>
+  <li><a href="#starsim.interventions.Delivery.max_wait" id="toc-starsim.interventions.Delivery.max_wait" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.max_wait">max_wait</a></li>
+  <li><a href="#starsim.interventions.Delivery.moved_edges" id="toc-starsim.interventions.Delivery.moved_edges" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.moved_edges">moved_edges</a></li>
+  <li><a href="#starsim.interventions.Delivery.n_agents" id="toc-starsim.interventions.Delivery.n_agents" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.n_agents">n_agents</a></li>
+  <li><a href="#starsim.interventions.Delivery.n_selected" id="toc-starsim.interventions.Delivery.n_selected" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.n_selected">n_selected</a></li>
+  <li><a href="#starsim.interventions.Delivery.new_spells" id="toc-starsim.interventions.Delivery.new_spells" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.new_spells">new_spells</a></li>
+  <li><a href="#starsim.interventions.Delivery.offer" id="toc-starsim.interventions.Delivery.offer" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.offer">offer</a></li>
+  <li><a href="#starsim.interventions.Delivery.people" id="toc-starsim.interventions.Delivery.people" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.people">people</a></li>
+  <li><a href="#starsim.interventions.Delivery.per_state" id="toc-starsim.interventions.Delivery.per_state" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.per_state">per_state</a></li>
+  <li><a href="#starsim.interventions.Delivery.receive" id="toc-starsim.interventions.Delivery.receive" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.receive">receive</a></li>
+  <li><a href="#starsim.interventions.Delivery.report" id="toc-starsim.interventions.Delivery.report" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.report">report</a></li>
+  <li><a href="#starsim.interventions.Delivery.row" id="toc-starsim.interventions.Delivery.row" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.row">row</a></li>
+  <li><a href="#starsim.interventions.Delivery.score" id="toc-starsim.interventions.Delivery.score" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.score">score</a></li>
+  <li><a href="#starsim.interventions.Delivery.serve" id="toc-starsim.interventions.Delivery.serve" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.serve">serve</a></li>
+  <li><a href="#starsim.interventions.Delivery.serve_queue" id="toc-starsim.interventions.Delivery.serve_queue" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.serve_queue">serve_queue</a></li>
+  <li><a href="#starsim.interventions.Delivery.shift" id="toc-starsim.interventions.Delivery.shift" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.shift">shift</a></li>
+  <li><a href="#starsim.interventions.Delivery.skip_past" id="toc-starsim.interventions.Delivery.skip_past" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.skip_past">skip_past</a></li>
+  <li><a href="#starsim.interventions.Delivery.step" id="toc-starsim.interventions.Delivery.step" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.step">step</a></li>
+  <li><a href="#starsim.interventions.Delivery.step_results" id="toc-starsim.interventions.Delivery.step_results" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.step_results">step_results</a></li>
+  <li><a href="#starsim.interventions.Delivery.take" id="toc-starsim.interventions.Delivery.take" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.take">take</a></li>
+  <li><a href="#starsim.interventions.Delivery.tally" id="toc-starsim.interventions.Delivery.tally" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.tally">tally</a></li>
+  <li><a href="#starsim.interventions.Delivery.test" id="toc-starsim.interventions.Delivery.test" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.test">test</a></li>
+  <li><a href="#starsim.interventions.Delivery.tiebreak" id="toc-starsim.interventions.Delivery.tiebreak" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.tiebreak">tiebreak</a></li>
+  <li><a href="#starsim.interventions.Delivery.trigger_disease" id="toc-starsim.interventions.Delivery.trigger_disease" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.trigger_disease">trigger_disease</a></li>
+  <li><a href="#starsim.interventions.Delivery.typed_function" id="toc-starsim.interventions.Delivery.typed_function" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.typed_function">typed_function</a></li>
+  <li><a href="#starsim.interventions.Delivery.update_results" id="toc-starsim.interventions.Delivery.update_results" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.update_results">update_results</a></li>
+  <li><a href="#starsim.interventions.Delivery.use" id="toc-starsim.interventions.Delivery.use" class="nav-link" data-scroll-target="#starsim.interventions.Delivery.use">use</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.interventions.Intervention" id="toc-starsim.interventions.Intervention" class="nav-link" data-scroll-target="#starsim.interventions.Intervention">Intervention</a>
+  <ul class="collapse">
+  <li><a href="#parameters-4" id="toc-parameters-4" class="nav-link" data-scroll-target="#parameters-4">Parameters</a></li>
+  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1">Attributes</a></li>
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.interventions.Intervention.check_eligibility" id="toc-starsim.interventions.Intervention.check_eligibility" class="nav-link" data-scroll-target="#starsim.interventions.Intervention.check_eligibility">check_eligibility</a></li>
+  <li><a href="#starsim.interventions.Intervention.init_pre" id="toc-starsim.interventions.Intervention.init_pre" class="nav-link" data-scroll-target="#starsim.interventions.Intervention.init_pre">init_pre</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.interventions.screen" id="toc-starsim.interventions.screen" class="nav-link" data-scroll-target="#starsim.interventions.screen">screen</a>
+  <ul class="collapse">
+  <li><a href="#examples-1" id="toc-examples-1" class="nav-link" data-scroll-target="#examples-1">Examples</a></li>
+  </ul></li>
+  <li><a href="#starsim.interventions.treat" id="toc-starsim.interventions.treat" class="nav-link" data-scroll-target="#starsim.interventions.treat">treat</a>
+  <ul class="collapse">
+  <li><a href="#examples-2" id="toc-examples-2" class="nav-link" data-scroll-target="#examples-2">Examples</a></li>
+  </ul></li>
+  <li><a href="#starsim.interventions.vaccinate" id="toc-starsim.interventions.vaccinate" class="nav-link" data-scroll-target="#starsim.interventions.vaccinate">vaccinate</a>
+  <ul class="collapse">
+  <li><a href="#examples-3" id="toc-examples-3" class="nav-link" data-scroll-target="#examples-3">Examples</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
+  <ul>
+  <li><a href="#starsim.interventions.check_undriven" id="toc-starsim.interventions.check_undriven" class="nav-link" data-scroll-target="#starsim.interventions.check_undriven">check_undriven</a></li>
+  <li><a href="#starsim.interventions.coded_disease" id="toc-starsim.interventions.coded_disease" class="nav-link" data-scroll-target="#starsim.interventions.coded_disease">coded_disease</a></li>
+  <li><a href="#starsim.interventions.fired" id="toc-starsim.interventions.fired" class="nav-link" data-scroll-target="#starsim.interventions.fired">fired</a></li>
+  <li><a href="#starsim.interventions.flush_memory" id="toc-starsim.interventions.flush_memory" class="nav-link" data-scroll-target="#starsim.interventions.flush_memory">flush_memory</a></li>
+  <li><a href="#starsim.interventions.memory_needs" id="toc-starsim.interventions.memory_needs" class="nav-link" data-scroll-target="#starsim.interventions.memory_needs">memory_needs</a></li>
+  <li><a href="#starsim.interventions.modules_of" id="toc-starsim.interventions.modules_of" class="nav-link" data-scroll-target="#starsim.interventions.modules_of">modules_of</a></li>
+  <li><a href="#starsim.interventions.movers" id="toc-starsim.interventions.movers" class="nav-link" data-scroll-target="#starsim.interventions.movers">movers</a></li>
+  <li><a href="#starsim.interventions.order_steps" id="toc-starsim.interventions.order_steps" class="nav-link" data-scroll-target="#starsim.interventions.order_steps">order_steps</a></li>
+  <li><a href="#starsim.interventions.product_keys" id="toc-starsim.interventions.product_keys" class="nav-link" data-scroll-target="#starsim.interventions.product_keys">product_keys</a></li>
+  <li><a href="#starsim.interventions.remembered" id="toc-starsim.interventions.remembered" class="nav-link" data-scroll-target="#starsim.interventions.remembered">remembered</a></li>
+  <li><a href="#starsim.interventions.trigger_moves" id="toc-starsim.interventions.trigger_moves" class="nav-link" data-scroll-target="#starsim.interventions.trigger_moves">trigger_moves</a>
+  <ul class="collapse">
+  <li><a href="#parameters-6" id="toc-parameters-6" class="nav-link" data-scroll-target="#parameters-6">Parameters</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.modules.html"><strong>Modules</strong></a></li><li class="breadcrumb-item"><a href="../api/interventions.html">interventions</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.interventions" class="level1">
+<h1>interventions</h1>
+<p><a href="../api/interventions.html#starsim.interventions" title="0"><code>interventions</code></a></p>
+<p>Interventions, which change the course of a sim during a run</p>
+<p>Interventions typically include things like testing, treatment, and vaccination. A delivery (<a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a>, and <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a>) gives a product to the people chosen, and exists so that the same intervention can be written once and run under any solver. It also works with a disease written as code, as agents.</p>
+<p>Used with: agents and compartments; declared and coded modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery">Delivery</a></td>
+<td>Deliver a product, or move people along a stratification; see <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Intervention">Intervention</a></td>
+<td>Base class for interventions.</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.screen">screen</a></td>
+<td>Deliver a diagnostic test; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.treat">treat</a></td>
+<td>Deliver a treatment; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.vaccinate">vaccinate</a></td>
+<td>Deliver a vaccine; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.interventions.Delivery" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.Delivery">Delivery</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    what<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    who<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    move<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    increment<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    stop<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    at<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    interval<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    where<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    coverage<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    capacity<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    deliver<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    trace<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    priority<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    queue<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    delay<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    disease<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    at_age<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    strain<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver a product, or move people along a stratification; see <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a></p>
+<p>Who receives it is <code>who=</code>: a condition on people (who is eligible), or an event (the people it happened to); <code>where=</code> is anything else it depends on, including an event, and <code>when=</code> a condition on time. With an event in <code>who=</code> or <code>where=</code>, delivery is triggered: it reaches the people the event happened to on this step who meet the conditions. Otherwise, with <code>at</code> or <code>interval</code>, delivery happens in rounds, and in each round every eligible person is offered the product once; and with neither, delivery is routine: each person is offered the product once, at the first step on which they are eligible.</p>
+<p>A delivery is an event too (the people it reached on the step), and so is each outcome of it (a test’s <code>positive</code> and <code>negative</code>, a cure’s <code>cured</code>, <code>failed</code>, and <code>unneeded</code>): a follow-up is a step of its own, triggered by one (<code>ss.treat(drug, who=screening.positive)</code>), and runs after it in the same step. Each event remembers per person whether (<code>.ever</code>), how often (<code>.count</code>), and how long ago (<code>.since</code>) it happened, including on this step once the delivery has run. With no product and no move, a delivery is a step people attend (e.g.&nbsp;a clinic visit): its event is who attended, which several steps can take. <code>delivery.reached()</code> is the UIDs of the people it reached on the step (agents only).</p>
+<p>Its methods are how it runs as agents; in a compartmental run, what differs is <code>delivery.in_compartments</code> (see <code>ss.solvers.CompartmentalDelivery</code>). A product whose effect is code of your own is an <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a> with an <code>administer(uids)</code> method.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>what</td>
+<td><a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a></td>
+<td>what is delivered: an <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>, <a href="../api/products.html#starsim.products.Diagnostic" title="0"><code>ss.Diagnostic</code></a>, or <a href="../api/products.html#starsim.products.Treatment" title="0"><code>ss.Treatment</code></a>, or a product written as code (an <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a> with an <code>administer()</code>), which any of them can give (also the first argument); <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a> instead take the product’s own keywords and make it, e.g.&nbsp;<code>ss.vaccinate(efficacy=0.9, ...)</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>who</td>
+<td><code>Cond</code> / <code>event</code></td>
+<td>who receives it, which must choose people or compartments: a condition on them (e.g.&nbsp;<code>ss.ppl.age &lt; 5</code>), an event (e.g.&nbsp;<code>sir.infection</code>, <code>screening.positive</code>, or a delivery), or a combination with <code>&amp;</code> and <code>\|</code> (an event <code>\|</code> a condition raises, being neither triggered nor routine); a condition on the population or a function goes in <code>where=</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>move</td>
+<td><a href="../api/transitions.html#starsim.transitions.Transition">Transition</a> / <code>dict</code> / <code>StrainMove</code></td>
+<td>instead of a product, a move between two states for the people reached, written with the states, e.g.&nbsp;<code>move=S &gt;&gt; V</code> (a one-off campaign), or from any of several (<code>move=U + P + W &gt;&gt; P</code>: a re-dose, which restarts the time in <code>P</code> of those already there); or the level of a stratification they move to, e.g.&nbsp;<code>move=dict(vaccinated=True)</code>, or from one level to another, <code>move=dict(risk=('low', 'high'))</code>; or a change of strains, e.g.&nbsp;<code>move=DS &gt;&gt; RIF</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>strain</td>
+<td><code>str</code> / <code>Strain</code></td>
+<td>with <code>move=</code> into a state where people carry a strain (e.g.&nbsp;<code>move=S &gt;&gt; E</code>), the strain they arrive with: the import of a strain on a date, e.g.&nbsp;<code>ss.Delivery(move=S &gt;&gt; E, strain='alpha', at=['2021-01-01'], capacity=20)</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>increment</td>
+<td><code>str</code> / <code>dict</code></td>
+<td>instead of a product, a counter that goes up for the people reached: its name, which adds 1 (<code>increment='doses'</code>), or a dict of the amount for each (<code>dict(doses=2)</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>at_age</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <code>float</code></td>
+<td>routine delivery to people as they reach this age (a bare number is in years), e.g.&nbsp;<code>at_age=ss.months(9)</code>; not to people already past it when delivery starts, nor (as agents) to those who arrive past it later, e.g.&nbsp;immigrants. As compartments, people reach it by aging into the age group it starts, so the sim needs age groups with an edge at the age (an error otherwise)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>start</td>
+<td><a href="../api/internals.dates.html#starsim.internals.dates.date">date</a> / <code>float</code></td>
+<td>when delivery starts, within the sim (default: the start of the sim); a number is a calendar year from 1900 on (e.g.&nbsp;<code>2030</code>), and otherwise a time in the sim’s unit (in a sim with dates, that long after the start)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>stop</td>
+<td><a href="../api/internals.dates.html#starsim.internals.dates.date">date</a> / <code>float</code></td>
+<td>when delivery stops (default: never); a stop after the end of the sim never stops it</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>at</td>
+<td><code>list</code></td>
+<td>deliver in rounds at these times (a campaign), each within the sim: dates, or numbers, read as <code>start</code> is</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>interval</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a></td>
+<td>deliver in rounds this far apart, between <code>start</code> and <code>stop</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>where</td>
+<td><code>Cond</code> / <code>event</code> / <code>str</code> / <code>func</code></td>
+<td>anything else it depends on, joined to who= with <code>&amp;</code>: a condition on the population (e.g.&nbsp;<code>sir.I.n &gt; 1000</code>), an event, which triggers it (e.g.&nbsp;<code>where=sir.infection</code>, or a transition by its path, <code>where='sir.infection'</code>, found when the sim is initialized), a condition on people, or a function of the sim</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>coverage</td>
+<td><code>float</code></td>
+<td>the fraction of eligible people reached; also <code>ss.by(...)</code>, a function of the sim returning a probability per person, or a typed rate or probability (e.g.&nbsp;<code>ss.perday(0.1)</code>, <code>ss.probperyear(0.5)</code>): the chance over the step or the round (and, for routine delivery, offered at every step to those eligible)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>capacity</td>
+<td><code>float</code></td>
+<td>the number that can be delivered: a number per round (or per step, for delivery on events or by a function), or a rate (e.g.&nbsp;<code>ss.peryear(50_000)</code>), which routine delivery needs; a rate in rounds gives what accrues between them</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>priority</td>
+<td><code>Cond</code> / <code>list</code> / <code>Expr</code> / <code>func</code></td>
+<td>who is served first when not everyone can be (under <code>capacity=</code>): a condition, or a list of them served in order (all of the first, then the second); a score, highest first: an expression (e.g.&nbsp;<code>-hiv.cd4</code>, the lowest CD4 first) or a function of the sim (or of <code>(sim, uids)</code>, agents only); or a list of conditions and scores, each breaking the ties of the ones before (e.g.&nbsp;<code>[due, ss.ppl.age]</code>, those due first, and among them the oldest); other ties are broken at random</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>queue</td>
+<td><code>bool</code> / <a href="../api/internals.time.html#starsim.internals.time.dur">dur</a></td>
+<td>what happens to people not served for lack of capacity (agents only): None (the default), they are lost; True, they wait until served; a duration, they wait at most that long, and those still waiting then are the outcome <code>never_ran</code>. Those waiting are served before anyone newly reached in their class (longest first), and leave the queue if they stop being eligible (<code>left</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>delay</td>
+<td><a href="../api/internals.time.html#starsim.internals.time.dur">dur</a> / <a href="../api/internals.dists.html#starsim.internals.dists.Dist">Dist</a></td>
+<td>for a triggered step, the time from the trigger to delivery (agents only): a duration, or a distribution of durations, drawn per person (e.g.&nbsp;<code>ss.uniform(ss.months(1), ss.months(8))</code>). The people triggered receive it then if they are eligible then (who=’s condition, and coverage=, are applied when it is due); someone waiting is not triggered again</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>trace</td>
+<td><code>str</code> / <a href="../api/networks.html#starsim.networks.Network">Network</a> / <code>list</code></td>
+<td>contact tracing: deliver to the contacts, in this network (or these), of the people that the event in who= selects, instead of to them; the condition and <code>coverage=</code> then apply to the contacts. Agents only, since only networks know who someone’s contacts are. A network with <code>memory=</code> also gives the partnerships of that long ago that have ended (e.g.&nbsp;<code>ss.DegreeNet(..., memory=ss.months(12))</code>, to notify the partners of the past year)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>when</td>
+<td><code>func</code></td>
+<td>deliver only on the steps where this function of the timeline returns True (e.g.&nbsp;<code>lambda t: t.ti % 7 == 0</code>); a condition on anything but time goes in <code>where=</code></td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>deliver</td>
+<td><code>func</code></td>
+<td>a function of the sim returning who receives it this step (UIDs, or a number per group in a compartmental run); replaces <code>where</code>, <code>coverage</code>, and the rounds</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>disease</td>
+<td><code>str</code></td>
+<td>the disease the product acts on (default: the only one)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td><code>str</code></td>
+<td>the name; if not given, taken from the variable the delivery is assigned to</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td><code>str</code></td>
+<td>a human-readable name</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Seeding: three people, chosen from everyone susceptible, infected every 30 days for ten years</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>seeds <span class="op">=</span> ss.Delivery(move<span class="op">=</span>S <span class="op">&gt;&gt;</span> I, capacity<span class="op">=</span><span class="dv">3</span>, start<span class="op">=</span>ss.days(<span class="dv">30</span>), interval<span class="op">=</span>ss.days(<span class="dv">30</span>), stop<span class="op">=</span>ss.years(<span class="dv">10</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># A move along a stratification for 70% of people in two rounds, e.g. a campaign that leaves a mark</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>rollout <span class="op">=</span> ss.Delivery(move<span class="op">=</span><span class="bu">dict</span>(vaccinated<span class="op">=</span><span class="va">True</span>), coverage<span class="op">=</span><span class="fl">0.7</span>, at<span class="op">=</span>[<span class="dv">5</span>, <span class="dv">30</span>], who<span class="op">=~</span>sir.vaccinated)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Each round of a campaign adds a dose (with sim.stratify(doses=[0, 1, 2, 3]))</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>campaign <span class="op">=</span> ss.Delivery(increment<span class="op">=</span><span class="st">'doses'</span>, coverage<span class="op">=</span><span class="fl">0.6</span>, at<span class="op">=</span>[<span class="dv">2025</span>, <span class="dv">2026</span>, <span class="dv">2027</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># A test, and a treatment of those who test positive, as two steps</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>screening <span class="op">=</span> ss.screen(sensitivity<span class="op">=</span><span class="fl">0.9</span>, specificity<span class="op">=</span><span class="fl">0.95</span>, who<span class="op">=</span>ss.ppl.age <span class="op">&gt;</span> <span class="dv">30</span>, coverage<span class="op">=</span><span class="fl">0.4</span>, interval<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>treatment <span class="op">=</span> ss.treat(cure<span class="op">=</span><span class="fl">0.95</span>, who<span class="op">=</span>screening.positive, coverage<span class="op">=</span><span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.age_years">age_years</a></td>
+<td>With <code>at_age=</code>: the age, in years</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.cost">cost</a></td>
+<td>The cost of each delivery: its product’s</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.dis">dis</a></td>
+<td>The disease the product acts on: declared, or written as code</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.disease">disease</a></td>
+<td>The disease whose engine evaluates the conditions: as given, else the one whose states move= names, else the first that the product names, else the first declared disease its conditions name</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.dt_sim">dt_sim</a></td>
+<td>The timestep, in the sim’s unit</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.eng">eng</a></td>
+<td>The engine of the disease, which applies its effects (see <code>ss.solvers.Effects</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.holds">holds</a></td>
+<td>Whether people hold what is delivered</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.move_arrow">move_arrow</a></td>
+<td>With move= between states: the move, as written (<code>S &gt;&gt; V</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.move_names">move_names</a></td>
+<td>With move= between states: the names of the states it moves people from, and the one it moves them to</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.remembers">remembers</a></td>
+<td>Whether the model has to record who has been offered the product; not if everyone eligible receives something they then hold for good, nor for a rate among those eligible</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.routine">routine</a></td>
+<td>Whether each person is offered the product once, at the first step on which they are eligible</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.span">span</a></td>
+<td>The time this delivery stands for now: the step, or the round</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.tabulated">tabulated</a></td>
+<td>Whether the kernels can take this delivery in a whole run (see <code>ss.kernels.apply_shifts()</code>): in a compartmental run of one disease, a</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.waits">waits</a></td>
+<td>Whether the results of the test it delivers come after a delay</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.add">add</a></td>
+<td>Add people to a result (and to its part for one disease and transition): agents by UID, or people by group</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.age_reason">age_reason</a></td>
+<td>With <code>at_age=</code>: why a compartmental run cannot deliver it, or None. As compartments, people reach the age by aging from</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.agent_reasons">agent_reasons</a></td>
+<td>The reasons, if any, that this delivery needs agents (a priority per agent is ignored by a compartmental solver that was asked for, with a note: see <code>key()</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.arrivals">arrivals</a></td>
+<td>Who is offered it now, before eligibility: everyone, or those its event happened to (with delay=, those it happened to the delay ago)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.boxed">boxed</a></td>
+<td>Whether holding the product has the levels of a box in this sim: in a compartmental run, for a product that wanes as an <a href="../api/products.html#starsim.products.box" title="0"><code>ss.box</code></a> (see <code>ss.Held.box_form</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.check_coded">check_coded</a></td>
+<td>For a disease written as code (PL2): agents only, and it has the parts the product uses, or this raises naming the missing one</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.convert">convert</a></td>
+<td>Convert a typed quantity to a plain number in the sim’s unit</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.cure">cure</a></td>
+<td>Move the people treated along the transitions of the treatment (see <a href="../api/products.html#starsim.products.Treatment" title="0"><code>ss.Treatment</code></a>), and record the outcomes as results</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.default_eligible">default_eligible</a></td>
+<td>Who is eligible if nothing is said: for a treatment that is not triggered, the people it can cure (those in the sources of its moves, or who are infected)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.delay_steps">delay_steps</a></td>
+<td>The number of steps from the trigger to delivery, with a fixed delay=</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.delayed_arrivals">delayed_arrivals</a></td>
+<td>With delay= (agents only): those triggered now start waiting (unless waiting already), and those whose wait is over arrive</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.delivered_by_function">delivered_by_function</a></td>
+<td>Who the deliver= function says receives the product: UIDs, or a number of people per group</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.describe">describe</a></td>
+<td>A line saying what is delivered and how</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.dim_moves">dim_moves</a></td>
+<td>Movement along those properties that happens by itself: losing the protection of a product (at a rate, or through the levels of a box)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.dims">dims</a></td>
+<td>The properties of people that this delivery needs, as stratifications where everyone starts at the first level</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.edge_prob">edge_prob</a></td>
+<td>The probability of moving along one of the treatment’s transitions: its own (a number, or a dict by state), times the modifiers of the transition if it is undriven (scalar, per agent, or per state and group)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.edge_sources">edge_sources</a></td>
+<td>The condition of being in a source state of a transition the treatment moves people along</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.eligible_now">eligible_now</a></td>
+<td>Who can receive it now: eligible, in a state a move is from (or carrying the strains a change of strains is from), not holding it already (unless <code>held=False</code>, or its protection fades by a function of time, when a new dose restarts it), and not at the level a transfer moves them to</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.fire">fire</a></td>
+<td>Record an event of this delivery, which is one of its product too (see <a href="../api/products.html#starsim.products.EventSource" title="0"><code>ss.products.EventSource</code></a>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.follow">follow</a></td>
+<td>Move the selected people to other levels of some dimensions; returns those chosen among them, as they now are</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.give">give</a></td>
+<td>Deliver the product to the people chosen, and record them (and the outcomes) as its events</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.hold">hold</a></td>
+<td>Those chosen now hold the product: at level 1, or with doses (<code>doses=</code>), the next dose</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.infected_states">infected_states</a></td>
+<td>The infected states of the disease, which a test with no detects= finds and a treatment with no where= is for; raises if there are none (TL52: nobody was found, with no message)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.init_pre">init_pre</a></td>
+<td>Find the disease and the product, check them against the sim, and set up what is delivered</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.key">key</a></td>
+<td>The order in which each agent, or each state and group, is served (lowest first), or None for a random order: a</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.key_product">key_product</a></td>
+<td>For a delivery for several diseases (<code>disease=[...]</code>): their names, as the sim has them, and the product keyed by them</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.limit">limit</a></td>
+<td>The most people that can be served now: what is left of the capacity this step</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.mark_offered">mark_offered</a></td>
+<td>Record that the selected people have been offered the product; returns those chosen, as they now are</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.max_wait">max_wait</a></td>
+<td>The most steps anyone waits (inf for queue=True)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.moved_edges">moved_edges</a></td>
+<td>The transitions the product moves people along, as (disease, transition) names, once initialized</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.n_agents">n_agents</a></td>
+<td>As agents, the number of agents selected</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.n_selected">n_selected</a></td>
+<td>The number of people selected, as results count them (see <a href="../api/results.html#starsim.results.people_scale" title="0"><code>ss.results.people_scale()</code></a>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.new_spells">new_spells</a></td>
+<td>Routine delivery is once per spell of being eligible: those offered it who are no longer eligible can be offered it again when they are</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.offer">offer</a></td>
+<td>Those of some people who are eligible: not holding the product already, not yet offered it (for routine delivery), and so on</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.people">people</a></td>
+<td>The number of people selected, whatever the results count in</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.per_state">per_state</a></td>
+<td>A value for each state (each a number or an <code>ss.by</code>), as a value for each agent, or each state and group (of <code>eng</code>, the delivery’s disease by default)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.receive">receive</a></td>
+<td>Offer the product to some people: those eligible among them, thinned by coverage, served within capacity, and recorded as offered it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.report">report</a></td>
+<td>Count the results, from the least severe (see <a href="../api/products.html#starsim.products.Diagnostic.result_names" title="0"><code>ss.Diagnostic.result_names</code></a>), and record the people with each as an event, which the steps that follow it act on</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.row">row</a></td>
+<td>The row of the results by group that time point ti is in</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.score">score</a></td>
+<td>A priority given as a score (served highest first), per agent or per state and group</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.serve">serve</a></td>
+<td>Who is served now, of those chosen (and those waiting, with <code>queue=</code>), within what is left of the capacity; returns those offered and those served</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.serve_queue">serve_queue</a></td>
+<td>Serve those waiting and those just chosen, by priority and then by how long they have waited; the rest wait, until queue=</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.shift">shift</a></td>
+<td>Move the selected people to other levels of some dimensions (<code>mover</code> is the event they are, if known, which a compartmental run uses)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.skip_past">skip_past</a></td>
+<td>For <code>at_age=</code>: the people already past the age are recorded as offered it, so only those who reach the age get it: on its</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.step">step</a></td>
+<td>Deliver the product to whoever it is due to in this step (at its time point, as for all code in a step: see <code>ss.Loop</code>), before the disease’s transitions in it, under every solver</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.step_results">step_results</a></td>
+<td>Act on the test results that have become available (agents only)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.take">take</a></td>
+<td>Choose <code>n</code> people (a number of people, not agents) from the candidates, in the order of <code>priority=</code>: as agents,</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.tally">tally</a></td>
+<td>Add the people selected to a result, in total and by group; returns the total</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.test">test</a></td>
+<td>Work out the result of each test (one draw per person, from the probability of each result: see <a href="../api/products.html#starsim.products.Diagnostic.tails" title="0"><code>ss.Diagnostic.tails()</code></a>), and either act on it or wait for it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.tiebreak">tiebreak</a></td>
+<td>A random number per agent, the same for every choice of the step (from the delivery’s own stream, so scenarios stay paired)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.trigger_disease">trigger_disease</a></td>
+<td>The disease of the first transition or delivery in the event that triggers this delivery, if any</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.typed_function">typed_function</a></td>
+<td>Whether the coverage is a function of the sim that gives a typed rate (e.g.&nbsp;<code>lambda sim: ss.peryear(4)</code>): worked out the first time it can be called</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.Delivery.update_results">update_results</a></td>
+<td>The coverage of what was delivered in the step</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Delivery.use">use</a></td>
+<td>Record the people served, against the capacity of the step</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.interventions.Delivery.add" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.add">add</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.add(key, uids<span class="op">=</span><span class="va">None</span>, groups<span class="op">=</span><span class="va">None</span>, part<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add people to a result (and to its part for one disease and transition): agents by UID, or people by group</p>
+</section>
+<section id="starsim.interventions.Delivery.age_reason" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.age_reason">age_reason</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.age_reason(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>With <code>at_age=</code>: why a compartmental run cannot deliver it, or None. As compartments, people reach the age by aging from the age group below it into the one it starts, so the sim needs age groups with an edge at the age. It is an error rather than a reason for <code>solver='auto'</code> to run as agents (see <code>ss.solvers.init_capabilities()</code>), since a comparison with a baseline without it would then compare two solvers.</p>
+</section>
+<section id="starsim.interventions.Delivery.agent_reasons" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.agent_reasons">agent_reasons</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.agent_reasons(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The reasons, if any, that this delivery needs agents (a priority per agent is ignored by a compartmental solver that was asked for, with a note: see <code>key()</code>)</p>
+</section>
+<section id="starsim.interventions.Delivery.arrivals" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.arrivals">arrivals</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.arrivals()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who is offered it now, before eligibility: everyone, or those its event happened to (with delay=, those it happened to the delay ago)</p>
+</section>
+<section id="starsim.interventions.Delivery.boxed" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.boxed">boxed</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.boxed(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether holding the product has the levels of a box in this sim: in a compartmental run, for a product that wanes as an <a href="../api/products.html#starsim.products.box" title="0"><code>ss.box</code></a> (see <code>ss.Held.box_form</code>)</p>
+</section>
+<section id="starsim.interventions.Delivery.check_coded" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.check_coded">check_coded</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.check_coded(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For a disease written as code (PL2): agents only, and it has the parts the product uses, or this raises naming the missing one</p>
+</section>
+<section id="starsim.interventions.Delivery.convert" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.convert">convert</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.convert(val)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Convert a typed quantity to a plain number in the sim’s unit</p>
+</section>
+<section id="starsim.interventions.Delivery.cure" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.cure">cure</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.cure(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the people treated along the transitions of the treatment (see <a href="../api/products.html#starsim.products.Treatment" title="0"><code>ss.Treatment</code></a>), and record the outcomes as results and events: each person in a source of one of a disease’s moves along it with its probability (<code>cured</code>), or does not (<code>failed</code>); one in none is <code>unneeded</code>.</p>
+</section>
+<section id="starsim.interventions.Delivery.default_eligible" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.default_eligible">default_eligible</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.default_eligible()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who is eligible if nothing is said: for a treatment that is not triggered, the people it can cure (those in the sources of its moves, or who are infected)</p>
+</section>
+<section id="starsim.interventions.Delivery.delay_steps" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.delay_steps">delay_steps</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.delay_steps(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of steps from the trigger to delivery, with a fixed delay=</p>
+</section>
+<section id="starsim.interventions.Delivery.delayed_arrivals" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.delayed_arrivals">delayed_arrivals</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.delayed_arrivals(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>With delay= (agents only): those triggered now start waiting (unless waiting already), and those whose wait is over arrive</p>
+</section>
+<section id="starsim.interventions.Delivery.delivered_by_function" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.delivered_by_function">delivered_by_function</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.delivered_by_function()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who the deliver= function says receives the product: UIDs, or a number of people per group</p>
+</section>
+<section id="starsim.interventions.Delivery.describe" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.describe">describe</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A line saying what is delivered and how</p>
+</section>
+<section id="starsim.interventions.Delivery.dim_moves" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.dim_moves">dim_moves</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.dim_moves(sim<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Movement along those properties that happens by itself: losing the protection of a product (at a rate, or through the levels of a box)</p>
+</section>
+<section id="starsim.interventions.Delivery.dims" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.dims">dims</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.dims(sim<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The properties of people that this delivery needs, as stratifications where everyone starts at the first level</p>
+</section>
+<section id="starsim.interventions.Delivery.edge_prob" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.edge_prob">edge_prob</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.edge_prob(e, eng, state<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The probability of moving along one of the treatment’s transitions: its own (a number, or a dict by state), times the modifiers of the transition if it is undriven (scalar, per agent, or per state and group)</p>
+</section>
+<section id="starsim.interventions.Delivery.edge_sources" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.edge_sources">edge_sources</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.edge_sources()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The condition of being in a source state of a transition the treatment moves people along</p>
+</section>
+<section id="starsim.interventions.Delivery.eligible_now" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.eligible_now">eligible_now</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.eligible_now(held<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who can receive it now: eligible, in a state a move is from (or carrying the strains a change of strains is from), not holding it already (unless <code>held=False</code>, or its protection fades by a function of time, when a new dose restarts it), and not at the level a transfer moves them to</p>
+</section>
+<section id="starsim.interventions.Delivery.fire" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.fire">fire</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.fire(outcome, sel, eng<span class="op">=</span><span class="va">None</span>, before<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record an event of this delivery, which is one of its product too (see <a href="../api/products.html#starsim.products.EventSource" title="0"><code>ss.products.EventSource</code></a>)</p>
+</section>
+<section id="starsim.interventions.Delivery.follow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.follow">follow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.follow(sel, chosen, changes, mover<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the selected people to other levels of some dimensions; returns those chosen among them, as they now are</p>
+</section>
+<section id="starsim.interventions.Delivery.give" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.give">give</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.give(chosen, capped<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver the product to the people chosen, and record them (and the outcomes) as its events</p>
+</section>
+<section id="starsim.interventions.Delivery.hold" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.hold">hold</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.hold(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Those chosen now hold the product: at level 1, or with doses (<code>doses=</code>), the next dose</p>
+</section>
+<section id="starsim.interventions.Delivery.infected_states" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.infected_states">infected_states</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.infected_states()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The infected states of the disease, which a test with no detects= finds and a treatment with no where= is for; raises if there are none (TL52: nobody was found, with no message)</p>
+</section>
+<section id="starsim.interventions.Delivery.init_pre" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.init_pre">init_pre</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.init_pre(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Find the disease and the product, check them against the sim, and set up what is delivered</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim">Sim</a></td>
+<td>the sim being initialized</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.interventions.Delivery.key" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.key">key</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.key(strict<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The order in which each agent, or each state and group, is served (lowest first), or None for a random order: a condition’s people (or the first of a list’s) first, then the next; or the highest score first</p>
+<section id="parameters-2" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 10%">
+<col style="width: 75%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strict</td>
+<td><code>bool</code></td>
+<td>in a compartmental run, raise <code>ss.CapabilityError</code> for a priority that is per agent, rather than ignoring it with a note</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.interventions.Delivery.key_product" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.key_product">key_product</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.key_product(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For a delivery for several diseases (<code>disease=[...]</code>): their names, as the sim has them, and the product keyed by them</p>
+</section>
+<section id="starsim.interventions.Delivery.limit" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.limit">limit</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.limit()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The most people that can be served now: what is left of the capacity this step</p>
+</section>
+<section id="starsim.interventions.Delivery.mark_offered" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.mark_offered">mark_offered</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.mark_offered(sel, chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record that the selected people have been offered the product; returns those chosen, as they now are</p>
+</section>
+<section id="starsim.interventions.Delivery.max_wait" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.max_wait">max_wait</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.max_wait(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The most steps anyone waits (inf for queue=True)</p>
+</section>
+<section id="starsim.interventions.Delivery.moved_edges" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.moved_edges">moved_edges</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.moved_edges()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The transitions the product moves people along, as (disease, transition) names, once initialized</p>
+</section>
+<section id="starsim.interventions.Delivery.n_agents" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.n_agents">n_agents</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.n_agents(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>As agents, the number of agents selected</p>
+</section>
+<section id="starsim.interventions.Delivery.n_selected" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.n_selected">n_selected</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.n_selected(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of people selected, as results count them (see <a href="../api/results.html#starsim.results.people_scale" title="0"><code>ss.results.people_scale()</code></a>)</p>
+</section>
+<section id="starsim.interventions.Delivery.new_spells" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.new_spells">new_spells</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.new_spells()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Routine delivery is once per spell of being eligible: those offered it who are no longer eligible can be offered it again when they are</p>
+</section>
+<section id="starsim.interventions.Delivery.offer" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.offer">offer</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.offer(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Those of some people who are eligible: not holding the product already, not yet offered it (for routine delivery), and so on</p>
+</section>
+<section id="starsim.interventions.Delivery.people" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.people">people</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.people(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The number of people selected, whatever the results count in</p>
+</section>
+<section id="starsim.interventions.Delivery.per_state" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.per_state">per_state</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.per_state(values, what, eng<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A value for each state (each a number or an <code>ss.by</code>), as a value for each agent, or each state and group (of <code>eng</code>, the delivery’s disease by default)</p>
+</section>
+<section id="starsim.interventions.Delivery.receive" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.receive">receive</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.receive(sel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Offer the product to some people: those eligible among them, thinned by coverage, served within capacity, and recorded as offered it</p>
+</section>
+<section id="starsim.interventions.Delivery.report" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.report">report</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.report(sels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Count the results, from the least severe (see <a href="../api/products.html#starsim.products.Diagnostic.result_names" title="0"><code>ss.Diagnostic.result_names</code></a>), and record the people with each as an event, which the steps that follow it act on</p>
+</section>
+<section id="starsim.interventions.Delivery.row" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.row">row</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.row(ti)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The row of the results by group that time point ti is in</p>
+</section>
+<section id="starsim.interventions.Delivery.score" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.score">score</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.score(val)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A priority given as a score (served highest first), per agent or per state and group</p>
+</section>
+<section id="starsim.interventions.Delivery.serve" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.serve">serve</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.serve(sel, chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Who is served now, of those chosen (and those waiting, with <code>queue=</code>), within what is left of the capacity; returns those offered and those served</p>
+</section>
+<section id="starsim.interventions.Delivery.serve_queue" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.serve_queue">serve_queue</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.serve_queue(sel, chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Serve those waiting and those just chosen, by priority and then by how long they have waited; the rest wait, until queue=</p>
+</section>
+<section id="starsim.interventions.Delivery.shift" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.shift">shift</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.shift(sel, changes, mover<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Move the selected people to other levels of some dimensions (<code>mover</code> is the event they are, if known, which a compartmental run uses)</p>
+</section>
+<section id="starsim.interventions.Delivery.skip_past" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.skip_past">skip_past</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.skip_past()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For <code>at_age=</code>: the people already past the age are recorded as offered it, so only those who reach the age get it: on its first step, everyone past it (as agents, older by more than a step; in a compartmental run, everyone in an age group at or above it); and as agents, on each step after, the agents who have arrived since (e.g.&nbsp;immigrants made by <code>people.grow()</code>, HP76)</p>
+</section>
+<section id="starsim.interventions.Delivery.step" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.step">step</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.step()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver the product to whoever it is due to in this step (at its time point, as for all code in a step: see <code>ss.Loop</code>), before the disease’s transitions in it, under every solver</p>
+</section>
+<section id="starsim.interventions.Delivery.step_results" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.step_results">step_results</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.step_results()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Act on the test results that have become available (agents only)</p>
+</section>
+<section id="starsim.interventions.Delivery.take" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.take">take</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.take(cands, n, carry<span class="op">=</span><span class="va">False</span>, wait<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Choose <code>n</code> people (a number of people, not agents) from the candidates, in the order of <code>priority=</code>: as agents, sorted by priority with ties broken at random; as compartments, whole cells in order and pro rata within a tie</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 72%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cands</td>
+<td><code>array</code></td>
+<td>the candidates, as a selection</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>n</td>
+<td><code>float</code></td>
+<td>the number of people</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>carry</td>
+<td><code>bool</code></td>
+<td>as agents, keep the part of an agent left over for the next step (for a capacity)</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td>wait</td>
+<td><code>array</code></td>
+<td>the steps each has waited (per agent, or the level of waiting of each group): longest first, after the priority</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.interventions.Delivery.tally" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.tally">tally</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.tally(key, sel, weight<span class="op">=</span><span class="fl">1.0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add the people selected to a result, in total and by group; returns the total</p>
+</section>
+<section id="starsim.interventions.Delivery.test" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.test">test</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.test(chosen)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out the result of each test (one draw per person, from the probability of each result: see <a href="../api/products.html#starsim.products.Diagnostic.tails" title="0"><code>ss.Diagnostic.tails()</code></a>), and either act on it or wait for it</p>
+</section>
+<section id="starsim.interventions.Delivery.tiebreak" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.tiebreak">tiebreak</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.tiebreak(uids)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A random number per agent, the same for every choice of the step (from the delivery’s own stream, so scenarios stay paired)</p>
+</section>
+<section id="starsim.interventions.Delivery.trigger_disease" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.trigger_disease">trigger_disease</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.trigger_disease(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The disease of the first transition or delivery in the event that triggers this delivery, if any</p>
+</section>
+<section id="starsim.interventions.Delivery.typed_function" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.typed_function">typed_function</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.typed_function()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether the coverage is a function of the sim that gives a typed rate (e.g.&nbsp;<code>lambda sim: ss.peryear(4)</code>): worked out the first time it can be called</p>
+</section>
+<section id="starsim.interventions.Delivery.update_results" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.update_results">update_results</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.update_results()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The coverage of what was delivered in the step</p>
+</section>
+<section id="starsim.interventions.Delivery.use" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Delivery.use">use</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>interventions.Delivery.use(served)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record the people served, against the capacity of the step</p>
+</section>
+</section>
+</section>
+<section id="starsim.interventions.Intervention" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.Intervention">Intervention</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>interventions.Intervention(<span class="op">*</span>args, eligibility<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Base class for interventions.</p>
+<p>The key method of the intervention is <code>step()</code>, which is called with the sim on each timestep. Interventions can modify disease states (e.g.&nbsp;treating or vaccinating agents); to deliver a product, see <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a>.</p>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 17%">
+<col style="width: 54%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>args</td>
+<td><code>list</code></td>
+<td>passed to <code>ss.Module</code></td>
+<td><code>()</code></td>
+</tr>
+<tr class="even">
+<td>eligibility</td>
+<td><code>func</code></td>
+<td>a function of the sim that returns who is eligible</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td><code>dict</code></td>
+<td>passed to <code>ss.Module</code></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes-1" class="level4">
+<h4 class="anchored" data-anchor-id="attributes-1">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.Intervention.has_product">has_product</a></td>
+<td>Check if the intervention has a product</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.Intervention.check_eligibility">check_eligibility</a></td>
+<td>Return an array of indices of agents eligible for screening at time t</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.Intervention.init_pre">init_pre</a></td>
+<td>Initialize the module, and its product if it has one</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.interventions.Intervention.check_eligibility" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Intervention.check_eligibility">check_eligibility</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>interventions.Intervention.check_eligibility()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Return an array of indices of agents eligible for screening at time t</p>
+</section>
+<section id="starsim.interventions.Intervention.init_pre" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.interventions.Intervention.init_pre">init_pre</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>interventions.Intervention.init_pre(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Initialize the module, and its product if it has one</p>
+<section id="parameters-5" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sim</td>
+<td><a href="../api/sim.html#starsim.sim.Sim">Sim</a></td>
+<td>the sim being initialized</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.interventions.screen" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.screen">screen</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>interventions.screen(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    what<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>    who<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    move<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    increment<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    stop<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>    at<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>    interval<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>    where<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>    coverage<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>    capacity<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a>    deliver<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a>    trace<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a>    priority<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a>    queue<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a>    delay<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a>    disease<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a>    at_age<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-21"><a href="#cb60-21" aria-hidden="true" tabindex="-1"></a>    strain<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-22"><a href="#cb60-22" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-23"><a href="#cb60-23" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb60-24"><a href="#cb60-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb60-25"><a href="#cb60-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver a diagnostic test; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</p>
+<p><code>delay=</code> is the step’s, the time from its trigger to the test, as for any step; the time from the test to its result is the test’s (<code>ss.Diagnostic(delay=...)</code>).</p>
+<p>Its outcomes, <code>positive</code> and <code>negative</code>, are events on the step the result is available (after the test’s <code>delay</code>), and results: the number with each result on each step. What happens next is a step of its own, triggered by an outcome.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="dv">3</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.3</span><span class="op">*</span>I, recovery<span class="op">=</span>ss.Transition(I, R, dur<span class="op">=</span><span class="dv">10</span>), init_prev<span class="op">=</span><span class="fl">0.01</span>)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>screening <span class="op">=</span> ss.screen(sensitivity<span class="op">=</span><span class="fl">0.9</span>, specificity<span class="op">=</span><span class="fl">0.98</span>, coverage<span class="op">=</span><span class="fl">0.4</span>, interval<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>treatment <span class="op">=</span> ss.treat(cure<span class="op">=</span><span class="fl">0.95</span>, who<span class="op">=</span>screening.positive, coverage<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, interventions<span class="op">=</span>[screening, treatment], stop<span class="op">=</span><span class="dv">100</span>).run()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="starsim.interventions.treat" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.treat">treat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>interventions.treat(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    what<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    who<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    move<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    increment<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    stop<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    at<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>    interval<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>    where<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>    coverage<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>    capacity<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>    deliver<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a>    trace<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>    priority<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-17"><a href="#cb62-17" aria-hidden="true" tabindex="-1"></a>    queue<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-18"><a href="#cb62-18" aria-hidden="true" tabindex="-1"></a>    delay<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-19"><a href="#cb62-19" aria-hidden="true" tabindex="-1"></a>    disease<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-20"><a href="#cb62-20" aria-hidden="true" tabindex="-1"></a>    at_age<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-21"><a href="#cb62-21" aria-hidden="true" tabindex="-1"></a>    strain<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-22"><a href="#cb62-22" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-23"><a href="#cb62-23" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb62-24"><a href="#cb62-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb62-25"><a href="#cb62-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver a treatment; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</p>
+<p>Note: CRN safe as agents.</p>
+<section id="examples-2" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="dv">3</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.3</span><span class="op">*</span>I, recovery<span class="op">=</span>ss.Transition(I, R, dur<span class="op">=</span><span class="dv">10</span>), init_prev<span class="op">=</span><span class="fl">0.01</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>treatment <span class="op">=</span> ss.treat(cure<span class="op">=</span><span class="fl">0.95</span>, coverage<span class="op">=</span><span class="fl">0.5</span>, interval<span class="op">=</span><span class="dv">7</span>) <span class="co"># Makes the drug, ss.Treatment(cure=0.95)</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, interventions<span class="op">=</span>treatment, stop<span class="op">=</span><span class="dv">100</span>).run()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="starsim.interventions.vaccinate" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.vaccinate">vaccinate</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>interventions.vaccinate(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>    what<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>    who<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    move<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    increment<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>    start<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>    stop<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>    at<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>    interval<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>    where<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>    coverage<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>    capacity<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>    deliver<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>    trace<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a>    priority<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a>    queue<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-18"><a href="#cb64-18" aria-hidden="true" tabindex="-1"></a>    delay<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-19"><a href="#cb64-19" aria-hidden="true" tabindex="-1"></a>    disease<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-20"><a href="#cb64-20" aria-hidden="true" tabindex="-1"></a>    at_age<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-21"><a href="#cb64-21" aria-hidden="true" tabindex="-1"></a>    strain<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-22"><a href="#cb64-22" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-23"><a href="#cb64-23" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb64-24"><a href="#cb64-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb64-25"><a href="#cb64-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deliver a vaccine; see <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> for the arguments</p>
+<p>Note: CRN safe as agents.</p>
+<section id="examples-3" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.states(<span class="dv">3</span>)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.Disease(infection<span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.3</span><span class="op">*</span>I, recovery<span class="op">=</span>ss.Transition(I, R, dur<span class="op">=</span><span class="dv">10</span>), init_prev<span class="op">=</span><span class="fl">0.01</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>campaign <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.85</span>, coverage<span class="op">=</span><span class="fl">0.7</span>, at<span class="op">=</span>[<span class="dv">20</span>, <span class="dv">40</span>]) <span class="co"># Makes the vaccine, ss.Vaccine(efficacy=0.85)</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim(sir, interventions<span class="op">=</span>campaign, stop<span class="op">=</span><span class="dv">100</span>).run()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+</section>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.interventions.check_undriven">check_undriven</a></td>
+<td>An undriven transition that nothing in the sim names, so nobody moves along it unless custom code does</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.coded_disease">coded_disease</a></td>
+<td>The disease of this name if it is written as code (not declared), else None</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.fired">fired</a></td>
+<td>The people an event happened to on this step (see <code>ss.conditions.Selector.leaf()</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.flush_memory">flush_memory</a></td>
+<td>At the start of a step: put any events not yet there into the memory</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.memory_needs">memory_needs</a></td>
+<td>The events whose memory something in the sim reads, by (module name, outcome): the kinds read (<code>ever</code>, <code>count</code>, <code>since</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.modules_of">modules_of</a></td>
+<td>The modules of a kind (‘interventions’, ‘connectors’, ‘diseases’): the sim’s, once it has them, and before then those in its parameters</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.movers">movers</a></td>
+<td>The names of the products and deliveries that name a transition: those that move people along it, and those triggered by it</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.order_steps">order_steps</a></td>
+<td>The interventions in the order they run: each delivery after the deliveries whose events trigger it, so a step acts on</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.product_keys">product_keys</a></td>
+<td>The keywords of a kind of product (e.g.&nbsp;<code>efficacy</code> and <code>waning</code> for <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>), which its delivery takes to make one</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.interventions.remembered">remembered</a></td>
+<td>The memory of an event for each agent or group: whether (<code>ever</code>), how often (<code>count</code>), or how long ago (<code>since</code>, in the sim’s unit) it happened</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.interventions.trigger_moves">trigger_moves</a></td>
+<td>The transitions triggered by an event of a delivery or product (e.g.&nbsp;<code>ss.Transition(I, R_res, where=drug.failed, p=0.05)</code>):</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.interventions.check_undriven" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.check_undriven">check_undriven</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>interventions.check_undriven(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>An undriven transition that nothing in the sim names, so nobody moves along it unless custom code does</p>
+</section>
+<section id="starsim.interventions.coded_disease" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.coded_disease">coded_disease</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>interventions.coded_disease(sim, name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The disease of this name if it is written as code (not declared), else None</p>
+</section>
+<section id="starsim.interventions.fired" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.fired">fired</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>interventions.fired(selector, cond)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The people an event happened to on this step (see <code>ss.conditions.Selector.leaf()</code>)</p>
+</section>
+<section id="starsim.interventions.flush_memory" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.flush_memory">flush_memory</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>interventions.flush_memory(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>At the start of a step: put any events not yet there into the memory</p>
+</section>
+<section id="starsim.interventions.memory_needs" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.memory_needs">memory_needs</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>interventions.memory_needs(sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The events whose memory something in the sim reads, by (module name, outcome): the kinds read (<code>ever</code>, <code>count</code>, <code>since</code>)</p>
+<p>Found by walking every expression of the interventions, connectors, diseases, and demographics: conditions, rates, <code>p=</code>, <code>dur=</code>, attributes, results, and modifier amounts.</p>
+</section>
+<section id="starsim.interventions.modules_of" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.modules_of">modules_of</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>interventions.modules_of(sim, key)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The modules of a kind (‘interventions’, ‘connectors’, ‘diseases’): the sim’s, once it has them, and before then those in its parameters</p>
+</section>
+<section id="starsim.interventions.movers" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.movers">movers</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>interventions.movers(sim, modname, name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The names of the products and deliveries that name a transition: those that move people along it, and those triggered by it</p>
+</section>
+<section id="starsim.interventions.order_steps" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.order_steps">order_steps</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>interventions.order_steps(mods)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The interventions in the order they run: each delivery after the deliveries whose events trigger it, so a step acts on the step its trigger happens; otherwise in the order given. A cycle raises.</p>
+</section>
+<section id="starsim.interventions.product_keys" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.product_keys">product_keys</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>interventions.product_keys(kind)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The keywords of a kind of product (e.g.&nbsp;<code>efficacy</code> and <code>waning</code> for <a href="../api/products.html#starsim.products.Vaccine" title="0"><code>ss.Vaccine</code></a>), which its delivery takes to make one</p>
+</section>
+<section id="starsim.interventions.remembered" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.remembered">remembered</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>interventions.remembered(selector, cond)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The memory of an event for each agent or group: whether (<code>ever</code>), how often (<code>count</code>), or how long ago (<code>since</code>, in the sim’s unit) it happened</p>
+</section>
+<section id="starsim.interventions.trigger_moves" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.interventions.trigger_moves">trigger_moves</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>interventions.trigger_moves(owner, outcome, sel, eng<span class="op">=</span><span class="va">None</span>, before<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The transitions triggered by an event of a delivery or product (e.g.&nbsp;<code>ss.Transition(I, R_res, where=drug.failed, p=0.05)</code>): the people it happened to who are in the transition’s source, and meet the rest of its condition, move now, with its probability (<code>p=</code>), or split between its destinations; under every solver</p>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>owner</td>
+<td><a href="../api/interventions.html#starsim.interventions.Delivery">Delivery</a> / <a href="../api/products.html#starsim.products.Product">Product</a></td>
+<td>what fired the event</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>outcome</td>
+<td><code>str</code></td>
+<td>the outcome (None for the delivery itself)</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>sel</td>
+<td><a href="../api/internals.arrays.html#starsim.internals.arrays.uids">uids</a> / <code>array</code></td>
+<td>the people it happened to: UIDs, or a share of each state and group of <code>eng</code></td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>eng</td>
+<td><code>Engine</code></td>
+<td>in a compartmental run, the engine whose states and groups <code>sel</code> is a share of</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>before</td>
+<td><code>array</code></td>
+<td>in a compartmental run, the people in each state and group that <code>sel</code> is a share of, if not those now</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/demographics.html" class="pagination-link" aria-label="demographics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">demographics</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/products.html" class="pagination-link" aria-label="products">
+        <span class="nav-page-text">products</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

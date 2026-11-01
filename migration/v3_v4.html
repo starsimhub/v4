@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>v3_v4 – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23f26afbfc4e3bc647f4fb718972d4cf.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-6577d3d6f52b1e7c83ceba9f9a936443.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsim-idm.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim-v3-to-v4-migration-guide" id="toc-starsim-v3-to-v4-migration-guide" class="nav-link active" data-scroll-target="#starsim-v3-to-v4-migration-guide">Starsim v3 to v4 migration guide</a>
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#what-changes-the-numbers" id="toc-what-changes-the-numbers" class="nav-link" data-scroll-target="#what-changes-the-numbers">What changes the numbers</a>
+  <ul>
+  <li><a href="#results-move-by-one-step" id="toc-results-move-by-one-step" class="nav-link" data-scroll-target="#results-move-by-one-step">1. Results move by one step</a></li>
+  <li><a href="#the-first-step-is-ti-1" id="toc-the-first-step-is-ti-1" class="nav-link" data-scroll-target="#the-first-step-is-ti-1">2. The first step is <code>ti == 1</code></a></li>
+  <li><a href="#a-beta-dict-of-bare-numbers-changes-meaning" id="toc-a-beta-dict-of-bare-numbers-changes-meaning" class="nav-link" data-scroll-target="#a-beta-dict-of-bare-numbers-changes-meaning">3. A <code>beta</code> dict of bare numbers changes meaning</a></li>
+  <li><a href="#routine-delivery-means-something-else" id="toc-routine-delivery-means-something-else" class="nav-link" data-scroll-target="#routine-delivery-means-something-else">4. “Routine” delivery means something else</a></li>
+  <li><a href="#a-fixed-duration-becomes-exponential" id="toc-a-fixed-duration-becomes-exponential" class="nav-link" data-scroll-target="#a-fixed-duration-becomes-exponential">5. A fixed duration becomes exponential</a></li>
+  <li><a href="#result-names-follow-the-states" id="toc-result-names-follow-the-states" class="nav-link" data-scroll-target="#result-names-follow-the-states">6. Result names follow the states</a></li>
+  <li><a href="#write-dates-as-strings" id="toc-write-dates-as-strings" class="nav-link" data-scroll-target="#write-dates-as-strings">7. Write dates as strings</a></li>
+  </ul></li>
+  <li><a href="#jobs-and-spellings" id="toc-jobs-and-spellings" class="nav-link" data-scroll-target="#jobs-and-spellings">Jobs and spellings</a>
+  <ul>
+  <li><a href="#diseases" id="toc-diseases" class="nav-link" data-scroll-target="#diseases">Diseases</a></li>
+  <li><a href="#mixing-and-demographics" id="toc-mixing-and-demographics" class="nav-link" data-scroll-target="#mixing-and-demographics">Mixing and demographics</a></li>
+  <li><a href="#interventions-and-connectors" id="toc-interventions-and-connectors" class="nav-link" data-scroll-target="#interventions-and-connectors">Interventions and connectors</a></li>
+  <li><a href="#runs-results-and-calibration" id="toc-runs-results-and-calibration" class="nav-link" data-scroll-target="#runs-results-and-calibration">Runs, results, and calibration</a></li>
+  </ul></li>
+  <li><a href="#migrating-one-disease-at-a-time" id="toc-migrating-one-disease-at-a-time" class="nav-link" data-scroll-target="#migrating-one-disease-at-a-time">Migrating one disease at a time</a></li>
+  <li><a href="#what-needs-a-declared-disease" id="toc-what-needs-a-declared-disease" class="nav-link" data-scroll-target="#what-needs-a-declared-disease">What needs a declared disease</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+
+<section id="starsim-v3-to-v4-migration-guide" class="level1">
+<h1>Starsim v3 to v4 migration guide</h1>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>Starsim 4 adds a way to write a disease as declared states and transitions, which can then be run as an ODE, as a stochastic compartmental model, or as agents. This guide maps Starsim 3 code to Starsim 4, job by job, and lists what changes meaning on the way. It is written for both humans and LLMs.</p>
+<p>Starsim 3 code is of two kinds, and they migrate differently:</p>
+<ul>
+<li><strong>Modules written as code</strong> (<code>ss.Module</code>, <a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a> and <a href="../api/diseases.html#starsim.diseases.Infection" title="0"><code>ss.Infection</code></a> subclasses with <code>define_states()</code>, <code>set_prognoses()</code>, and <code>step_state()</code>, custom networks, <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a> and <a href="../api/analyzers.html#starsim.analyzers.Analyzer" title="0"><code>ss.Analyzer</code></a> subclasses, <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a>, <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a>, <a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a>, and <code>ss.MFNet</code>, now <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>) are still part of Starsim 4. They run unchanged, as agents, and can sit in the same sim as declared diseases. <a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a> is the base of every disease, as in Starsim 3, whether it is declared, written as code, or both in one class; <a href="../api/diseases.html#starsim.diseases.Infection" title="0"><code>ss.Infection</code></a> adds transmission written as code. Per-agent quantities that change continuously (a CD4 count, a level of immunity, time since an event) have no declared form, and keeping them as code is a supported choice.</li>
+<li><strong>Starsim 3 spellings that Starsim 4 replaces</strong> (the library <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>, <a href="../api/diseases.html#starsim.diseases.SIS" title="0"><code>ss.SIS</code></a>, and <a href="../api/diseases.html#starsim.diseases.SEIR" title="0"><code>ss.SEIR</code></a> as code; <code>ss.routine_vx</code>, <code>ss.campaign_vx</code>, <code>ss.routine_screening</code>, <code>ss.treat_num</code>, and the products <code>ss.Vx</code>, <code>ss.Dx</code>, <code>ss.Tx</code>; <code>ss.seasonality</code>) have been removed, as have <code>ss.Calibration</code> with its components, and <code>ss.Samples</code> and <code>ss.Dataset</code>. Use the <a href="#jobs-and-spellings">table of jobs</a> below to port them.</li>
+</ul>
+<p>The migration script makes the mechanical changes for you and lists, by file and line, what needs a person: <code>python -m starsim.converters.migrate mymodel.py --check</code> lists what it would change, and without <code>--check</code> it rewrites the files (or folders) in place. Read its diff afterwards. A removed name used in Starsim 4 also raises an error that says what replaced it.</p>
+<p><em>Note</em>: If you are an LLM reading this, migrate one module at a time, run the model after each step, compare it with the Starsim 3 results (allowing for the changes in the next section), and confirm with the user before going on.</p>
+</section>
+<section id="what-changes-the-numbers" class="level2">
+<h2 class="anchored" data-anchor-id="what-changes-the-numbers">What changes the numbers</h2>
+<p>Read this first: each of these changes results without an error.</p>
+<section id="results-move-by-one-step" class="level3">
+<h3 class="anchored" data-anchor-id="results-move-by-one-step">1. Results move by one step</h3>
+<p>Results now follow the convention of other modeling frameworks, for modules written as code too. <code>&lt;state&gt;[0]</code> (e.g.&nbsp;<code>infected[0]</code>) is the number at the start, before any step; a flow at index 0 is 0; and <code>&lt;state&gt;[ti]</code> is the number after <code>ti</code> steps. A sim with <code>stop=T</code> ends at <code>T</code>, so it takes one step fewer than in Starsim 3. The same script, with Starsim 3’s SIR (<code>ssl.AgentSIR</code> in Starsim 4; see 5), gives:</p>
+<pre><code>                  infected[:4]            new_infections[:2]
+Starsim 3.7.2     53, 99, 186, 356        26, 46
+Starsim 4         31, 64, 128, 240        0, 33</code></pre>
+<p>(<code>ss.Sim(n_agents=3000, diseases=ss.SIR(beta=0.1), networks='random')</code>, with <code>ssl.AgentSIR(beta=0.1)</code> in Starsim 4.) The whole curve is one step later, and the random draws differ after that, so results agree statistically (over several seeds), not number for number. For a model with yearly steps, a peak moves a year later. To reproduce published Starsim 3 numbers exactly, use <code>pip install starsim==3.7.2</code>.</p>
+<p>With coarse steps, a model can also differ by more than one step. In Starsim 3, a person could pass through several states within one step (e.g.&nbsp;infected, then latent, then active, all in the same step); in Starsim 4, someone who enters a state in a step leaves it in the next step at the earliest (unless the exit is immediate, with no <code>rate=</code> or <code>dur=</code>), as in the compartmental solvers. So with long steps, people wait longer in each state. For tbsim with <code>dt=0.1</code> years, latent TB is 36% higher and active TB 13% higher than in Starsim 3; at <code>dt=0.005</code> they agree. If results differ at a coarse step, check them at a smaller <code>dt</code> (<code>sim.check_dt()</code> says whether the step is too long for the model’s rates).</p>
+</section>
+<section id="the-first-step-is-ti-1" class="level3">
+<h3 class="anchored" data-anchor-id="the-first-step-is-ti-1">2. The first step is <code>ti == 1</code></h3>
+<p>During the step from time point <code>k-1</code> to <code>k</code>, <code>sim.ti</code> (and <code>self.ti</code>) is <code>k</code> in every module and every phase, from <code>step()</code> to <code>update_results()</code> and the analyzers, and <code>self.now</code> is the time the step starts, at which it reads inputs that change in time, as in Starsim 3. So Starsim 3’s <code>self.results.x[self.ti] = v</code> is right wherever it is written, and a time stamped as <code>self.ti</code> in <code>step()</code> matches <code>self.ti</code> in <code>update_results()</code>. What changes is the first step: time point 0 is the start of the run, recorded before any step, so the first step is <code>ti == 1</code>, and code that does something <code>if self.ti == 0</code> in <code>step()</code> never does it (an analyzer’s <code>step()</code> also runs at the start, at <code>ti == 0</code>). Do it in <code>init_post()</code>, or test <code>self.ti == 1</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Starsim 3</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> step(<span class="va">self</span>):</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="va">self</span>.ti <span class="op">==</span> <span class="dv">0</span>: <span class="co"># The first step</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seed()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.results.new_cases[<span class="va">self</span>.ti] <span class="op">+=</span> <span class="bu">len</span>(cases) <span class="co"># Unchanged in Starsim 4</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Starsim 4</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> step(<span class="va">self</span>):</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="va">self</span>.ti <span class="op">==</span> <span class="dv">1</span>: <span class="co"># The first step; time point 0 is the start of the run</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seed()</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.results.new_cases[<span class="va">self</span>.ti] <span class="op">+=</span> <span class="bu">len</span>(cases)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A declared disease dates a move between states at the start of the step (<code>ti - 1</code>) and an infection at its end (<code>ti</code>), so a time in a declared state worked out by hand during a step (<code>sim.ti - dis.ti_P</code>) is one step long; its clocks (<code>dis.P.time</code>) are right. For how long people stayed in a state, use <code>dis.P.stays</code>.</p>
+<p>A disease written as code dates its initial infections at the start of the run (<code>self.ti</code> is 0 in <code>set_prognoses()</code>), as a declared disease dates its seeds, where Starsim 3 dated them by the first step. So in a Starsim 3 disease that schedules recovery at <code>self.ti + dur</code> and takes it when <code>ti_recovered &lt;= self.ti</code>, the seeds are infectious for one step less than in Starsim 3, as long as later cases are. Both are about half a step short of <code>dur</code> on average; to give every case <code>dur</code> steps on average, as a declared disease does, schedule from the step after the infection and round as the engine does: <code>ss.TimeArr('ti_recovered')</code>, <code>self.ti_recovered[uids] = self.ti + 1 + dur</code>, and <code>self.ti_recovered.due()</code> (see <a href="../api/diseases.html#starsim.diseases.Infection" title="0"><code>ss.Infection</code></a>; <code>ssl.AgentSIR</code> and the others do this).</p>
+</section>
+<section id="a-beta-dict-of-bare-numbers-changes-meaning" class="level3">
+<h3 class="anchored" data-anchor-id="a-beta-dict-of-bare-numbers-changes-meaning">3. A <code>beta</code> dict of bare numbers changes meaning</h3>
+<p>In Starsim 3, <code>beta=0.05</code> is a rate per year, but <code>beta={'randomnet': 0.05}</code> is a <em>probability per step</em>, used as it is. In Starsim 4 both are rates per unit time, so a dict copied verbatim is too low by a factor of about <code>1/dt</code>: 12 times at monthly steps, 52 times at weekly ones (5 infections instead of 22,000 in an SIS on a random network at monthly steps). Give each value its Starsim 3 meaning explicitly:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Starsim 3 (monthly steps)</th>
+<th>Starsim 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>beta={'randomnet': 0.05}</code></td>
+<td><code>beta={'randomnet': ss.prob(0.05, 'month')}</code></td>
+</tr>
+<tr class="even">
+<td><code>beta={'mf': [0.008, 0.004]}</code></td>
+<td><code>beta={'sexual': ss.peract(m2f=0.008, f2m=0.004)}</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>ss.prob(..., 'week')</code> or <code>ss.prob(..., 'day')</code> for weekly or daily steps. Starsim 4 warns when a dict of bare numbers reaches a declared transmission with a step shorter than its unit; a typed value silences the warning. On <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> (Starsim 3’s <code>ss.MFNet</code>), which has acts, a beta is a probability per act, the same at any step: Starsim 3’s pair, [men to women, women to men], is <code>ss.peract(m2f=..., f2m=...)</code>, and the network is <code>sexual</code> in a beta dict, not <code>mf</code>.</p>
+</section>
+<section id="routine-delivery-means-something-else" class="level3">
+<h3 class="anchored" data-anchor-id="routine-delivery-means-something-else">4. “Routine” delivery means something else</h3>
+<p>Starsim 3’s <code>ss.routine_vx(prob=0.05, start_year=2005)</code> gives each eligible person a 5% chance of vaccination <em>every year</em>. Starsim 4’s routine delivery, <code>ss.vaccinate(..., coverage=0.05, start='2005')</code>, offers the vaccine <em>once</em>, when a person first becomes eligible. In an SIS model with 5,000 agents from 2000 to 2020, the first reaches about half the population and the second about 5%. The Starsim 3 behavior is delivery in yearly rounds:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, coverage<span class="op">=</span><span class="fl">0.05</span>, interval<span class="op">=</span>ss.years(<span class="dv">1</span>), start<span class="op">=</span><span class="st">'2005'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="a-fixed-duration-becomes-exponential" class="level3">
+<h3 class="anchored" data-anchor-id="a-fixed-duration-becomes-exponential">5. A fixed duration becomes exponential</h3>
+<p>In a disease you declare with <code>ss.Disease(...)</code> (or a class with states and transitions), a duration given as a number (<code>dur=ss.years(1)</code>) is the mean of an exponential distribution, as in an ODE; <code>describe()</code> marks this as a guess. Starsim 3’s library diseases used <a href="../api/distributions.html#starsim.distributions.lognorm_ex" title="0"><code>ss.lognorm_ex()</code></a>. To keep a distribution, give it: <code>I &gt;&gt; R @ ss.lognorm_ex(mean=ss.years(6))</code>. (A distribution that is not exponential runs as Erlang stages in a compartmental run, with a note.)</p>
+<p>This includes the library <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>, <a href="../api/diseases.html#starsim.diseases.SIS" title="0"><code>ss.SIS</code></a>, and <a href="../api/diseases.html#starsim.diseases.SEIR" title="0"><code>ss.SEIR</code></a>, which are now declared, with Starsim 3’s keywords but the textbook defaults: <code>dur_inf</code> (and <code>dur_exp</code>) given as a number or an <code>ss.dur</code> is the mean of an exponential (a number is in years, as before), where Starsim 3 had a lognormal with a standard deviation of 1 in the same unit (nearly fixed); and nobody dies of the infection unless <code>p_death</code> is given, where Starsim 3 had <code>p_death=0.01</code>. The shape matters: an SIR with R0 = 2.5 and a 7-day infectious period, with <code>beta</code> cut by 40% from day 30 to 90, infects 715,000 of a million with the exponential and 786,000 with Starsim 3’s nearly fixed period. Starsim 3’s models, with their defaults, are <code>ssl.AgentSIR</code>, <code>ssl.AgentSIS</code>, and <code>ssl.AgentSEIR</code> (<code>import starsim.library as ssl</code>): use them to keep Starsim 3’s model, or give <code>ss.SIR(dur_inf=ss.lognorm_ex(mean=ss.years(6), std=ss.years(1)), p_death=0.01)</code>.</p>
+</section>
+<section id="result-names-follow-the-states" class="level3">
+<h3 class="anchored" data-anchor-id="result-names-follow-the-states">6. Result names follow the states</h3>
+<p>A declared disease’s results are named after its states and transitions: <code>I</code>, not <code>n_infected</code> (a module written as code also counts each state under its own name: <code>infected</code>, and <code>sim.results.alive</code>, not <code>n_alive</code>); the flow of a transition is named after it (<code>infection</code>, <code>recovery</code>, with the cumulative total <code>res.infection.cum</code>); and <code>new_infections</code> and <code>cum_infections</code> are <code>infection</code> and <code>infection.cum</code>, for a disease written as code too. Map the names before comparing with Starsim 3 results.</p>
+<p>The results of demographics follow the same rule: <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> and <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> have the flows <a href="../api/transitions.html#starsim.transitions.birth" title="0"><code>birth</code></a> and <a href="../api/transitions.html#starsim.transitions.death" title="0"><code>death</code></a> (were <code>new</code>), with totals <code>birth.cum</code> and <code>death.cum</code> (were <code>cumulative</code>); <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a> has <code>preterm</code>, <code>very_preterm</code>, and <code>unborn</code> (were <code>n_preterm</code>, <code>n_very_preterm</code>, and <code>n_unborn</code>), and <code>maternal_death</code> and <code>neonatal_death</code> (were plural).</p>
+</section>
+<section id="write-dates-as-strings" class="level3">
+<h3 class="anchored" data-anchor-id="write-dates-as-strings">7. Write dates as strings</h3>
+<p>Write calendar dates as strings (<code>start='2000'</code>, <code>stop='2030-06-30'</code>), and step sizes with a unit (<code>dt=ss.months(1)</code>, not <code>dt=1/12</code>). A bare <code>start=2000</code> is still read as a year today, but bare numbers are being changed to mean times in the sim’s unit.</p>
+</section>
+</section>
+<section id="jobs-and-spellings" class="level2">
+<h2 class="anchored" data-anchor-id="jobs-and-spellings">Jobs and spellings</h2>
+<p>Each row is one job, with the Starsim 3 spelling and the Starsim 4 one. In the Starsim 4 column, <code>sir</code> is a declared disease.</p>
+<section id="diseases" class="level3">
+<h3 class="anchored" data-anchor-id="diseases">Diseases</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Job</th>
+<th>Starsim 3</th>
+<th>Starsim 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Starsim 3’s SIR, with its numbers</td>
+<td><code>ss.SIR(beta=0.1, dur_inf=10)</code> (a lognormal <code>dur_inf</code>, <code>p_death=0.01</code>)</td>
+<td><code>ssl.AgentSIR(beta=0.1, dur_inf=10)</code>, and <code>ssl.AgentSIS</code>, <code>ssl.AgentSEIR</code> (agents only); <code>ss.SIR(...)</code> is now the textbook SIR, with an exponential <code>dur_inf</code> and no deaths</td>
+</tr>
+<tr class="even">
+<td>An SIR</td>
+<td><code>ss.SIR(beta=0.1, dur_inf=10, init_prev=0.01)</code></td>
+<td><code>S, I, R = ss.states(3)</code>, then <code>infection = S &gt;&gt; I @ ss.peryear(0.1) * I</code>, <code>recovery = I &gt;&gt; R @ ss.years(10)</code>, and <code>sir = ss.Disease(infection, recovery, init_prev=0.01)</code></td>
+</tr>
+<tr class="odd">
+<td>An SIS</td>
+<td><code>ss.SIS(beta=0.05, dur_inf=10)</code></td>
+<td><code>S, I = ss.states(2)</code>, then <code>ss.Disease(infection=S &gt;&gt; I @ ss.peryear(0.05) * I, recovery=I &gt;&gt; S @ ss.years(10), init_prev=0.01, name='sis')</code> (no waning immunity: add an <code>R</code> state and <code>R &gt;&gt; S</code> for that)</td>
+</tr>
+<tr class="even">
+<td>An SEIR</td>
+<td><code>ss.SEIR(dur_exp=ss.days(5), dur_inf=ss.days(10))</code></td>
+<td><code>S &gt;&gt; E @ beta * I</code>, <code>E &gt;&gt; I @ ss.days(5)</code>, <code>I &gt;&gt; R @ ss.days(10)</code> (the state in the rate, <code>I</code>, says who infects)</td>
+</tr>
+<tr class="odd">
+<td>A disease given as a dict</td>
+<td><code>diseases=dict(type='sir', beta=0.1)</code></td>
+<td>the module itself: <code>ss.Sim(sir)</code></td>
+</tr>
+<tr class="even">
+<td>Parameters</td>
+<td><code>define_pars(beta=ss.peryear(0.1))</code>, <code>pars=dict(beta=...)</code></td>
+<td><code>beta = ss.par(ss.peryear(0.1), bounds=[0.01, 0.5])</code>, used in the rate; bounds make it fittable</td>
+</tr>
+<tr class="odd">
+<td>Initial infections</td>
+<td><code>init_prev=ss.bernoulli(0.01)</code></td>
+<td><code>init_prev=0.01</code>, or <code>init_n=dict(I=100)</code> for a number of people (<code>init=dict(I=0.01)</code> is a share); <code>init_prev=</code> seeds the state a new infection enters (<code>E</code> in an SEIR), and <code>init=</code> and <code>init_n=</code> name the state</td>
+</tr>
+<tr class="even">
+<td>Where people start</td>
+<td>a state whose default is <code>True</code> (<code>ss.BoolState('susceptible', default=True)</code>)</td>
+<td>one named with <code>first='N'</code> (in a class, <code>first = 'N'</code> in its body), else the state named <code>S</code> or <code>susceptible</code>, else the first state made</td>
+</tr>
+<tr class="odd">
+<td>Population size</td>
+<td><code>n_agents=10_000</code> (with <code>total_pop=</code> to scale)</td>
+<td><code>total_pop=1e6</code> for any solver; <code>n_agents=</code> makes <code>solver='auto'</code> run as agents (and is used as <code>total_pop</code> in a compartmental run if that is not given)</td>
+</tr>
+<tr class="even">
+<td>A new state, by subclassing</td>
+<td>an <a href="../api/diseases.html#starsim.diseases.Infection" title="0"><code>ss.Infection</code></a> subclass with <code>define_states()</code>, <code>set_prognoses()</code>, and <code>step_state()</code></td>
+<td>a class with states and transitions in its body (below), or keep it as code</td>
+</tr>
+<tr class="odd">
+<td>Moves scheduled with <code>ti_&lt;event&gt;</code></td>
+<td><code>set_prognoses()</code> draws <code>dur_inf</code>; <code>step_state()</code> moves people whose <code>ti_recovered &lt;= ti</code></td>
+<td><code>I &gt;&gt; R @ dur_inf</code> (a duration after <code>@</code> is a time in the state)</td>
+</tr>
+<tr class="even">
+<td>Competing exits</td>
+<td><code>self.transition(uids, to={A: rate_a, B: rate_b})</code></td>
+<td>one transition per exit: <code>X &gt;&gt; A @ rate_a</code>, <code>X &gt;&gt; B @ rate_b</code></td>
+</tr>
+<tr class="odd">
+<td>Death from infection</td>
+<td><code>p_death=0.01</code>, drawn at infection</td>
+<td>two transitions with the same <code>dur</code> and <code>p=</code>: <code>ss.Transition(I, R, dur=dur, p=0.99)</code> and <code>ss.Transition(I, ss.null, dur=dur, p=0.01)</code></td>
+</tr>
+<tr class="even">
+<td>A rate scaled per agent</td>
+<td><code>rel_sus[uids] *= 2</code> in <code>step()</code></td>
+<td>a stratification with <code>adjust=</code>, or <code>ss.modify(sir.rel_sus, multiply=2, where=...)</code></td>
+</tr>
+</tbody>
+</table>
+<p>A disease written as a class, when it needs a method as well as transitions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SEIR(ss.Disease):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    S, E, I, R <span class="op">=</span> ss.states(<span class="dv">4</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    beta     <span class="op">=</span> ss.par(ss.perday(<span class="fl">0.3</span>), bounds<span class="op">=</span>[<span class="fl">0.1</span>, <span class="dv">1</span>])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    exposure <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> beta <span class="op">*</span> I</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    onset    <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.days(<span class="dv">5</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    recovery <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.days(<span class="dv">10</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>seir <span class="op">=</span> SEIR(init_prev<span class="op">=</span><span class="fl">0.01</span>) <span class="co"># Named "seir", after the class</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="mixing-and-demographics" class="level3">
+<h3 class="anchored" data-anchor-id="mixing-and-demographics">Mixing and demographics</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Job</th>
+<th>Starsim 3</th>
+<th>Starsim 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Homogeneous mixing</td>
+<td>a <a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet()</code></a> with many contacts</td>
+<td>no network (<code>ss.Sim(sir)</code>); this runs as an ODE</td>
+</tr>
+<tr class="even">
+<td>A contact matrix by age</td>
+<td>a custom network or mixing pools</td>
+<td><code>sir.stratify(age=[0, 15, 65])</code> and <code>networks=ss.contacts(ages=[0, 15, 65], matrix=matrix)</code> (<code>ages=</code> gives the lower edge of each of the matrix’s age groups), or <code>ss.contacts('Kenya')</code></td>
+</tr>
+<tr class="odd">
+<td>A network</td>
+<td><a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet()</code></a>, <code>ss.MFNet()</code>, <code>networks='random'</code></td>
+<td>the same, with <code>ss.MFNet()</code> now <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet()</code></a> (between men and women by default; <code>ss.MSMNet()</code> is <code>ss.SexualNet(between='mm')</code>); a network makes the sim run as agents</td>
+</tr>
+<tr class="even">
+<td>Births and deaths</td>
+<td><code>ss.Births(birth_rate=20)</code>, <code>ss.Deaths(death_rate=15)</code>, or <code>ss.Sim(birth_rate=20, death_rate=15)</code> (per 1,000 per year)</td>
+<td>for the population: <code>ss.Sim(demographics=[ss.birth(rate=ss.peryear(0.02)), ss.death(rate=ss.peryear(0.015))])</code> (per person; under every solver); or keep the modules (agents only). <code>birth_rate=</code> and <code>death_rate=</code> on the sim are removed</td>
+</tr>
+<tr class="odd">
+<td>Pregnancy</td>
+<td><a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy()</code></a>, written as code, with methods to override (<code>make_embryos()</code>, …) and arrays (<code>pregnant</code>, <code>ti_pregnant</code>, <code>ti_delivery</code>)</td>
+<td><a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy()</code></a> is now declared, with Starsim 3’s arguments: the states <code>NP</code> and <code>P</code> and transitions (<code>preg.conception</code>, <code>preg.delivery</code>, <code>preg.birth</code>, …), under every solver. <code>preg.pregnant</code> is <code>preg.P</code>, <code>ti_pregnant</code> is <code>ti_P</code>, the scheduled delivery is <code>ti_exit_P</code>, and the results <code>pregnancies</code>, <code>births</code>, <code>miscarriages</code>, and <code>stillbirths</code> are its flows <code>conception</code>, <a href="../api/transitions.html#starsim.transitions.birth" title="0"><code>birth</code></a>, <code>miscarriage</code>, and <code>stillbirth</code>. A subclass that overrides Starsim 3’s methods raises: use its seams instead: its three rates, <code>fertility=</code>, <code>loss_rate=</code>, and <code>infant_rate=</code> (each a rate, or a function of <code>(sim, uids)</code>; <code>fertility</code> is <code>conception_rate()</code> by default), <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> of its transitions, <code>since_birth</code> and <code>preg.lactating</code> (breastfeeding) after a birth, and <code>ss.on(preg.birth)</code> or, from code, <code>preg.add_callback(preg.birth, fn)</code> (Starsim 3’s <code>add_conception_callback(fn)</code> and <code>add_delivery_callback(fn)</code> are removed). <code>ss.PregnancyPars</code> is removed too: <code>ss.Pregnancy().pars</code> has the parameters</td>
+</tr>
+<tr class="even">
+<td>The children of some parents</td>
+<td><code>sim.people.find_children(uids)</code></td>
+<td><code>ss.uids(ppl.auids[np.isin(ppl.parent, uids)])</code> (<code>People.find_children()</code> is removed)</td>
+</tr>
+<tr class="odd">
+<td>An age range</td>
+<td><code>ss.parse_age_range('[15, 25)')</code>, <code>ss.apply_age_range()</code></td>
+<td>a condition, <code>(ppl.age &gt;= 15) &amp; (ppl.age &lt; 25)</code>, or a stratification, <code>sim.stratify(age=[15, 25, 50])</code> (both functions moved to STIsim)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interventions-and-connectors" class="level3">
+<h3 class="anchored" data-anchor-id="interventions-and-connectors">Interventions and connectors</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Job</th>
+<th>Starsim 3</th>
+<th>Starsim 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A vaccine</td>
+<td><code>ss.simple_vx(efficacy=0.8)</code>, <code>ss.Vx(...)</code></td>
+<td>the product’s keywords on its delivery, <code>ss.vaccinate(efficacy=0.8, ...)</code>, or the product itself, <code>ss.Vaccine(efficacy=0.8)</code>, when one product is given by several deliveries. It is leaky, as <code>ss.simple_vx</code> was by default (everyone vaccinated has their chance of infection cut by 80%); for all-or-nothing (Starsim 3’s <code>leaky=False</code>: 80% of those vaccinated are fully protected, the rest not at all), <code>leaky=False</code></td>
+</tr>
+<tr class="even">
+<td>Routine vaccination, <code>p</code> a year</td>
+<td><code>ss.routine_vx(product=vx, prob=0.05, start_year=2005)</code></td>
+<td><code>ss.vaccinate(efficacy=0.8, coverage=0.05, interval=ss.years(1), start='2005')</code> (see item 4 above)</td>
+</tr>
+<tr class="odd">
+<td>A campaign</td>
+<td><code>ss.campaign_vx(product=vx, years=[2020], prob=0.6)</code></td>
+<td><code>ss.vaccinate(efficacy=0.8, at=['2020'], coverage=0.6)</code></td>
+</tr>
+<tr class="even">
+<td>Who is eligible</td>
+<td><code>eligibility=lambda sim: sim.people.age &lt; 15</code></td>
+<td><code>where=lambda sim: sim.people.age &lt; 15</code>, or a condition: <code>where=sir.age &lt; 15</code> when <code>sir</code> is stratified by age</td>
+</tr>
+<tr class="odd">
+<td>Screening and treatment</td>
+<td><code>ss.routine_screening(product=ss.Dx(...), prob=0.1)</code> with a treatment intervention</td>
+<td><code>screening = ss.screen(sensitivity=0.9, specificity=0.98, coverage=0.1, interval=ss.years(1))</code> and <code>ss.treat(cure=0.95, who=screening.positive, coverage=0.8)</code></td>
+</tr>
+<tr class="even">
+<td>Treatment with limited capacity</td>
+<td><code>ss.treat_num(product=ss.Tx(...), max_capacity=10)</code></td>
+<td><code>ss.treat(cure=0.95, where=sir.infection, capacity=10)</code></td>
+</tr>
+<tr class="odd">
+<td>A parameter change at a time</td>
+<td>an <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a> that edits <code>sim.diseases.sir.pars.beta</code> in <code>step()</code></td>
+<td><code>ss.modify(sir.pars.beta, multiply=0.5, start='2010')</code></td>
+</tr>
+<tr class="even">
+<td>A change while something holds</td>
+<td>the same, with a test in <code>step()</code></td>
+<td><code>ss.modify(sir.pars.beta, multiply=0.6, start='2020-03-15', stop='2020-06-01')</code></td>
+</tr>
+<tr class="odd">
+<td>Seasonality</td>
+<td><code>ss.seasonality(...)</code></td>
+<td><code>beta=ss.seasonal(mean=ss.peryear(0.5), amplitude=0.4, peak='January')</code></td>
+</tr>
+<tr class="even">
+<td>One disease changing another</td>
+<td>an <a href="../api/connectors.html#starsim.connectors.Connector" title="0"><code>ss.Connector</code></a> that writes <code>sis.rel_sus</code> from <code>hiv</code>’s states</td>
+<td><code>connectors=ss.modify(sis.rel_sus, multiply=3, where=hiv.I)</code></td>
+</tr>
+<tr class="odd">
+<td>A custom intervention</td>
+<td>an <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a> subclass with <code>step()</code></td>
+<td>keep it (agents), or <code>ss.vaccinate(..., deliver=fn)</code> with a function returning who receives it</td>
+</tr>
+</tbody>
+</table>
+<p>A connector that sets an array (<code>sis.rel_sus[:] = 1.0</code>, then raises it for some people) also erases what other modules set, such as a disease’s own immunity. <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> multiplies a base value that it never overwrites, so modifiers from several modules combine.</p>
+</section>
+<section id="runs-results-and-calibration" class="level3">
+<h3 class="anchored" data-anchor-id="runs-results-and-calibration">Runs, results, and calibration</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Job</th>
+<th>Starsim 3</th>
+<th>Starsim 4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Many runs of one sim</td>
+<td><code>ss.MultiSim(sim, n_runs=10).run()</code>, then <code>msim.mean()</code></td>
+<td><code>msim = sim.run(n_runs=10)</code> (or <code>ss.parallel(sim, n_runs=10)</code>), then <code>msim.summarize()</code> (a table of the median, a 95% interval, the mean, and the standard deviation of each result over the runs), <code>msim.plot()</code> (the median and 95% interval), or <code>msim.results.sir.I.median()</code> and <code>.quantiles()</code> at each time, for any sim; <code>msim.reduce()</code>, <code>mean()</code>, and <code>median()</code> are gone</td>
+</tr>
+<tr class="even">
+<td>Scenarios</td>
+<td><code>ss.parallel(sim1, sim2)</code></td>
+<td><code>ss.parallel({'Baseline': sim1, 'Masks': sim2})</code>, labeled as you like, and <code>msim.diff('Baseline')</code></td>
+</tr>
+<tr class="odd">
+<td>A parameter sweep</td>
+<td>a loop over <code>ss.Sim(pars=...)</code></td>
+<td><code>ss.parallel(sim, pars={'sir.beta': [0.2, 0.3, 0.4]})</code></td>
+</tr>
+<tr class="even">
+<td>A result</td>
+<td><code>sim.results.sir.n_infected</code></td>
+<td><code>sim.results.sir.I</code></td>
+</tr>
+<tr class="odd">
+<td>A result by group</td>
+<td>an analyzer</td>
+<td><code>sim.results.sir.I.by('age')</code>, <code>.select(age='0-14')</code></td>
+</tr>
+<tr class="even">
+<td>The modules given to a sim</td>
+<td><code>ss.Sim(..., copy_inputs=False)</code>, so that <code>sir.results</code> is the sim’s</td>
+<td>a sim always copies the modules it is given (<code>copy_inputs=</code> is removed; the migration script removes it and lists the line): read them, and their results, from the sim (<code>sim.diseases.sir</code>, <code>sim.results.sir</code>)</td>
+</tr>
+<tr class="odd">
+<td>A copy with changes</td>
+<td><code>sc.dcp(sim)</code>, then edit</td>
+<td><code>sim.new(n_agents=5000)</code>, a new sim from the same inputs with what is given changed; to run the same sim again with another solver, <code>sim.run(solver='abm')</code> (a sim that has run is run again from the start)</td>
+</tr>
+<tr class="even">
+<td>Calibration</td>
+<td><code>ss.Calibration(sim, calib_pars=dict(beta=dict(low=0.01, high=0.3, guess=0.1)), build_fn=..., components=[ss.Normal(...)], total_trials=100)</code>, then <code>calib.fit()</code></td>
+<td><code>beta=ss.par(0.1, bounds=[0.01, 0.3])</code> in the model, <code>ss.Sim(sir, data=df)</code> with a column named after a result (<code>prevalence</code>), then <code>fit = sim.fit()</code> (<code>n_trials=100</code> for Optuna, used for agents)</td>
+</tr>
+<tr class="odd">
+<td>A likelihood</td>
+<td><code>ss.Normal(...)</code>, <code>ss.BetaBinomial(...)</code> components</td>
+<td><code>sim.fit(likelihood=dict(prevalence=ss.normal(scale=0.02)))</code>, or <code>likelihood=</code> on an <a href="../api/transitions.html#starsim.transitions.outcome" title="0"><code>ss.outcome()</code></a></td>
+</tr>
+<tr class="even">
+<td>Data shared by two diseases</td>
+<td>an <code>extract_fn</code> per component</td>
+<td>name the column after the disease too: <code>sis.prevalence</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="migrating-one-disease-at-a-time" class="level2">
+<h2 class="anchored" data-anchor-id="migrating-one-disease-at-a-time">Migrating one disease at a time</h2>
+<p>A published model does not have to move all at once. Keep the hard disease as code and declare the easy one: the mixed sim runs as agents, and <code>sim.new()</code>, <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> scenarios and sweeps, <code>msim.diff()</code>, and <code>sim.fit()</code> work on the whole sim.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim.library <span class="im">as</span> ssl</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>hiv <span class="op">=</span> ssl.HIV(beta<span class="op">=</span>{<span class="st">'sexual'</span>: ss.peract(m2f<span class="op">=</span><span class="fl">0.008</span>, f2m<span class="op">=</span><span class="fl">0.004</span>), <span class="st">'random'</span>: <span class="dv">0</span>}, init_prev<span class="op">=</span><span class="fl">0.05</span>) <span class="co"># Starsim 3's module, written as code (see 3 for its beta)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>S, I <span class="op">=</span> ss.states(<span class="st">'S I'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>sis <span class="op">=</span> ss.Disease( <span class="co"># Newly declared</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    infection <span class="op">=</span> ss.Transition(S, I, rate<span class="op">=</span><span class="bu">dict</span>(sexual<span class="op">=</span><span class="dv">0</span>, random<span class="op">=</span>ss.par(ss.prob(<span class="fl">0.005</span>, <span class="st">'month'</span>), bounds<span class="op">=</span>[<span class="fl">0.001</span>, <span class="fl">0.05</span>])) <span class="op">*</span> I),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    recovery  <span class="op">=</span> ss.Transition(I, S, dur<span class="op">=</span>ss.years(<span class="dv">2</span>)),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    init_prev <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    name <span class="op">=</span> <span class="st">'sis'</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>susceptible <span class="op">=</span> ss.modify(sis.rel_sus, multiply<span class="op">=</span><span class="dv">3</span>, where<span class="op">=</span>hiv.infected)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.Sim([hiv, sis], networks<span class="op">=</span>[ss.SexualNet(), ss.RandomNet()], connectors<span class="op">=</span>susceptible,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>             n_agents<span class="op">=</span><span class="dv">2000</span>, start<span class="op">=</span><span class="st">'2000'</span>, stop<span class="op">=</span><span class="st">'2020'</span>, dt<span class="op">=</span>ss.months(<span class="dv">1</span>))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>vaccination <span class="op">=</span> ss.vaccinate(efficacy<span class="op">=</span><span class="fl">0.8</span>, disease<span class="op">=</span>sis, coverage<span class="op">=</span><span class="fl">0.05</span>, interval<span class="op">=</span>ss.years(<span class="dv">1</span>), start<span class="op">=</span><span class="st">'2010'</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.parallel({<span class="st">'Baseline'</span>: sim, <span class="st">'Vaccine'</span>: sim.new(interventions<span class="op">=</span>vaccination)}, n_runs<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>msim.diff(<span class="st">'Baseline'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Two things to know in a mixed sim:</p>
+<ul>
+<li>A condition can name the arrays of a module written as code (<code>where=hiv.infected</code>, <code>where=hiv.cd4 &lt; 200</code>), or be a function of the sim (<code>where=lambda sim: sim.diseases.hiv.infected</code>).</li>
+<li><a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> and <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a> act on a module written as code too, as agents, if it has what they change (such as <code>rel_sus</code>); give <code>disease=</code> when there are several diseases. Its Starsim 3 connectors and interventions also still run.</li>
+</ul>
+<p>To validate each step, run the Starsim 3 version and the ported one over several seeds (<code>sim.run(n_runs=10)</code>) and compare means and spreads, after mapping the result names and allowing for the one-step shift.</p>
+</section>
+<section id="what-needs-a-declared-disease" class="level2">
+<h2 class="anchored" data-anchor-id="what-needs-a-declared-disease">What needs a declared disease</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Works on any module</th>
+<th>Needs a declared disease</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Running as agents, networks, <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a>/<a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a>, analyzers, <code>ss.parallel(sim, n_runs=...)</code> with <code>msim.results</code> across the runs, <code>sim.new()</code>, scenarios and sweeps with <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a>, <code>sim.fit()</code> (with bounds on a parameter), <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> and <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a> targets (as agents), <code>sim.describe()</code> (in brief)</td>
+<td>The ODE and stochastic compartmental solvers, <code>describe()</code> in full, <code>equations()</code></td>
+</tr>
+</tbody>
+</table>
+<p>The compartmental solvers need every module of the sim to have a compartmental form, so a sim with a disease written as code runs as agents.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// Sidebar sections listed here start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const collapsed = ['Architecture'];
+  for (const section of document.querySelectorAll('#quarto-sidebar .sidebar-item-section')) {
+    const title = section.querySelector('.menu-text');
+    if (!title || !collapsed.includes(title.textContent.trim()) || section.querySelector('.sidebar-link.active')) continue;
+    section.querySelector(':scope > ul.collapse')?.classList.remove('show');
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0 (2026-10-31).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
