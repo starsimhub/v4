@@ -1,0 +1,69 @@
+/* Global font settings */
+body, p {
+  font-family: "Raleway", "Montserrat", "Lato", "Open Sans", sans-serif;
+  font-size: 1.0em;
+}
+
+/* Prevent excessive spacing in terminal output -- need a better solution for when ansi codes are present */
+pre {
+  line-height: 1.2;
+}
+
+/* Do not insert a space between a paragraph and a list */
+p:has(+ ul) {
+  margin-bottom: 0.0em;
+}
+
+/* Quarto-specific */
+.navbar-logo {
+    height: 2em !important;
+    max-height: none !important;
+    min-height: 40px !important;
+}
+
+.navbar-nav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#quarto-document-content {
+  margin-top: 0;
+  padding-top: 0 !important;
+}
+
+/* Prevent API doc table name columns from wrapping */
+table td:first-child a {
+  white-space: nowrap;
+}
+/* Bold every top-level sidebar section; a section with its own page (href) can't use **bold** in its title, since Quarto shows it literally */
+#quarto-sidebar li.sidebar-item-section:not(ul.sidebar-section li) > .sidebar-item-container .menu-text {
+  font-weight: bold;
+}
+
+/* "Expand all" and "Collapse all" at the top of a sidebar with sections (see collapse_sections.html) */
+.sidebar-expand-all {
+  display: flex;
+  gap: 0.75em;
+  font-size: 0.8em;
+  margin: 0 0 0.25em 0;
+}
+.sidebar-expand-all button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.sidebar-expand-all button:hover {
+  text-decoration: underline;
+}
+
+/* Figures shrink with the page down to a minimum width, then scroll; Quarto gives each a fixed width (e.g. width="758"), which otherwise always scrolls when the column is narrower */
+.cell-output-display img, .quarto-figure img {
+  max-width: 100%;
+  min-width: 360px;
+  height: auto;
+}
+.cell-output-display {
+  overflow-x: auto;
+}

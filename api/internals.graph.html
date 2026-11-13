@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>internals.graph – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/internals.loop.html" rel="next">
+<link href="../api/internals.gradients.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-75bfa209afa5bea2820a722bb1d12033.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+<meta property="og:title" content="Starsim">
+<meta property="og:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta property="og:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta property="og:site_name" content="Starsim">
+<meta property="og:image:height" content="498">
+<meta property="og:image:width" content="2141">
+<meta name="twitter:title" content="Starsim">
+<meta name="twitter:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta name="twitter:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsimhub.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Internals</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.graph.html">graph</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Starsim</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Converters</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fitting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.joint_states.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">joint_states</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.internals.graph" id="toc-starsim.internals.graph" class="nav-link active" data-scroll-target="#starsim.internals.graph">internals.graph</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.internals.graph.Graph" id="toc-starsim.internals.graph.Graph" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph">Graph</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes">Attributes</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.internals.graph.Graph.add" id="toc-starsim.internals.graph.Graph.add" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.add">add</a></li>
+  <li><a href="#starsim.internals.graph.Graph.add_flow" id="toc-starsim.internals.graph.Graph.add_flow" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.add_flow">add_flow</a></li>
+  <li><a href="#starsim.internals.graph.Graph.all_pars" id="toc-starsim.internals.graph.Graph.all_pars" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.all_pars">all_pars</a></li>
+  <li><a href="#starsim.internals.graph.Graph.bad_splits" id="toc-starsim.internals.graph.Graph.bad_splits" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.bad_splits">bad_splits</a></li>
+  <li><a href="#starsim.internals.graph.Graph.check" id="toc-starsim.internals.graph.Graph.check" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.check">check</a></li>
+  <li><a href="#starsim.internals.graph.Graph.check_counts" id="toc-starsim.internals.graph.Graph.check_counts" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.check_counts">check_counts</a></li>
+  <li><a href="#starsim.internals.graph.Graph.check_read" id="toc-starsim.internals.graph.Graph.check_read" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.check_read">check_read</a></li>
+  <li><a href="#starsim.internals.graph.Graph.collect" id="toc-starsim.internals.graph.Graph.collect" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.collect">collect</a></li>
+  <li><a href="#starsim.internals.graph.Graph.counted" id="toc-starsim.internals.graph.Graph.counted" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.counted">counted</a></li>
+  <li><a href="#starsim.internals.graph.Graph.counts_in" id="toc-starsim.internals.graph.Graph.counts_in" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.counts_in">counts_in</a></li>
+  <li><a href="#starsim.internals.graph.Graph.dependence" id="toc-starsim.internals.graph.Graph.dependence" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.dependence">dependence</a></li>
+  <li><a href="#starsim.internals.graph.Graph.destination" id="toc-starsim.internals.graph.Graph.destination" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.destination">destination</a></li>
+  <li><a href="#starsim.internals.graph.Graph.destinations" id="toc-starsim.internals.graph.Graph.destinations" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.destinations">destinations</a></li>
+  <li><a href="#starsim.internals.graph.Graph.dwell_not_branch" id="toc-starsim.internals.graph.Graph.dwell_not_branch" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.dwell_not_branch">dwell_not_branch</a></li>
+  <li><a href="#starsim.internals.graph.Graph.fill_people" id="toc-starsim.internals.graph.Graph.fill_people" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.fill_people">fill_people</a></li>
+  <li><a href="#starsim.internals.graph.Graph.leaves" id="toc-starsim.internals.graph.Graph.leaves" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.leaves">leaves</a></li>
+  <li><a href="#starsim.internals.graph.Graph.linked" id="toc-starsim.internals.graph.Graph.linked" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.linked">linked</a></li>
+  <li><a href="#starsim.internals.graph.Graph.modifier_kind" id="toc-starsim.internals.graph.Graph.modifier_kind" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.modifier_kind">modifier_kind</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_acquisition" id="toc-starsim.internals.graph.Graph.resolve_acquisition" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_acquisition">resolve_acquisition</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_attrs" id="toc-starsim.internals.graph.Graph.resolve_attrs" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_attrs">resolve_attrs</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_derived" id="toc-starsim.internals.graph.Graph.resolve_derived" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_derived">resolve_derived</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_exits" id="toc-starsim.internals.graph.Graph.resolve_exits" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_exits">resolve_exits</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_init_prev" id="toc-starsim.internals.graph.Graph.resolve_init_prev" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_init_prev">resolve_init_prev</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_pars" id="toc-starsim.internals.graph.Graph.resolve_pars" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_pars">resolve_pars</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_people" id="toc-starsim.internals.graph.Graph.resolve_people" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_people">resolve_people</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_rest" id="toc-starsim.internals.graph.Graph.resolve_rest" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_rest">resolve_rest</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_starting" id="toc-starsim.internals.graph.Graph.resolve_starting" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_starting">resolve_starting</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_states" id="toc-starsim.internals.graph.Graph.resolve_states" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_states">resolve_states</a></li>
+  <li><a href="#starsim.internals.graph.Graph.resolve_transitions" id="toc-starsim.internals.graph.Graph.resolve_transitions" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.resolve_transitions">resolve_transitions</a></li>
+  <li><a href="#starsim.internals.graph.Graph.set_keywords" id="toc-starsim.internals.graph.Graph.set_keywords" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.set_keywords">set_keywords</a></li>
+  <li><a href="#starsim.internals.graph.Graph.set_slots" id="toc-starsim.internals.graph.Graph.set_slots" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.set_slots">set_slots</a></li>
+  <li><a href="#starsim.internals.graph.Graph.spread_pars" id="toc-starsim.internals.graph.Graph.spread_pars" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.spread_pars">spread_pars</a></li>
+  <li><a href="#starsim.internals.graph.Graph.stratify" id="toc-starsim.internals.graph.Graph.stratify" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.stratify">stratify</a></li>
+  <li><a href="#starsim.internals.graph.Graph.taken" id="toc-starsim.internals.graph.Graph.taken" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.taken">taken</a></li>
+  <li><a href="#starsim.internals.graph.Graph.transmitted_from" id="toc-starsim.internals.graph.Graph.transmitted_from" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.transmitted_from">transmitted_from</a></li>
+  <li><a href="#starsim.internals.graph.Graph.unit_values" id="toc-starsim.internals.graph.Graph.unit_values" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.unit_values">unit_values</a></li>
+  <li><a href="#starsim.internals.graph.Graph.unset_default_init_prev" id="toc-starsim.internals.graph.Graph.unset_default_init_prev" class="nav-link" data-scroll-target="#starsim.internals.graph.Graph.unset_default_init_prev">unset_default_init_prev</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/internals.arrays.html"><strong>Internals</strong></a></li><li class="breadcrumb-item"><a href="../api/internals.graph.html">graph</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.internals.graph" class="level1">
+<h1>internals.graph</h1>
+<p><a href="../api/internals.graph.html#starsim.internals.graph" title="0"><code>internals.graph</code></a></p>
+<p>Not for the user: the graph of one module: its states, transitions, and parameters, collected, named, completed with defaults (each guess recorded), and checked</p>
+<p>It exists as the one description of a declared model, which every solver runs and <code>describe()</code> shows, so that a model can be written once.</p>
+<p>Used with: agents and compartments; declared modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph">Graph</a></td>
+<td>The states and transitions of one module</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.graph.Graph" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.internals.graph.Graph">Graph</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>internals.graph.<span class="fu">Graph</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    module,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">args</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">members</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">init_prev</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">init</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">init_n</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">default_state</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">names</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">seed_n</span><span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states and transitions of one module</p>
+<p>The graph is built when the module is constructed. It names everything, works out which states are people and which transitions are transmissions (from their rates), turns inline values into named parameters, and checks the result. Every guess is recorded, in <code>graph.guessed</code> and in the <code>guessed</code> of each state and transition.</p>
+<p>This class is not usually used directly: see <a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a>.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>module</td>
+<td><code>ss.Module</code></td>
+<td>the module the graph belongs to</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>args</td>
+<td><code>list</code></td>
+<td>transitions and outcomes passed positionally</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>members</td>
+<td><code>dict</code></td>
+<td>states, transitions, parameters, results, and functions, by name</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>init_prev</td>
+<td><code>float</code></td>
+<td>the initial prevalence, seeded through the transmission (by default 0.01, unless a state is given an initial value)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>init</td>
+<td><code>dict</code></td>
+<td>the fraction of people who start in each state, by name</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>init_n</td>
+<td><code>dict</code></td>
+<td>the number of people who start in each state, by name</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>seed_n</td>
+<td><code>bool</code></td>
+<td>whether <code>init_prev</code> is a number of people (given as <code>init_n=10</code>) rather than a fraction</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td>default_state</td>
+<td><code>str</code></td>
+<td>the state people are in unless they are put elsewhere (by default, the one named <code>S</code> or <code>susceptible</code>, else the first made; see <code>resolve_people()</code>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>names</td>
+<td><code>dict</code></td>
+<td>the names of the variables of the code that made the module, by the id of what they hold (see <a href="../api/utils.html#starsim.utils.caller_names" title="0"><code>ss.utils.caller_names()</code></a>), which name the states, transitions, and parameters given without one</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes" class="level4">
+<h4 class="anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.acquisitions">acquisitions</a></td>
+<td>The transitions that are an acquisition of the disease: see <code>resolve_acquisition()</code></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.count_sources">count_sources</a></td>
+<td>The states whose numbers or fractions drive an acquisition at a rate on counts of them, which are the sources of infection without a transmission: <code>I</code> in <code>S &gt;&gt; I @ beta*I.n</code> (density-dependent), or <code>beta*I.frac</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.infected">infected</a></td>
+<td>The states people carry an infection in, for what needs them (e.g.&nbsp;the states strains are carried in, or the number infected at the start): those</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.infection_sources">infection_sources</a></td>
+<td>The sources of infection: of people by contact (<code>I</code> in <code>beta*I</code>), density-dependent (<code>beta*I.n</code>), or of a count (<code>Ih</code> in a bite rate <code>Ih.n / N</code> of mosquitoes)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.infectious">infectious</a></td>
+<td>The states that are a source of infection</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.marked">marked</a></td>
+<td>The states the model says are infected: marked (<code>ss.State(infected=True)</code>), or in its own result <code>infected</code> if that is a sum or set of its states (<code>infected = E + I</code>, or <code>E \| I</code>)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.met_counts">met_counts</a></td>
+<td>The counts in a rate that a contact matrix acts on (see <code>ss.solvers.Mixing.count_terms()</code>): in the rate of an acquisition, the number</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.uninfected">uninfected</a></td>
+<td>The names of the states people can be in without ever having been infected: those reached from the first state by transitions that are not an acquisition</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.add">add</a></td>
+<td>Add a named member, checking the name</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.add_flow">add_flow</a></td>
+<td>Add a birth, death, or migration declared for the whole population (<code>ss.Sim(demographics=[ss.birth(...)])</code>), after the graph is built; see <code>ss.solvers.choose.init_flows()</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.all_pars">all_pars</a></td>
+<td>Every parameter in the graph, named or inline</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.bad_splits">bad_splits</a></td>
+<td>The groups of branches with constant p= whose fractions do not sum to 1: those that apply to the people at each level named by a move= arrow are summed within that level; returns [(branches, total)]</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.check">check</a></td>
+<td>Checks that do not need the sim</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.check_counts">check_counts</a></td>
+<td>Refuse a forgotten <code>people=False</code>: a group of states of people that no transition links to the first state</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.check_read">check_read</a></td>
+<td>Refuse a state that an earlier module only read in a rate, so took as a state of its own that nothing fills, e.g.&nbsp;<code>Rb.frac</code> in disease <code>a</code>, declared before the disease <code>b</code> that <code>Rb</code> was meant to belong to</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.collect">collect</a></td>
+<td>Sort the members by what they are, and name them</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.counted">counted</a></td>
+<td>The states of people of this module whose number or fraction a transition reads in its rate, other than its source, if the rate grows with them:</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.counts_in">counts_in</a></td>
+<td>The counts (<code>I.n</code>, <code>I.frac</code>) in the rate of a transition, other than the total of the people it is divided by, e.g.&nbsp;<code>I.n</code> and not <code>N.n</code> in <code>beta*I.n/N.n</code></td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.dependence">dependence</a></td>
+<td>How the rate of a transition grows with the people in other states it counts: ‘density’ (<code>beta*I.n</code>), ‘frequency’ (<code>beta*I.frac</code>, or <code>beta*I.n/N.n</code>), or None (see <code>ss.expressions.dependence()</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.destination">destination</a></td>
+<td>For the name of one destination of a transition with several, <code>'&lt;transition&gt;.&lt;state&gt;'</code> (e.g.&nbsp;<code>'progression.C'</code>, or <code>'outcome.dead'</code> and <code>'outcome.stay'</code> for ss.dead and ss.stay): the transition; otherwise None</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.destinations">destinations</a></td>
+<td>The names of the destinations of the transitions with several, as <code>destination()</code> takes them</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.dwell_not_branch">dwell_not_branch</a></td>
+<td>For a multiplier (<code>how</code>, e.g.&nbsp;‘the modifier “m”’) on a transition with several destinations chosen with p= and a dwell time: a note that it changes the dwell, not a branch, naming the destinations that would; otherwise None</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.fill_people">fill_people</a></td>
+<td>Fill in what depends on which states are people: the sources of the deaths of everyone (<code>ss.death()</code> with no state), and the people a birth rate is per person of (<code>ss.birth()</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.leaves">leaves</a></td>
+<td>The leaves of the rates and branch probabilities of its transitions</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.linked">linked</a></td>
+<td>The groups of states of people that transitions link, in either direction: one, unless the people are in separate chains of states (e.g.&nbsp;a chain for each host species)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.modifier_kind">modifier_kind</a></td>
+<td>What a modifier on a transition acts on: its probability if it is one branch of several with p= (chosen on entry) or one destination of a transition with several (<code>'recovery.R'</code>), and otherwise its rate</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_acquisition">resolve_acquisition</a></td>
+<td>Work out which transitions are an acquisition of the disease, which <code>rel_sus</code>, a product’s efficacy against acquisition, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat</code></a> act on</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.resolve_attrs">resolve_attrs</a></td>
+<td>Resolve each attribute: another attribute given by name, the cases of a derived one by state (a state, a sum of states, or a | of them), and its events</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_derived">resolve_derived</a></td>
+<td>Which states are infected, and their results. The infected states are those the model says are infected (marked</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.resolve_exits">resolve_exits</a></td>
+<td>Group the transitions out of each state: those with p= split on entry, the rest compete</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_init_prev">resolve_init_prev</a></td>
+<td>By default, 1% of people start infected, seeded through the transmission (frequency- or density-dependent), unless a state is given a starting value</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.resolve_pars">resolve_pars</a></td>
+<td>Turn inline values in the standard slots into named parameters (beta, dur, rate, p)</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_people">resolve_people</a></td>
+<td>Which states are people: every state, unless it is declared a count (<code>ss.State(people=False)</code>, e.g.&nbsp;mosquitoes or</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.resolve_rest">resolve_rest</a></td>
+<td>Work out where the people not given an initial state start: the first state, unless it is given an initial value of</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_starting">resolve_starting</a></td>
+<td>Let the starting values (init_prev, and each state’s init= and init_n=) leave levels out of an <code>ss.by</code> by label, which start at 0 (see <a href="../api/internals.parameters.html#starsim.internals.parameters.starting" title="0"><code>ss.parameters.starting()</code></a>); done when the sim is built, after values by name are set and before anything checks or reads them</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.resolve_states">resolve_states</a></td>
+<td>Find the states: the ones declared, and those the transitions use</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.resolve_transitions">resolve_transitions</a></td>
+<td>Give every transition a name, a source, and a rate or a dwell time</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.set_keywords">set_keywords</a></td>
+<td>A value given as a keyword sets the parameter of that name; there is nothing else for it to be</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.set_slots">set_slots</a></td>
+<td>Record the kind of value each parameter of a transition is, as <code>par.slot</code> (which describe() uses):</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.spread_pars">spread_pars</a></td>
+<td>The parameters whose value is a distribution across people (e.g.&nbsp;<code>beta=ss.lognormal(0.3, 0.1)</code>), other than dwell times, which are stages or are sampled on entry</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.stratify">stratify</a></td>
+<td>Stratify the graph by one or more dimensions; see <a href="../api/diseases.html#starsim.diseases.Disease.stratify" title="0"><code>ss.Disease.stratify()</code></a></td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.taken">taken</a></td>
+<td>Whether a member of the module has this name</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.transmitted_from">transmitted_from</a></td>
+<td>The states of people that transmission (by contact, or at a rate on counts of others) takes people from</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.internals.graph.Graph.unit_values">unit_values</a></td>
+<td>All the typed values (durations and rates) in the graph, used to infer the sim’s unit</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.internals.graph.Graph.unset_default_init_prev">unset_default_init_prev</a></td>
+<td>Remove the default init_prev</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.internals.graph.Graph.add" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.add">add</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">add</span>(container, name, obj)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add a named member, checking the name</p>
+</section>
+<section id="starsim.internals.graph.Graph.add_flow" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.add_flow">add_flow</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">add_flow</span>(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Add a birth, death, or migration declared for the whole population (<code>ss.Sim(demographics=[ss.birth(...)])</code>), after the graph is built; see <code>ss.solvers.choose.init_flows()</code></p>
+</section>
+<section id="starsim.internals.graph.Graph.all_pars" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.all_pars">all_pars</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">all_pars</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Every parameter in the graph, named or inline</p>
+</section>
+<section id="starsim.internals.graph.Graph.bad_splits" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.bad_splits">bad_splits</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">bad_splits</span>(exits)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The groups of branches with constant p= whose fractions do not sum to 1: those that apply to the people at each level named by a move= arrow are summed within that level; returns [(branches, total)]</p>
+</section>
+<section id="starsim.internals.graph.Graph.check" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.check">check</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">check</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Checks that do not need the sim</p>
+</section>
+<section id="starsim.internals.graph.Graph.check_counts" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.check_counts">check_counts</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">check_counts</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Refuse a forgotten <code>people=False</code>: a group of states of people that no transition links to the first state and that only an inflow (not a birth) fills, as mosquitoes are, would otherwise silently become agents</p>
+</section>
+<section id="starsim.internals.graph.Graph.check_read" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.check_read">check_read</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">check_read</span>(state)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Refuse a state that an earlier module only read in a rate, so took as a state of its own that nothing fills, e.g.&nbsp;<code>Rb.frac</code> in disease <code>a</code>, declared before the disease <code>b</code> that <code>Rb</code> was meant to belong to</p>
+</section>
+<section id="starsim.internals.graph.Graph.collect" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.collect">collect</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">collect</span>(args, members)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sort the members by what they are, and name them</p>
+</section>
+<section id="starsim.internals.graph.Graph.counted" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.counted">counted</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">counted</span>(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states of people of this module whose number or fraction a transition reads in its rate, other than its source, if the rate grows with them: <code>I</code> in <code>S &gt;&gt; I @ beta*I.n</code> (density-dependent transmission) or <code>S &gt;&gt; I @ beta*I.frac</code> (frequency-dependent, by the fraction of people in <code>I</code>; see <code>dependence()</code>); none for births at a rate on counts (<code>ss.unborn &gt;&gt; N @ b*N.n</code>)</p>
+</section>
+<section id="starsim.internals.graph.Graph.counts_in" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.counts_in">counts_in</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">counts_in</span>(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The counts (<code>I.n</code>, <code>I.frac</code>) in the rate of a transition, other than the total of the people it is divided by, e.g.&nbsp;<code>I.n</code> and not <code>N.n</code> in <code>beta*I.n/N.n</code></p>
+</section>
+<section id="starsim.internals.graph.Graph.dependence" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.dependence">dependence</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">dependence</span>(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>How the rate of a transition grows with the people in other states it counts: ‘density’ (<code>beta*I.n</code>), ‘frequency’ (<code>beta*I.frac</code>, or <code>beta*I.n/N.n</code>), or None (see <code>ss.expressions.dependence()</code>)</p>
+</section>
+<section id="starsim.internals.graph.Graph.destination" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.destination">destination</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">destination</span>(name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For the name of one destination of a transition with several, <code>'&lt;transition&gt;.&lt;state&gt;'</code> (e.g.&nbsp;<code>'progression.C'</code>, or <code>'outcome.dead'</code> and <code>'outcome.stay'</code> for ss.dead and ss.stay): the transition; otherwise None</p>
+</section>
+<section id="starsim.internals.graph.Graph.destinations" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.destinations">destinations</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">destinations</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The names of the destinations of the transitions with several, as <code>destination()</code> takes them</p>
+</section>
+<section id="starsim.internals.graph.Graph.dwell_not_branch" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.dwell_not_branch">dwell_not_branch</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">dwell_not_branch</span>(name, how, modname)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For a multiplier (<code>how</code>, e.g.&nbsp;‘the modifier “m”’) on a transition with several destinations chosen with p= and a dwell time: a note that it changes the dwell, not a branch, naming the destinations that would; otherwise None</p>
+</section>
+<section id="starsim.internals.graph.Graph.fill_people" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.fill_people">fill_people</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">fill_people</span>(tr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fill in what depends on which states are people: the sources of the deaths of everyone (<code>ss.death()</code> with no state), and the people a birth rate is per person of (<code>ss.birth()</code>)</p>
+</section>
+<section id="starsim.internals.graph.Graph.leaves" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.leaves">leaves</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">leaves</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The leaves of the rates and branch probabilities of its transitions</p>
+</section>
+<section id="starsim.internals.graph.Graph.linked" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.linked">linked</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">linked</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The groups of states of people that transitions link, in either direction: one, unless the people are in separate chains of states (e.g.&nbsp;a chain for each host species)</p>
+</section>
+<section id="starsim.internals.graph.Graph.modifier_kind" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.modifier_kind">modifier_kind</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">modifier_kind</span>(name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>What a modifier on a transition acts on: its probability if it is one branch of several with p= (chosen on entry) or one destination of a transition with several (<code>'recovery.R'</code>), and otherwise its rate</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_acquisition" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_acquisition">resolve_acquisition</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_acquisition</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out which transitions are an acquisition of the disease, which <code>rel_sus</code>, a product’s efficacy against acquisition, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat</code></a> act on</p>
+<p>A contact-mediated transition is one. So is any other transition of people out of the first state that is not an outflow, whatever its rate (a bite rate, an EIR, a count of bacteria), unless a transition out of that state is contact-mediated, which is then the acquisition (so <code>S -&gt; V</code> alongside <code>S -&gt; I @ beta * I</code> is a vaccination). <code>acquisition=</code> on the transition says it outright.</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_attrs" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_attrs">resolve_attrs</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_attrs</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resolve each attribute: another attribute given by name, the cases of a derived one by state (a state, a sum of states, or a | of them), and its events</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_derived" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_derived">resolve_derived</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_derived</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Which states are infected, and their results. The infected states are those the model says are infected (marked <code>ss.State(infected=True)</code>, or in its own result <code>infected = E + I</code>), exactly; or, if it says none are, those of a force of infection: the states people are infected into, and the sources (<code>E</code> and <code>I</code> in <code>S &gt;&gt; E @ beta*I</code>). With neither, as in a staged condition such as a cancer, no state is infected. Each state’s <code>infected</code> is set to match, and the infected states give the results <code>infected</code>, the number in them, and <code>prevalence</code>, their fraction of the people in every state, unless the module defines its own of that name, or has a state called <code>infected</code> (whose count has the name: it can define its own prevalence)</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_exits" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_exits">resolve_exits</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_exits</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Group the transitions out of each state: those with p= split on entry, the rest compete</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_init_prev" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_init_prev">resolve_init_prev</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_init_prev</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>By default, 1% of people start infected, seeded through the transmission (frequency- or density-dependent), unless a state is given a starting value</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_pars" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_pars">resolve_pars</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_pars</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Turn inline values in the standard slots into named parameters (beta, dur, rate, p)</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_people" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_people">resolve_people</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_people</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Which states are people: every state, unless it is declared a count (<code>ss.State(people=False)</code>, e.g.&nbsp;mosquitoes or bacteria in the water); and the first state, where people are unless they are put elsewhere: <code>default_state=</code> if given, else the state named <code>S</code> or <code>susceptible</code> (in any case), else the one state transmission infects people from, else the first state of people made (states are kept in the order they were created: see <code>resolve_states()</code>), which <code>describe()</code> shows as a guess. Not the state a birth goes to (<code>ss.birth(NB)</code> says where births go, not where everyone starts), nor the order of the transitions</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_rest" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_rest">resolve_rest</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_rest</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Work out where the people not given an initial state start: the first state, unless it is given an initial value of its own, which is then kept (<code>init=dict(S=0.1, I=1e-4)</code> starts 10% susceptible). Then it is the one state of people with no initial value, with a note in <code>guessed</code>; with none or several, there is no such state, and the initial values must sum to 1 (see <code>Engine.init_fractions()</code>)</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_starting" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_starting">resolve_starting</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_starting</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Let the starting values (init_prev, and each state’s init= and init_n=) leave levels out of an <code>ss.by</code> by label, which start at 0 (see <a href="../api/internals.parameters.html#starsim.internals.parameters.starting" title="0"><code>ss.parameters.starting()</code></a>); done when the sim is built, after values by name are set and before anything checks or reads them</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_states" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_states">resolve_states</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_states</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Find the states: the ones declared, and those the transitions use</p>
+</section>
+<section id="starsim.internals.graph.Graph.resolve_transitions" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.resolve_transitions">resolve_transitions</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">resolve_transitions</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Give every transition a name, a source, and a rate or a dwell time</p>
+</section>
+<section id="starsim.internals.graph.Graph.set_keywords" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.set_keywords">set_keywords</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">set_keywords</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A value given as a keyword sets the parameter of that name; there is nothing else for it to be</p>
+</section>
+<section id="starsim.internals.graph.Graph.set_slots" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.set_slots">set_slots</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">set_slots</span>(tr, <span class="va">density</span><span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Record the kind of value each parameter of a transition is, as <code>par.slot</code> (which describe() uses): ‘rate’ or ‘dur’, or None for a plain number (e.g.&nbsp;a factor of a rate); returns the standard slots it fills, as (slot name, parameter). <code>density</code> says the transition is a transmission at a rate on the number or fraction of people in a state (<code>beta*I.n</code>, <code>beta*I.frac</code>), whose coefficient is beta too</p>
+</section>
+<section id="starsim.internals.graph.Graph.spread_pars" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.spread_pars">spread_pars</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">spread_pars</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The parameters whose value is a distribution across people (e.g.&nbsp;<code>beta=ss.lognormal(0.3, 0.1)</code>), other than dwell times, which are stages or are sampled on entry</p>
+</section>
+<section id="starsim.internals.graph.Graph.stratify" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.stratify">stratify</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">stratify</span>(<span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Stratify the graph by one or more dimensions; see <a href="../api/diseases.html#starsim.diseases.Disease.stratify" title="0"><code>ss.Disease.stratify()</code></a></p>
+</section>
+<section id="starsim.internals.graph.Graph.taken" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.taken">taken</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">taken</span>(name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether a member of the module has this name</p>
+</section>
+<section id="starsim.internals.graph.Graph.transmitted_from" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.transmitted_from">transmitted_from</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">transmitted_from</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The states of people that transmission (by contact, or at a rate on counts of others) takes people from</p>
+</section>
+<section id="starsim.internals.graph.Graph.unit_values" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.unit_values">unit_values</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">unit_values</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>All the typed values (durations and rates) in the graph, used to infer the sim’s unit</p>
+</section>
+<section id="starsim.internals.graph.Graph.unset_default_init_prev" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.internals.graph.Graph.unset_default_init_prev">unset_default_init_prev</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>internals.graph.Graph.<span class="fu">unset_default_init_prev</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Remove the default init_prev</p>
+
+
+</section>
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// The sidebar's sections: "Expand all" and "Collapse all", and which sections are open, and where the sidebar is scrolled, kept from page to page.
+// Sections listed in `collapsed` start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.querySelector('#quarto-sidebar');
+  const sections = sidebar ? [...sidebar.querySelectorAll('.sidebar-item-section')] : [];
+  if (!sections.length) return;
+  const collapsed = ['Architecture'];
+  const title = (section) => section.querySelector(':scope > .sidebar-item-container .menu-text')?.textContent.trim() ?? '';
+  const path = (section) => { // Its title and those of the sections it is in, so that the same title in two sidebars is not confused
+    const titles = [];
+    for (let s = section; s; s = s.parentElement.closest('.sidebar-item-section')) titles.unshift(title(s));
+    return titles.join(' / ');
+  };
+  const key = 'starsim-sidebar:' + sections.map(title).join('|'); // One per sidebar (user guide, API, ...)
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const setOpen = (section, open) => { // Without Bootstrap's animation
+    section.querySelector(':scope > ul.collapse')?.classList.toggle('show', open);
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.toggle('collapsed', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+  };
+  const isOpen = (section) => section.querySelector(':scope > ul.collapse')?.classList.contains('show') ?? false;
+  const save = (all) => { // all: true or false after "Expand all" or "Collapse all", since the current page's section stays open on screen
+    const state = {};
+    for (const section of sections) state[path(section)] = typeof all === 'boolean' ? all : isOpen(section);
+    localStorage.setItem(key, JSON.stringify(state));
+  };
+
+  // Open each section as it was left (or by default), always with the current page showing
+  for (const section of sections) {
+    const p = path(section);
+    const open = section.querySelector('.sidebar-link.active') ? true : p in saved ? saved[p] : !collapsed.includes(title(section)) && isOpen(section);
+    setOpen(section, open);
+  }
+  sidebar.addEventListener('shown.bs.collapse', () => save());
+  sidebar.addEventListener('hidden.bs.collapse', () => save());
+
+  // Expand all and collapse all
+  const bar = document.createElement('div');
+  bar.className = 'sidebar-expand-all';
+  for (const [text, open] of [['Expand all', true], ['Collapse all', false]]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      for (const section of sections) setOpen(section, open || !!section.querySelector('.sidebar-link.active'));
+      save(open);
+    });
+    bar.append(button);
+  }
+  sidebar.querySelector('.sidebar-menu-container')?.prepend(bar);
+
+  // Where the sidebar was scrolled, if the current page is still in view there
+  const scrollKey = key + ':scroll';
+  const top = Number(sessionStorage.getItem(scrollKey));
+  if (top) {
+    sidebar.scrollTop = top;
+    const active = sidebar.querySelector('.sidebar-link.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), s = sidebar.getBoundingClientRect();
+      if (a.top < s.top || a.bottom > s.bottom) active.scrollIntoView({block: 'center'});
+    }
+  }
+  window.addEventListener('pagehide', () => sessionStorage.setItem(scrollKey, sidebar.scrollTop));
+});
+</script>
+<script>
+// Tabs in a group sync by title (Python, R, Explicit), and Quarto leaves a tabset blank if it has no tab of the title chosen (e.g. Explicit in a tabset of Python and R); show its first tab instead
+function showFirstTabs() {
+  for (const tabset of document.querySelectorAll('.panel-tabset[data-group]')) {
+    const tabs = tabset.querySelectorAll(':scope > .nav-tabs > .nav-item > .nav-link');
+    if (!tabs.length || tabset.querySelector(':scope > .nav-tabs .nav-link.active')) continue;
+    tabs[0].classList.add('active');
+    document.getElementById(tabs[0].getAttribute('aria-controls'))?.classList.add('active');
+  }
+}
+window.addEventListener('pageshow', () => setTimeout(showFirstTabs, 0)); // After Quarto's own pageshow handler, which restores the saved tab (pageshow fires after load)
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.panel-tabset[data-group] .nav-link')) setTimeout(showFirstTabs, 0); // After Quarto's own handler
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var opensNewContext = (link) => {
+        var target = (link.getAttribute("target") || "").toLowerCase();
+        return target !== "" && !["_self", "_parent", "_top"].includes(target);
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+        if (opensNewContext(link)) {
+          describeNewWindow(link);
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/internals.gradients.html" class="pagination-link" aria-label="gradients">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">gradients</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/internals.loop.html" class="pagination-link" aria-label="loop">
+        <span class="nav-page-text">loop</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0rc4 (2026-11-12).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

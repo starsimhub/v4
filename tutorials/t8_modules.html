@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>T8 – Custom modules – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../tutorials/solutions.html" rel="next">
+<link href="../tutorials/t7_strata.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-75bfa209afa5bea2820a722bb1d12033.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/authorship-1.0.0/authorship.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+<meta property="og:title" content="T8 – Custom modules – Starsim">
+<meta property="og:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta property="og:image" content="https://starsim.org/v4/tutorials/t8_modules_files/figure-html/cell-2-output-2.png">
+<meta property="og:site_name" content="Starsim">
+<meta property="og:image:height" content="1132">
+<meta property="og:image:width" content="1516">
+<meta name="twitter:title" content="T8 – Custom modules – Starsim">
+<meta name="twitter:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta name="twitter:image" content="https://starsim.org/v4/tutorials/t8_modules_files/figure-html/cell-2-output-2.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../tutorials.html" aria-current="page"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsimhub.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tutorials/t8_modules.html">T8 – Custom modules</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Tutorials</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t1_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T1 – Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T2 – Building a model</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t3_disease.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T3 – Building a disease</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t4_mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T4 – Mixing</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t5_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T5 – Interventions and scenarios</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t6_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T6 – Data and calibration</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t7_strata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">T7 – Stratification and co-transmission</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/t8_modules.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">T8 – Custom modules</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../tutorials/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Solutions</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section: Solutions">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t1_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T1 – Getting started</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t2_model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T2 – Building a model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t3_disease.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T3 – Building a disease</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t4_mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T4 – Mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t5_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T5 – Interventions and scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t6_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T6 – Data and calibration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t7_strata.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T7 – Stratification and co-transmission</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/solutions_t8_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solutions: T8 – Custom modules</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#vaccine-demand" id="toc-vaccine-demand" class="nav-link active" data-scroll-target="#vaccine-demand">Vaccine demand</a></li>
+  <li><a href="#a-module-as-a-class" id="toc-a-module-as-a-class" class="nav-link" data-scroll-target="#a-module-as-a-class">A module as a class</a></li>
+  <li><a href="#a-quantity-for-each-person" id="toc-a-quantity-for-each-person" class="nav-link" data-scroll-target="#a-quantity-for-each-person">A value for each person</a>
+  <ul>
+  <li><a href="#an-analyzer" id="toc-an-analyzer" class="nav-link" data-scroll-target="#an-analyzer">An analyzer</a></li>
+  </ul></li>
+  <li><a href="#a-disease-written-as-code" id="toc-a-disease-written-as-code" class="nav-link" data-scroll-target="#a-disease-written-as-code">Advanced: a disease written as code</a></li>
+  <li><a href="#a-network-written-as-code" id="toc-a-network-written-as-code" class="nav-link" data-scroll-target="#a-network-written-as-code">Advanced: a network written as code</a></li>
+  <li><a href="#which-to-use" id="toc-which-to-use" class="nav-link" data-scroll-target="#which-to-use">Which to use</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Download</h2><ul><li><a href="t8_modules.ipynb" download="t8_modules.ipynb"><i class="bi bi-journal-code"></i>Jupyter notebook</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">T8 – Custom modules</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Written by AI, from the earlier AI-written tutorial on modules written as code, with a new example of vaccine demand that responds to an outbreak. Merged on Nov 11 by AI with the agent-based tutorial on custom modules (A5), adapted from the Starsim 3 user guide page on adding modules and the waning-immunity example of its diseases tutorial. Shortened on Nov 11 by AI, which also added the analyzer; restructured on Nov 12 by AI after the docs review, with antibodies boosted by each infection as the example that needs a value for each person, and the disease and network written as code as advanced sections">🧠10% 🤖90%</div>
+<p><strong>When people hear about an outbreak, some of them go and get vaccinated. How much does that slow the outbreak down, and what limits it?</strong></p>
+<p>Most of a Starsim model is declared: its states, transitions, interventions, and results, which run under every solver and which <code>describe()</code> can show. But some things are easier to say in code, such as a rule of behavior, or a quantity with its own dynamics. A <strong>module written as code</strong> is a Python class with a <code>step()</code> method, which Starsim calls at each step, alongside the declared diseases.</p>
+<p>This tutorial first writes a module that keeps numbers for the whole population, vaccine demand, and so still runs as an ODE. It then writes one that has to keep a value for each person, which needs agents, and an analyzer. Advanced sections write a disease and a network as code. By the end of this tutorial, you will be able to:</p>
+<ul>
+<li>write a function that Starsim calls at each step, and a module as a class, with parameters, a state of its own, and results;</li>
+<li>write a module that keeps a value for each person, and an analyzer;</li>
+<li>choose between declaring part of a model and writing it as code.</li>
+</ul>
+<p>Before writing a module, check the table at the top of <a href="../user_guide/building_modules.html">Custom modules</a>: many things that seem to need code (vaccination, testing, treatment, contact tracing, changes to parameters, and protection that depends on the time since an event) can be declared.</p>
+<section id="vaccine-demand" class="level2">
+<h2 class="anchored" data-anchor-id="vaccine-demand">Vaccine demand</h2>
+<p>This is the measles model from <a href="../tutorials/t6_data.html">T6 – Data and calibration</a>, in a town of 100,000 people in three age groups, with β = 0.16 and 40% of infections reported. These are the values T6’s illustrative data were made with, not the values its fit found (β ≈ 0.17, and about a quarter reported), which fit those data about as well:</p>
+<div id="da4c2fd2" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>S, E, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S E I R'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>infection   <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> <span class="fl">0.16</span><span class="op">*</span>I         <span class="co"># β = 0.16 per contact per day</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>progression <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">10</span>)   <span class="co"># Latent for 10 days on average</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>recovery    <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">8</span>)    <span class="co"># Infectious for 8 days on average</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>cases       <span class="op">=</span> ss.<span class="fu">outcome</span>(<span class="fl">0.4</span><span class="op">*</span>infection) <span class="co"># Reported cases: 40% of infections</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.<span class="fu">Disease</span>(infection, progression, recovery, cases,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">init</span> <span class="op">=</span> <span class="bu">dict</span>(<span class="va">R</span><span class="op">=</span>ss.<span class="fu">by</span>(<span class="va">age</span><span class="op">=</span>[<span class="fl">0.8</span>, <span class="fl">0.92</span>, <span class="fl">0.98</span>])), <span class="co"># The fraction immune in each age group</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">init_n</span> <span class="op">=</span> <span class="bu">dict</span>(<span class="va">I</span><span class="op">=</span><span class="dv">10</span>),                          <span class="co"># 10 people infectious at the start</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="va">name</span> <span class="op">=</span> <span class="st">'measles'</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>measles.<span class="fu">stratify</span>(<span class="va">age</span><span class="op">=</span>{<span class="dv">0</span>: <span class="fl">0.3</span>, <span class="dv">15</span>: <span class="fl">0.6</span>, <span class="dv">65</span>: <span class="fl">0.1</span>}) <span class="co"># Ages 0-14, 15-64, and 65+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>contacts <span class="op">=</span> ss.<span class="fu">contacts</span>(<span class="va">ages</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">65</span>], <span class="va">matrix</span><span class="op">=</span>[[<span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">3</span>]]) <span class="co"># Contacts a day, between age groups</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>settings <span class="op">=</span> <span class="bu">dict</span>(<span class="va">networks</span><span class="op">=</span>contacts, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">start</span><span class="op">=</span><span class="st">'2025-01-01'</span>, <span class="va">stop</span><span class="op">=</span><span class="st">'2026-01-01'</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="op">**</span>settings)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>sim.<span class="fu">run</span>()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>sim.<span class="fu">plot</span>(<span class="st">'measles.cases'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: measles, 100,000 people, as an ODE, 2025-01-01 to 2026-01-01
+  measles: R0 = 18.1 (R = 2.81 at the start, with 11% susceptible), with 10 infectious at the start
+  Note: people do not age between the age groups, since nobody is born or dies; pass aging=True to age them
+  Done in 0.0043 s; measles: 9,358 infections; at most 1,140 infectious, on 2025-04-12</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-2-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>During measles outbreaks, parents who had put off vaccinating hear about cases and go to a clinic. A simple rule: the rate at which susceptible people seek vaccination rises with the cases reported in the last week, reaching half its highest value (10% a week) at 300 cases a week.</p>
+<p>The smallest module written as code is a function of the sim, called once each step; given as <code>interventions=</code>, it becomes an intervention. In it, <code>sim.results</code> has the results so far, and <code>sim.ti</code> is the index of the current time point. <code>ss.move()</code> moves people between a declared disease’s states, the same way under every solver: here, those vaccinated and protected from <code>S</code> to <code>R</code>. <code>to_prob()</code> turns a rate into the chance of an event in one step, 1 − exp(−rate × dt). Two simplifications keep this short: everyone in <code>S</code> is taken to be unvaccinated (the model doesn’t record who was vaccinated), and the vaccine is all or nothing (93% of those vaccinated are fully protected), unlike the leaky vaccine of <a href="../tutorials/t5_interventions.html">T5</a>:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Explicit</a></li></ul>
+<div class="tab-content" data-group="language">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div id="86c990b8" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">vaccine_demand</span>(sim):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" The unvaccinated seek vaccination at a rate that rises with the cases reported in the last week """</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    measles <span class="op">=</span> sim.diseases.measles</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    last_week <span class="op">=</span> sim.results.measles.cases[<span class="bu">max</span>(sim.ti<span class="op">-</span><span class="dv">7</span>, <span class="dv">0</span>):sim.ti].<span class="bu">sum</span>()      <span class="co"># Cases reported in the last 7 steps: a week, since each step here is a day</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    frac <span class="op">=</span> last_week<span class="op">/</span>(last_week <span class="op">+</span> <span class="dv">300</span>)                                        <span class="co"># From 0 to 1, a half at 300 cases a week</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    seeking <span class="op">=</span> (ss.<span class="fu">perweek</span>(<span class="fl">0.1</span>)<span class="op">*</span>frac).<span class="fu">to_prob</span>(sim.t.dt)                        <span class="co"># The chance of seeking vaccination in this step</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ss.<span class="fu">move</span>(measles.S, measles.R, <span class="va">p</span><span class="op">=</span>seeking<span class="op">*</span><span class="fl">0.93</span>)                             <span class="co"># Those vaccinated and protected become immune</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div id="c386235b" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">vaccine_demand</span>(sim):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" The unvaccinated seek vaccination at a rate that rises with the cases reported in the last week """</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    measles <span class="op">=</span> sim.diseases.measles</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    last_week <span class="op">=</span> sim.results.measles.cases[<span class="bu">max</span>(sim.ti<span class="op">-</span><span class="dv">7</span>, <span class="dv">0</span>):sim.ti].<span class="bu">sum</span>()      <span class="co"># Cases reported in the last 7 steps: a week, since each step here is a day</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    frac <span class="op">=</span> last_week<span class="op">/</span>(last_week <span class="op">+</span> <span class="dv">300</span>)                                        <span class="co"># From 0 to 1, a half at 300 cases a week</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    rate <span class="op">=</span> <span class="fl">0.1</span><span class="op">/</span><span class="dv">7</span><span class="op">*</span>frac                                                         <span class="co"># The rate of seeking vaccination, per day</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    seeking <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> np.<span class="fu">exp</span>(<span class="op">-</span>rate<span class="op">*</span>sim.t.dt.days)                                 <span class="co"># The chance of seeking vaccination in this step</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    ss.<span class="fu">move</span>(measles.S, measles.R, <span class="va">p</span><span class="op">=</span>seeking<span class="op">*</span><span class="fl">0.93</span>)                             <span class="co"># Those vaccinated and protected become immune</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<div id="0ca9612e" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No response'</span>: ss.<span class="fu">Sim</span>(measles, <span class="op">**</span>settings),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Vaccine demand'</span>: ss.<span class="fu">Sim</span>(measles, <span class="va">interventions</span><span class="op">=</span>vaccine_demand, <span class="op">**</span>settings),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.<span class="fu">parallel</span>(sims)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Solver:'</span>, msim.sims[<span class="st">'Vaccine demand'</span>].solver)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">plot</span>(<span class="st">'measles.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 2 runs of 2 scenarios (No response, Vaccine demand)
+  Done in 0.9 s
+Solver: ode</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-5-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The sim still runs as an ODE, since the function keeps nothing for each person. But the function’s numbers are fixed inside it, it has no results (so how many doses were given?), and it forgets a case abruptly after 7 days.</p>
+</section>
+<section id="a-module-as-a-class" class="level2">
+<h2 class="anchored" data-anchor-id="a-module-as-a-class">A module as a class</h2>
+<p>A module written as a class fixes all three. It inherits from one of Starsim’s module types (here <a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a>), so that it runs at the right point in each step:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Base class</th>
+<th>Use for</th>
+<th>Added to the sim via</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a>, <a href="../api/diseases.html#starsim.diseases.AgentDisease" title="0"><code>ss.AgentDisease</code></a></td>
+<td>Disease natural history and transmission</td>
+<td><code>diseases=</code></td>
+</tr>
+<tr class="even">
+<td><a href="../api/networks.html#starsim.networks.Network" title="0"><code>ss.Network</code></a></td>
+<td>Who contacts whom</td>
+<td><code>networks=</code></td>
+</tr>
+<tr class="odd">
+<td><a href="../api/demographics.html#starsim.demographics.Demographics" title="0"><code>ss.Demographics</code></a></td>
+<td>Births, deaths, migration</td>
+<td><code>demographics=</code></td>
+</tr>
+<tr class="even">
+<td><a href="../api/interventions.html#starsim.interventions.Intervention" title="0"><code>ss.Intervention</code></a></td>
+<td>Actions that change the simulation</td>
+<td><code>interventions=</code></td>
+</tr>
+<tr class="odd">
+<td><a href="../api/analyzers.html#starsim.analyzers.Analyzer" title="0"><code>ss.Analyzer</code></a></td>
+<td>Recording results without changing anything</td>
+<td><code>analyzers=</code></td>
+</tr>
+<tr class="even">
+<td><a href="../api/connectors.html#starsim.connectors.Connector" title="0"><code>ss.Connector</code></a></td>
+<td>Interactions between modules</td>
+<td><code>connectors=</code></td>
+</tr>
+<tr class="odd">
+<td><code>ss.Module</code></td>
+<td>Anything that doesn’t fit the others</td>
+<td><code>modules=</code> (or as a positional argument)</td>
+</tr>
+</tbody>
+</table>
+<p>The module has:</p>
+<ul>
+<li><strong>Parameters</strong>, with defaults in <code>__init__()</code> via <code>define_pars()</code>, changed by name when the module is made. Rates and durations are <a href="../user_guide/building_time.html">time parameters</a>, so they mean the same whatever the step length.</li>
+<li><strong>A state of its own</strong>: here, one number, the cases people remember. Each step adds the new reported cases and forgets a fraction of what is remembered, so a case is remembered for <code>memory</code> (30 days) on average: a small ODE of its own, dM/dt = cases − M/memory.</li>
+<li><strong>Results of its own</strong>, defined in <code>init_results()</code> and filled in each step at <code>self.ti</code>: the doses given in each step (a flow), and the cases remembered (a stock).</li>
+<li><strong>A <code>step()</code> method</strong>, which does the work. In it, <code>self.sim</code> is the sim, <code>self.t.dt</code> the step length, and <code>self.pars</code> the parameters.</li>
+<li><strong>A limit</strong>: clinics can give at most <a href="../api/interventions.html#starsim.interventions.capacity" title="0"><code>capacity</code></a> doses a day (no limit by default); people who can’t be served try again the next day.</li>
+</ul>
+<div id="7add5752" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="fu">VaccineDemand</span>(ss.Intervention):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Unvaccinated people seek vaccination at a rate that rises with the outbreak cases they remember """</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="va">memory</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">30</span>), <span class="va">half</span><span class="op">=</span><span class="dv">300</span>, <span class="va">max_rate</span><span class="op">=</span>ss.<span class="fu">perweek</span>(<span class="fl">0.1</span>), <span class="va">capacity</span><span class="op">=</span><span class="va">None</span>, <span class="va">efficacy</span><span class="op">=</span><span class="fl">0.93</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_pars</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="va">memory</span>   <span class="op">=</span> memory,   <span class="co"># How long a reported case is remembered, on average</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">half</span>     <span class="op">=</span> half,     <span class="co"># The number of cases remembered at which demand is half its highest</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">max_rate</span> <span class="op">=</span> max_rate, <span class="co"># The highest rate at which unvaccinated people seek vaccination</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            <span class="va">capacity</span> <span class="op">=</span> capacity, <span class="co"># The most doses the clinics can give, as a rate (None for no limit)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="va">efficacy</span> <span class="op">=</span> efficacy, <span class="co"># The fraction of those vaccinated who are fully protected (all or nothing)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">update_pars</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.remembered <span class="op">=</span> <span class="fl">0.0</span> <span class="co"># The cases that people remember, for the whole population</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">init_results</span>(<span class="va">self</span>):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">init_results</span>()</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_results</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">Result</span>(<span class="st">'doses'</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'flow'</span>, <span class="va">scale</span><span class="op">=</span><span class="va">False</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Doses given'</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">Result</span>(<span class="st">'remembered'</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'stock'</span>, <span class="va">scale</span><span class="op">=</span><span class="va">False</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Cases remembered'</span>),</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">step</span>(<span class="va">self</span>):</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        measles <span class="op">=</span> <span class="va">self</span>.sim.diseases.measles</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        dt <span class="op">=</span> <span class="va">self</span>.t.dt</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Remember the cases reported in the last step (there is none before the first), and forget a fraction of those remembered</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        new_cases <span class="op">=</span> <span class="va">self</span>.sim.results.measles.cases[<span class="va">self</span>.ti<span class="op">-</span><span class="dv">1</span>] <span class="cf">if</span> <span class="va">self</span>.ti <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.remembered <span class="op">+=</span> new_cases <span class="op">-</span> <span class="va">self</span>.remembered<span class="op">*</span>(dt<span class="op">/</span><span class="va">self</span>.pars.memory)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The doses sought by those in S (all taken to be unvaccinated), limited by what the clinics can give</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        frac <span class="op">=</span> <span class="va">self</span>.remembered<span class="op">/</span>(<span class="va">self</span>.remembered <span class="op">+</span> <span class="va">self</span>.pars.half)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        seeking <span class="op">=</span> (<span class="va">self</span>.pars.max_rate<span class="op">*</span>frac).<span class="fu">to_prob</span>(dt)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        doses <span class="op">=</span> seeking<span class="op">*</span>measles.S.n</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>.pars.capacity <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>            doses <span class="op">=</span> <span class="bu">min</span>(doses, <span class="va">self</span>.pars.capacity.<span class="fu">to_events</span>(dt))</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Those protected become immune</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        ss.<span class="fu">move</span>(measles.S, measles.R, <span class="va">n</span><span class="op">=</span>doses<span class="op">*</span><span class="va">self</span>.pars.efficacy)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.results.doses[<span class="va">self</span>.ti] <span class="op">=</span> doses</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.results.remembered[<span class="va">self</span>.ti] <span class="op">=</span> <span class="va">self</span>.remembered <span class="co"># Recorded here, where it changes: the cases remembered in this step</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>measles.S.n</code> is the number of people in <code>S</code> now (and <code>measles.S.frac</code> the fraction), under every solver, and <code>ss.move(..., n=...)</code> moves a number of people rather than a fraction. A module that is not a disease steps before the diseases, so it reads the last step’s cases (<code>self.ti-1</code>), and what it does applies to this step’s transmission. (A stock is usually recorded in <code>record_states()</code>, at the start of a step; <code>remembered</code> is recorded in <code>step()</code> instead, since that is where it is updated, so each value is the memory that step used.) The sim works on its own copy of each module, so reach other modules through <code>self.sim</code>, not a variable from outside the class. The module’s results are under its class name in lower case, <code>sim.results.vaccinedemand</code>. <a href="../user_guide/building_modules.html#when-each-method-is-called">Custom modules</a> lists when Starsim calls each method.</p>
+<p>With parameters, one module serves every scenario: no response (a highest rate of 0), demand met in full, and clinics that can give at most 30 doses a day:</p>
+<div id="81456f7c" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No response'</span>:           ss.<span class="fu">Sim</span>(measles, <span class="va">interventions</span><span class="op">=</span><span class="fu">VaccineDemand</span>(<span class="va">max_rate</span><span class="op">=</span>ss.<span class="fu">perweek</span>(<span class="dv">0</span>)), <span class="op">**</span>settings),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Demand met in full'</span>:    ss.<span class="fu">Sim</span>(measles, <span class="va">interventions</span><span class="op">=</span><span class="fu">VaccineDemand</span>(), <span class="op">**</span>settings),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'At most 30 doses a day'</span>: ss.<span class="fu">Sim</span>(measles, <span class="va">interventions</span><span class="op">=</span><span class="fu">VaccineDemand</span>(<span class="va">capacity</span><span class="op">=</span>ss.<span class="fu">perday</span>(<span class="dv">30</span>)), <span class="op">**</span>settings),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.<span class="fu">parallel</span>(sims)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">plot</span>([<span class="st">'measles.I'</span>, <span class="st">'vaccinedemand.doses'</span>])</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">summarize</span>().loc[[<span class="st">'measles_infection'</span>, <span class="st">'vaccinedemand_doses'</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>MultiSim: 3 runs of 3 scenarios (No response, Demand met in full, At most 30 doses a day)
+  Done in 1.0 s</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-7-output-2.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">result</th>
+<th data-quarto-table-cell-role="th">scenario</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">measles_infection</th>
+<th data-quarto-table-cell-role="th">No response</th>
+<td>9,358</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Demand met in full</th>
+<td>5,397</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">At most 30 doses a day</th>
+<td>6,579</td>
+</tr>
+<tr class="even">
+<th rowspan="3" data-quarto-table-cell-role="th" data-valign="top">vaccinedemand_doses</th>
+<th data-quarto-table-cell-role="th">No response</th>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Demand met in full</th>
+<td>4,916</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">At most 30 doses a day</th>
+<td>3,750</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Met in full, demand prevents about 4,000 of 9,400 infections, but less than half, since it starts only once the outbreak is under way. With at most 30 doses a day, people waiting during the steep rise, when each dose matters most, are often infected. Its parameters can be fitted to data (<a href="../tutorials/t6_data.html#fitting-and-checking-the-fit">T6</a>) if given as <code>ss.par</code> with bounds, e.g.&nbsp;<code>VaccineDemand(half=ss.par(300, bounds=[50, 2000]))</code>.</p>
+</section>
+<section id="a-quantity-for-each-person" class="level2">
+<h2 class="anchored" data-anchor-id="a-quantity-for-each-person">A value for each person</h2>
+<p>The demand module keeps one number for the whole town. Some things belong to each person. For many respiratory infections, protection depends on past infections: antibodies rise with each one and decline in between. Protection that depends only on the time since the last recovery can be declared (as below), but a level boosted by every infection depends on each person’s whole history, so a module has to keep it, for each person.</p>
+<p>This section uses a generic cold, an SIS model with no immunity of its own, as agents (R0 = 0.4 × 7 = 2.8, with one contact a day):</p>
+<div id="249808b1" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>S, I <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I'</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>cold <span class="op">=</span> ss.<span class="fu">Disease</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">infection</span> <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.4</span><span class="op">*</span>I,     <span class="co"># A rate of infection of 0.4 per contact per day</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">recovery</span>  <span class="op">=</span> I <span class="op">&gt;&gt;</span> S <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">7</span>), <span class="co"># Infectious for 7 days on average, then susceptible again</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">init_prev</span> <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">name</span>      <span class="op">=</span> <span class="st">'cold'</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>pars <span class="op">=</span> <span class="bu">dict</span>(<span class="va">networks</span><span class="op">=</span>ss.<span class="fu">MixingPool</span>(<span class="va">n_contacts</span><span class="op">=</span><span class="dv">1</span>), <span class="va">n_agents</span><span class="op">=</span><span class="dv">10_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">2</span><span class="op">*</span><span class="dv">365</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The module holds each person’s antibody level, which rises by <code>boost</code> at each recovery, up to 1, and halves every <code>half_life</code>. It is an <code>ss.Module</code>, being neither a disease nor an intervention, and reads who recovered in the last step from the declared disease (<code>recovery.uids</code>). Besides parameters, results, and <code>step()</code>, it has:</p>
+<ul>
+<li><strong>A state for each person</strong>, declared with <code>define_states()</code>: here <code>ss.FloatArr</code>, a number for each agent (<code>ss.BoolState</code> is true or false, and <code>ss.TimeArr</code> a time). It grows as agents are born; keep values for each person this way, never in a NumPy array of your own. <a href="../user_guide/mechanics_indexing.html">Array indexing</a> covers reading and writing them by UID.</li>
+<li><strong>A stock recorded in <code>record_states()</code></strong>, at the start of each step, so that each value is the level at its time point.</li>
+</ul>
+<p>Anything random should come from a Starsim distribution, not <code>np.random</code>, so that results stay reproducible (<a href="../user_guide/mechanics_random.html">Random numbers</a>); this module has nothing random.</p>
+<div id="12fd8089" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="fu">Antibodies</span>(ss.Module):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Each person's antibody level: boosted by each recovery, up to 1, and halving every half_life in between """</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="va">half_life</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">90</span>), <span class="va">boost</span><span class="op">=</span><span class="fl">0.5</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_pars</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            <span class="va">half_life</span> <span class="op">=</span> half_life, <span class="co"># How quickly antibodies decline</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">boost</span>     <span class="op">=</span> boost,     <span class="co"># The rise in the level at each recovery</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">update_pars</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_states</span>(</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">FloatArr</span>(<span class="st">'level'</span>, <span class="va">default</span><span class="op">=</span><span class="fl">0.0</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Antibody level'</span>),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">init_results</span>(<span class="va">self</span>):</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">init_results</span>()</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_results</span>(</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">Result</span>(<span class="st">'mean_level'</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Mean antibody level'</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'ratio'</span>), <span class="co"># A mean (a ratio), so not scaled by the number of people per agent</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">step</span>(<span class="va">self</span>):</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        decay <span class="op">=</span> <span class="fl">0.5</span><span class="op">**</span>(<span class="va">self</span>.t.dt<span class="op">/</span><span class="va">self</span>.pars.half_life) <span class="co"># The fraction left after one step</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.level[:] <span class="op">=</span> <span class="va">self</span>.level<span class="op">*</span>decay</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        recovered <span class="op">=</span> <span class="va">self</span>.sim.diseases.cold.recovery.uids <span class="co"># Those who recovered in the last step</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.level[recovered] <span class="op">=</span> np.<span class="fu">minimum</span>(<span class="fl">1.0</span>, <span class="va">self</span>.level[recovered] <span class="op">+</span> <span class="va">self</span>.pars.boost)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">record_states</span>(<span class="va">self</span>):</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">record_states</span>()</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.results.mean_level[<span class="va">self</span>.ti] <span class="op">=</span> <span class="va">self</span>.level.<span class="fu">mean</span>() <span class="co"># The level at the start of the step</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The module keeps the level, and a modifier says what it does: it multiplies each person’s susceptibility by what the antibodies leave of it. A modifier never overwrites what it changes, and <code>describe()</code> lists it as part of the model. For comparison, protection that halves every 90 days after the last recovery, with no boosting, is declared in one line:</p>
+<div id="b4bcb539" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">susceptibility</span>(sim):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Each person's susceptibility: 1 minus their antibody level """</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> sim.custom.antibodies.level</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>by_antibodies <span class="op">=</span> ss.<span class="fu">modify</span>(cold.rel_sus, <span class="va">multiply</span><span class="op">=</span>susceptibility)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>by_recovery   <span class="op">=</span> ss.<span class="fu">modify</span>(cold.rel_sus, <span class="va">multiply</span><span class="op">=</span><span class="dv">1</span> <span class="op">-</span> <span class="fl">0.5</span><span class="op">**</span>(cold.recovery.since<span class="op">/</span>ss.<span class="fu">days</span>(<span class="dv">90</span>))) <span class="co"># Declared: full protection at recovery, halving every 90 days since</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'No immunity'</span>:                       ss.<span class="fu">Sim</span>(cold, <span class="op">**</span>pars),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Declared: since the last recovery'</span>: ss.<span class="fu">Sim</span>(cold, <span class="va">connectors</span><span class="op">=</span>by_recovery, <span class="op">**</span>pars),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Code: boosted by each recovery'</span>:    ss.<span class="fu">Sim</span>(cold, <span class="fu">Antibodies</span>(), <span class="va">connectors</span><span class="op">=</span>by_antibodies, <span class="op">**</span>pars),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.<span class="fu">parallel</span>(sims)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">plot</span>(<span class="st">'cold.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-10-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Either form of immunity cuts the endemic level to about a tenth of that with no immunity. With boosting, one infection gives only half protection, so the first wave is larger, and protection builds up only with repeated infections; the declared form gives full protection at every recovery. They are different assumptions about immunity, and only the one with boosting needed code. The module’s own result is under its name:</p>
+<div id="908c03ba" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>msim.sims[<span class="st">'Code: boosted by each recovery'</span>].results.antibodies.mean_level.<span class="fu">plot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-11-output-1.png" width="568" height="461" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A module that keeps a value for each person needs agents, so a sim with one runs as agents, including its declared diseases, unchanged.</p>
+<section id="an-analyzer" class="level3">
+<h3 class="anchored" data-anchor-id="an-analyzer">An analyzer</h3>
+<p>An analyzer records something without changing the model; it is the kind of module most models write. It runs at the end of each step, after the diseases, so it sees what happened in that step. This one counts how many times each person is infected, and the reinfections in each step; <code>finalize_results()</code>, called once at the end of the run, works out the mean number of infections of those ever infected:</p>
+<div id="0f6f13a4" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="fu">Reinfections</span>(ss.Analyzer):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" The number of times each person is infected, and the reinfections in each step """</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_states</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">FloatArr</span>(<span class="st">'times_infected'</span>, <span class="va">default</span><span class="op">=</span><span class="dv">0</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Times infected'</span>),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">init_results</span>(<span class="va">self</span>):</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">init_results</span>()</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_results</span>(</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">Result</span>(<span class="st">'reinfections'</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'flow'</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Reinfections'</span>),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">step</span>(<span class="va">self</span>):</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        new <span class="op">=</span> <span class="va">self</span>.sim.diseases.cold.infection.uids <span class="co"># Those infected in this step</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.results.reinfections[<span class="va">self</span>.ti] <span class="op">=</span> np.<span class="fu">count_nonzero</span>(<span class="va">self</span>.times_infected[new] <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.times_infected[new] <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">finalize_results</span>(<span class="va">self</span>):</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">finalize_results</span>()</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>        ever <span class="op">=</span> <span class="va">self</span>.times_infected <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.mean_times <span class="op">=</span> <span class="va">self</span>.times_infected[ever].<span class="fu">mean</span>() <span class="co"># Among those ever infected</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Analyzers are given as <code>analyzers=</code>, and their results are under their name, as for any module:</p>
+<div id="1562a881" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Declared: since the last recovery'</span>: ss.<span class="fu">Sim</span>(cold, <span class="va">connectors</span><span class="op">=</span>by_recovery, <span class="va">analyzers</span><span class="op">=</span><span class="fu">Reinfections</span>(), <span class="op">**</span>pars),</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Code: boosted by each recovery'</span>:    ss.<span class="fu">Sim</span>(cold, <span class="fu">Antibodies</span>(), <span class="va">connectors</span><span class="op">=</span>by_antibodies, <span class="va">analyzers</span><span class="op">=</span><span class="fu">Reinfections</span>(), <span class="op">**</span>pars),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.<span class="fu">parallel</span>(sims)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">plot</span>(<span class="st">'reinfections.reinfections'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, sim <span class="kw">in</span> <span class="bu">zip</span>(sims, msim.sims):</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(label, <span class="st">'- infections per person ever infected:'</span>, <span class="bu">round</span>(sim.analyzers.reinfections.mean_times, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-13-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Declared: since the last recovery - infections per person ever infected: 6.5
+Code: boosted by each recovery - infections per person ever infected: 8.8</code></pre>
+</div>
+</div>
+<p>With boosting, people ever infected are infected about 9 times in two years, against about 6 or 7 times with full protection at each recovery: with a cold every few months, the antibodies settle at about half, rarely building up to full protection. <a href="../user_guide/interventions_analyzers.html">Analyzers</a> has more, including the infection log, which records who infected whom.</p>
+</section>
+</section>
+<section id="a-disease-written-as-code" class="level2">
+<h2 class="anchored" data-anchor-id="a-disease-written-as-code">Advanced: a disease written as code</h2>
+<p>A disease can be written as code too: to keep a Starsim 3 model as it was, or when its course is easiest to say step by step. In <a href="../tutorials/t3_disease.html">T3</a>, waning immunity was one more declared transition, <code>R &gt;&gt; S</code>. Here is the same SIRS model written as code, inheriting from a template and changing only what differs. <code>ssl.AgentSIR</code> is the SIR model written as code (Starsim 3’s <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>); its states are per-agent arrays, <code>susceptible</code>, <code>infected</code>, and <code>recovered</code>, and its methods move agents between them:</p>
+<div id="6aa7efe1" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim.library <span class="im">as</span> ssl</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="fu">SIRS</span>(ssl.AgentSIR):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="va">pars</span><span class="op">=</span><span class="va">None</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_pars</span>(</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">dur_imm</span> <span class="op">=</span> ss.<span class="fu">expon</span>(<span class="va">mean</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">180</span>)), <span class="co"># How long immunity lasts after recovery</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">update_pars</span>(pars, <span class="op">**</span>kwargs)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># SIR states are added automatically; here we add the time of losing immunity</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_states</span>(</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>            ss.<span class="fu">TimeArr</span>(<span class="st">'ti_susceptible'</span>, <span class="va">label</span><span class="op">=</span><span class="st">'Time of becoming susceptible again'</span>),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">set_progression</span>(<span class="va">self</span>, uids):</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">""" Schedule recovery and death as usual, then schedule the waning of immunity """</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">set_progression</span>(uids)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>        recovering <span class="op">=</span> uids[np.<span class="fu">isfinite</span>(<span class="va">self</span>.ti_recovered[uids])] <span class="co"># Agents who are going to die have ti_recovered = NaN</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.ti_susceptible[recovering] <span class="op">=</span> <span class="va">self</span>.ti_recovered[recovering] <span class="op">+</span> <span class="va">self</span>.pars.dur_imm.<span class="fu">rvs</span>(recovering)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">step_state</span>(<span class="va">self</span>):</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        <span class="co">""" Do the usual SIR transitions, then return agents whose immunity has waned to susceptible """</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">step_state</span>()</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>        waning <span class="op">=</span> (<span class="va">self</span>.recovered <span class="op">&amp;</span> <span class="va">self</span>.ti_susceptible.<span class="fu">due</span>()).uids <span class="co"># Those whose time has come</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.recovered[waning] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.susceptible[waning] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>__init__()</code> adds the extra parameter and state; <code>set_progression()</code> does the usual scheduling, then draws a waning time for everyone who will recover; and <code>step_state()</code> adds the recovered → susceptible transition. Here it is next to the declared SIRS, with the same R0 (0.4 per day × 7 days = 2.8). A disease written as code transmits over the sim’s networks, so both get a mixing pool with one contact a day:</p>
+<div id="39243a48" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>coded <span class="op">=</span> <span class="fu">SIRS</span>(<span class="va">beta</span><span class="op">=</span>ss.<span class="fu">perday</span>(<span class="fl">0.4</span>), <span class="va">dur_inf</span><span class="op">=</span>ss.<span class="fu">expon</span>(<span class="va">mean</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">7</span>)), <span class="va">p_death</span><span class="op">=</span><span class="dv">0</span>, <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.01</span>, <span class="va">name</span><span class="op">=</span><span class="st">'cold'</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I R'</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>declared <span class="op">=</span> ss.<span class="fu">Disease</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">infection</span> <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.4</span><span class="op">*</span>I,          <span class="co"># A rate of infection of 0.4 per contact per day</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">recovery</span>  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">7</span>),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">waning</span>    <span class="op">=</span> R <span class="op">&gt;&gt;</span> S <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">180</span>),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">init_prev</span> <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">name</span>      <span class="op">=</span> <span class="st">'cold'</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>pars <span class="op">=</span> <span class="bu">dict</span>(<span class="va">networks</span><span class="op">=</span>ss.<span class="fu">MixingPool</span>(<span class="va">n_contacts</span><span class="op">=</span><span class="dv">1</span>), <span class="va">n_agents</span><span class="op">=</span><span class="dv">10_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">2</span><span class="op">*</span><span class="dv">365</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>sim_coded <span class="op">=</span> ss.<span class="fu">Sim</span>(coded, <span class="op">**</span>pars)</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>sim_declared <span class="op">=</span> ss.<span class="fu">Sim</span>(declared, <span class="op">**</span>pars)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>sim_coded.<span class="fu">run</span>()</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>sim_declared.<span class="fu">run</span>()</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>plt.<span class="fu">figure</span>()</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>plt.<span class="fu">plot</span>(sim_declared.results.cold.timevec, sim_declared.results.cold.I, <span class="va">label</span><span class="op">=</span><span class="st">'Declared'</span>)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>plt.<span class="fu">plot</span>(sim_coded.results.cold.timevec, sim_coded.results.cold.infected, <span class="va">label</span><span class="op">=</span><span class="st">'Written as code'</span>)</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>plt.<span class="fu">ylabel</span>(<span class="st">'Number infectious'</span>)</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>plt.<span class="fu">legend</span>()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-15-output-1.png" width="602" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The two give the same epidemic up to chance. What differs is what Starsim knows about them: the declared disease can be shown (<code>describe()</code>, <code>diagram()</code>, <code>equations()</code>), run under every solver, and fitted with <code>sim.fit()</code>, while the coded one runs only as agents. So if a model can be declared, declare it; write a disease as code when its course is easier to say in code, or to keep a Starsim 3 model as it was (a Starsim 3 subclass of <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a> can subclass <code>ssl.AgentSIR</code> unchanged).</p>
+</section>
+<section id="a-network-written-as-code" class="level2">
+<h2 class="anchored" data-anchor-id="a-network-written-as-code">Advanced: a network written as code</h2>
+<p>The networks of <a href="../tutorials/t4_mixing.html#contacts-per-person">T4</a> pair people at random, or as partners. Suppose instead that people mostly meet others of a similar age, and you want to check what that does to an epidemic of a cold. A network written as code subclasses <a href="../api/networks.html#starsim.networks.Network" title="0"><code>ss.Network</code></a> and overrides how edges are made: <code>add_pairs()</code> makes them, <code>step()</code> here replaces each day’s contacts, and <code>self.append()</code> adds edges, as the UIDs of the two people in each (<code>p1</code> and <code>p2</code>). To pair people of similar ages, sort them by age plus a little random noise, and connect each person with their neighbors in that order:</p>
+<div id="7e70e78a" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="fu">AgeNet</span>(ss.Network):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" Contacts each day with people close in age """</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, <span class="va">n_contacts</span><span class="op">=</span><span class="dv">4</span>, <span class="va">spread</span><span class="op">=</span>ss.<span class="fu">years</span>(<span class="dv">2</span>), <span class="op">**</span>kwargs):</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">define_pars</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            <span class="va">n_contacts</span> <span class="op">=</span> n_contacts, <span class="co"># The number of contacts each person has each day (an even number)</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">spread</span> <span class="op">=</span> spread,         <span class="co"># How far apart in age contacts tend to be</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">update_pars</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.noise <span class="op">=</span> ss.<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="co"># A Starsim distribution, so that the draws are reproducible</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">add_pairs</span>(<span class="va">self</span>):</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        uids <span class="op">=</span> <span class="va">self</span>.sim.people.alive.uids</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        age <span class="op">=</span> <span class="va">self</span>.sim.people.age[uids] <span class="op">+</span> <span class="va">self</span>.pars.spread.years<span class="op">*</span><span class="va">self</span>.noise.<span class="fu">rvs</span>(uids) <span class="co"># Each person's age, blurred a little</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>        order <span class="op">=</span> uids[np.<span class="fu">argsort</span>(age, <span class="va">kind</span><span class="op">=</span><span class="st">'stable'</span>)] <span class="co"># Everyone, from youngest to oldest</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>        p1, p2 <span class="op">=</span> [], []</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="va">self</span>.pars.n_contacts<span class="op">//</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span>): <span class="co"># Each person, with the k-th next person in the order</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>            p1.<span class="fu">append</span>(order[:<span class="op">-</span>k])</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>            p2.<span class="fu">append</span>(order[k:])</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>        p1 <span class="op">=</span> np.<span class="fu">concatenate</span>(p1)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        p2 <span class="op">=</span> np.<span class="fu">concatenate</span>(p2)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">append</span>(<span class="va">p1</span><span class="op">=</span>p1, <span class="va">p2</span><span class="op">=</span>p2, <span class="va">weight</span><span class="op">=</span>np.<span class="fu">ones</span>(<span class="bu">len</span>(p1)))</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">step</span>(<span class="va">self</span>):</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">remove_edges</span>(np.<span class="fu">ones</span>(<span class="bu">len</span>(<span class="va">self</span>), <span class="va">dtype</span><span class="op">=</span><span class="bu">bool</span>)) <span class="co"># Yesterday's contacts end...</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="fu">add_pairs</span>()                                  <span class="co"># ...and today's begin</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Check that a network makes what you meant: contacts of nearly the same age, about 4 per person:</p>
+<div id="d8933522" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I R'</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>cold <span class="op">=</span> ss.<span class="fu">Disease</span>(<span class="va">infection</span><span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.1</span><span class="op">*</span>I, <span class="co"># A rate of infection of 0.1 per contact per day: with 4 contacts, R0 = 0.1 × 4 × 7 = 2.8</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                  <span class="va">recovery</span><span class="op">=</span>I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">7</span>), <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.001</span>, <span class="va">name</span><span class="op">=</span><span class="st">'cold'</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>pars <span class="op">=</span> <span class="bu">dict</span>(<span class="va">n_agents</span><span class="op">=</span><span class="dv">5000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">250</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.<span class="fu">Sim</span>(cold, <span class="va">networks</span><span class="op">=</span><span class="fu">AgeNet</span>(), <span class="op">**</span>pars)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>sim.<span class="fu">init</span>()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> sim.networks.agenet.<span class="fu">to_df</span>()</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> sim.people.age</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Correlation of the ages of contacts:'</span>, <span class="bu">round</span>(np.<span class="fu">corrcoef</span>(age[ss.<span class="fu">uids</span>(df.p1)], age[ss.<span class="fu">uids</span>(df.p2)])[<span class="dv">0</span>, <span class="dv">1</span>], <span class="dv">3</span>))</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Contacts per person:'</span>, <span class="bu">round</span>(<span class="dv">2</span><span class="op">*</span><span class="bu">len</span>(df)<span class="op">/</span><span class="bu">len</span>(sim.people), <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Correlation of the ages of contacts: 0.992
+Contacts per person: 4.0</code></pre>
+</div>
+</div>
+<p>Compared with a random network with the same number of contacts:</p>
+<div id="15d6b632" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sims <span class="op">=</span> {</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Random contacts'</span>:       ss.<span class="fu">Sim</span>(cold, <span class="va">networks</span><span class="op">=</span>ss.<span class="fu">RandomNet</span>(<span class="va">n_contacts</span><span class="op">=</span><span class="dv">4</span>), <span class="op">**</span>pars),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Contacts close in age'</span>: ss.<span class="fu">Sim</span>(cold, <span class="va">networks</span><span class="op">=</span><span class="fu">AgeNet</span>(), <span class="op">**</span>pars),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>msim <span class="op">=</span> ss.<span class="fu">parallel</span>(sims)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>msim.<span class="fu">plot</span>(<span class="st">'cold.I'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="t8_modules_files/figure-html/cell-18-output-1.png" width="758" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Contacts close in age give a slower, flatter epidemic, since each case’s contacts overlap with those of whoever infected them. A contact matrix with many narrow age groups would give much the same, under every solver (<a href="../tutorials/t4_mixing.html#contacts-between-age-groups">T4</a>); a network written as code is worth it when the rule is about individuals, such as who is in which household or partnership.</p>
+</section>
+<section id="which-to-use" class="level2">
+<h2 class="anchored" data-anchor-id="which-to-use">Which to use</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>What you write</th>
+<th>What Starsim still does</th>
+<th>What is given up</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Declared</td>
+<td>States, transitions, deliveries, modifiers</td>
+<td>Everything: <code>describe()</code>, every solver, fitting</td>
+<td>Nothing, if it can say what you need</td>
+</tr>
+<tr class="even">
+<td>Declared, with a little code</td>
+<td>A function of the sim as a rate, a condition, or a modifier’s amount</td>
+<td>Results, solvers that can take the function, fitting</td>
+<td>Speed (the function runs once a step), and showing what the function does</td>
+</tr>
+<tr class="odd">
+<td>A module written as code</td>
+<td>A class with <code>step()</code> (and states, results, parameters)</td>
+<td>Time, people, random numbers, parallel runs, its results</td>
+<td>Showing what the module does, and solvers other than agents if it keeps a value for each person</td>
+</tr>
+<tr class="even">
+<td>A disease or network written as code</td>
+<td>A subclass of <a href="../api/diseases.html#starsim.diseases.AgentDisease" title="0"><code>ss.AgentDisease</code></a> or <a href="../api/networks.html#starsim.networks.Network" title="0"><code>ss.Network</code></a></td>
+<td>The same, and transmission over the sim’s networks</td>
+<td>The same, and fitting its structure</td>
+</tr>
+</tbody>
+</table>
+<p>Start declared, and move down the table only for the part that needs it. When code is slow because it loops over agents, <code>@ss.jit</code> compiles a function with Numba. <a href="../user_guide/building_modules.html">Custom modules</a> covers the order in which Starsim calls a module’s methods, demographics and connectors written as code, and pitfalls.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<ol type="1">
+<li>How much does it matter how long people remember cases? Run <code>VaccineDemand()</code> with a memory of 10 days and of 90 days, and compare the infections and doses with 30 days. Does each extra dose prevent as many infections as the ones before? Why not?</li>
+<li>People who hear about an outbreak may also avoid others. Add a modifier, <code>ss.modify(measles.rel_sus, multiply=...)</code>, whose <code>multiply=</code> is a function of the sim returning 1 − 0.3 × the fraction used for demand (so contacts fall by up to 30%), reading the cases remembered as <code>sim.interventions.vaccinedemand.remembered</code>. How much smaller is the outbreak?</li>
+<li>Run the model with demand met in full as agents, one for each person (<code>n_agents=100_000</code>), and compare the infections and doses with those of the ODE. Does the module need any change? Why not?</li>
+<li>Change the half-life of the antibodies to 30 days and to 365 days. How does each change the endemic level of infection, compared with no immunity? What does a boost of 1 (full protection after every infection) do?</li>
+<li>(Advanced) The <code>SIRS</code> class schedules each person’s loss of immunity at recovery. Write an <code>SIRS</code> in which immunity is lost instead with a constant chance each step (an exponential duration, drawn step by step), using an <a href="../api/distributions.html#starsim.distributions.bernoulli" title="0"><code>ss.bernoulli</code></a> distribution in <code>step_state()</code>. Does it give the same epidemic?</li>
+<li>(Advanced) Give <code>AgeNet</code> a parameter <code>p_random</code>, the fraction of each person’s contacts that are with anyone at random rather than with people close in age (hint: shuffle a fraction of the order before pairing, or add a second, random network). How large does it have to be before the epidemic looks like the one with random contacts?</li>
+</ol>
+<p><a href="../tutorials/solutions_t8_modules.html">Solutions</a></p>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://pubmed.ncbi.nlm.nih.gov/20504800/">Funk et al.&nbsp;(2010): Modelling the influence of human behaviour on the spread of infectious diseases: a review</a>: models in which people respond to an epidemic, as here</li>
+<li><a href="https://epimodel.github.io/EpiModel-Gallery/">EpiModel: Extending EpiModel</a>: worked examples of modules of your own, for network models</li>
+<li><a href="https://networkx.org/documentation/stable/reference/generators.html">NetworkX: graph generators</a>: ready-made graphs that can be turned into a Starsim network (<code>ssl.StaticNet</code>)</li>
+<li><a href="https://numba.readthedocs.io/en/stable/user/5minguide.html">Numba: a 5-minute guide</a>: compiling Python loops, as <code>@ss.jit</code> does</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// The sidebar's sections: "Expand all" and "Collapse all", and which sections are open, and where the sidebar is scrolled, kept from page to page.
+// Sections listed in `collapsed` start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.querySelector('#quarto-sidebar');
+  const sections = sidebar ? [...sidebar.querySelectorAll('.sidebar-item-section')] : [];
+  if (!sections.length) return;
+  const collapsed = ['Architecture'];
+  const title = (section) => section.querySelector(':scope > .sidebar-item-container .menu-text')?.textContent.trim() ?? '';
+  const path = (section) => { // Its title and those of the sections it is in, so that the same title in two sidebars is not confused
+    const titles = [];
+    for (let s = section; s; s = s.parentElement.closest('.sidebar-item-section')) titles.unshift(title(s));
+    return titles.join(' / ');
+  };
+  const key = 'starsim-sidebar:' + sections.map(title).join('|'); // One per sidebar (user guide, API, ...)
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const setOpen = (section, open) => { // Without Bootstrap's animation
+    section.querySelector(':scope > ul.collapse')?.classList.toggle('show', open);
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.toggle('collapsed', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+  };
+  const isOpen = (section) => section.querySelector(':scope > ul.collapse')?.classList.contains('show') ?? false;
+  const save = (all) => { // all: true or false after "Expand all" or "Collapse all", since the current page's section stays open on screen
+    const state = {};
+    for (const section of sections) state[path(section)] = typeof all === 'boolean' ? all : isOpen(section);
+    localStorage.setItem(key, JSON.stringify(state));
+  };
+
+  // Open each section as it was left (or by default), always with the current page showing
+  for (const section of sections) {
+    const p = path(section);
+    const open = section.querySelector('.sidebar-link.active') ? true : p in saved ? saved[p] : !collapsed.includes(title(section)) && isOpen(section);
+    setOpen(section, open);
+  }
+  sidebar.addEventListener('shown.bs.collapse', () => save());
+  sidebar.addEventListener('hidden.bs.collapse', () => save());
+
+  // Expand all and collapse all
+  const bar = document.createElement('div');
+  bar.className = 'sidebar-expand-all';
+  for (const [text, open] of [['Expand all', true], ['Collapse all', false]]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      for (const section of sections) setOpen(section, open || !!section.querySelector('.sidebar-link.active'));
+      save(open);
+    });
+    bar.append(button);
+  }
+  sidebar.querySelector('.sidebar-menu-container')?.prepend(bar);
+
+  // Where the sidebar was scrolled, if the current page is still in view there
+  const scrollKey = key + ':scroll';
+  const top = Number(sessionStorage.getItem(scrollKey));
+  if (top) {
+    sidebar.scrollTop = top;
+    const active = sidebar.querySelector('.sidebar-link.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), s = sidebar.getBoundingClientRect();
+      if (a.top < s.top || a.bottom > s.bottom) active.scrollIntoView({block: 'center'});
+    }
+  }
+  window.addEventListener('pagehide', () => sessionStorage.setItem(scrollKey, sidebar.scrollTop));
+});
+</script>
+<script>
+// Tabs in a group sync by title (Python, R, Explicit), and Quarto leaves a tabset blank if it has no tab of the title chosen (e.g. Explicit in a tabset of Python and R); show its first tab instead
+function showFirstTabs() {
+  for (const tabset of document.querySelectorAll('.panel-tabset[data-group]')) {
+    const tabs = tabset.querySelectorAll(':scope > .nav-tabs > .nav-item > .nav-link');
+    if (!tabs.length || tabset.querySelector(':scope > .nav-tabs .nav-link.active')) continue;
+    tabs[0].classList.add('active');
+    document.getElementById(tabs[0].getAttribute('aria-controls'))?.classList.add('active');
+  }
+}
+window.addEventListener('pageshow', () => setTimeout(showFirstTabs, 0)); // After Quarto's own pageshow handler, which restores the saved tab (pageshow fires after load)
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.panel-tabset[data-group] .nav-link')) setTimeout(showFirstTabs, 0); // After Quarto's own handler
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var opensNewContext = (link) => {
+        var target = (link.getAttribute("target") || "").toLowerCase();
+        return target !== "" && !["_self", "_parent", "_top"].includes(target);
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+        if (opensNewContext(link)) {
+          describeNewWindow(link);
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../tutorials/t7_strata.html" class="pagination-link" aria-label="T7 – Stratification and co-transmission">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">T7 – Stratification and co-transmission</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../tutorials/solutions.html" class="pagination-link" aria-label="Solutions">
+        <span class="nav-page-text">Solutions</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0rc4 (2026-11-12).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>geo – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../api/interventions.html" rel="next">
+<link href="../api/distributions.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-75bfa209afa5bea2820a722bb1d12033.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+<meta property="og:title" content="Starsim">
+<meta property="og:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta property="og:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta property="og:site_name" content="Starsim">
+<meta property="og:image:height" content="498">
+<meta property="og:image:width" content="2141">
+<meta name="twitter:title" content="Starsim">
+<meta name="twitter:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta name="twitter:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../api/index.html" aria-current="page"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsimhub.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/analyzers.html"><strong>Starsim</strong></a></li><li class="breadcrumb-item"><a href="../api/geo.html">geo</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>API</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><strong>Starsim</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">connectors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/demographics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/geo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">geo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">people</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">results</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/settings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">settings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sim</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/strains.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strains</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><strong>Converters</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/converters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">converters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><strong>Internals</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">conditions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.debugtools.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">debugtools</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dimensions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dimensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.display.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">display</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.dists.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">dists</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.errors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">errors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.expressions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">expressions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">fitting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.graph.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">graph</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.loop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">loop</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.timeline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">timeline</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/internals.transitions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">transitions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><strong>Library</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">econ</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mnch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/library.networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">networks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><strong>Solvers</strong></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.agents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">agents</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.choose.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">choose</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.compartmental.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">compartmental</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.deliveries.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">deliveries</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.engine.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">engine</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.joint_states.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">joint_states</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../api/solvers.particles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">particles</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim.geo" id="toc-starsim.geo" class="nav-link active" data-scroll-target="#starsim.geo">geo</a>
+  <ul>
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul>
+  <li><a href="#starsim.geo.Mobility" id="toc-starsim.geo.Mobility" class="nav-link" data-scroll-target="#starsim.geo.Mobility">Mobility</a>
+  <ul class="collapse">
+  <li><a href="#parameters" id="toc-parameters" class="nav-link" data-scroll-target="#parameters">Parameters</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.geo.Mobility.blank" id="toc-starsim.geo.Mobility.blank" class="nav-link" data-scroll-target="#starsim.geo.Mobility.blank">blank</a></li>
+  <li><a href="#starsim.geo.Mobility.by_value" id="toc-starsim.geo.Mobility.by_value" class="nav-link" data-scroll-target="#starsim.geo.Mobility.by_value">by_value</a></li>
+  <li><a href="#starsim.geo.Mobility.coupling" id="toc-starsim.geo.Mobility.coupling" class="nav-link" data-scroll-target="#starsim.geo.Mobility.coupling">coupling</a></li>
+  <li><a href="#starsim.geo.Mobility.events" id="toc-starsim.geo.Mobility.events" class="nav-link" data-scroll-target="#starsim.geo.Mobility.events">events</a></li>
+  <li><a href="#starsim.geo.Mobility.fitted" id="toc-starsim.geo.Mobility.fitted" class="nav-link" data-scroll-target="#starsim.geo.Mobility.fitted">fitted</a></li>
+  <li><a href="#starsim.geo.Mobility.from_model" id="toc-starsim.geo.Mobility.from_model" class="nav-link" data-scroll-target="#starsim.geo.Mobility.from_model">from_model</a></li>
+  <li><a href="#starsim.geo.Mobility.load" id="toc-starsim.geo.Mobility.load" class="nav-link" data-scroll-target="#starsim.geo.Mobility.load">load</a></li>
+  <li><a href="#starsim.geo.Mobility.matrix" id="toc-starsim.geo.Mobility.matrix" class="nav-link" data-scroll-target="#starsim.geo.Mobility.matrix">matrix</a></li>
+  <li><a href="#starsim.geo.Mobility.setup" id="toc-starsim.geo.Mobility.setup" class="nav-link" data-scroll-target="#starsim.geo.Mobility.setup">setup</a></li>
+  <li><a href="#starsim.geo.Mobility.time_frac" id="toc-starsim.geo.Mobility.time_frac" class="nav-link" data-scroll-target="#starsim.geo.Mobility.time_frac">time_frac</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.geo.geography" id="toc-starsim.geo.geography" class="nav-link" data-scroll-target="#starsim.geo.geography">geography</a>
+  <ul class="collapse">
+  <li><a href="#parameters-4" id="toc-parameters-4" class="nav-link" data-scroll-target="#parameters-4">Parameters</a></li>
+  <li><a href="#examples-1" id="toc-examples-1" class="nav-link" data-scroll-target="#examples-1">Examples</a></li>
+  <li><a href="#methods-1" id="toc-methods-1" class="nav-link" data-scroll-target="#methods-1">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.geo.geography.by_place" id="toc-starsim.geo.geography.by_place" class="nav-link" data-scroll-target="#starsim.geo.geography.by_place">by_place</a></li>
+  <li><a href="#starsim.geo.geography.draw" id="toc-starsim.geo.geography.draw" class="nav-link" data-scroll-target="#starsim.geo.geography.draw">draw</a></li>
+  <li><a href="#starsim.geo.geography.get_shapes" id="toc-starsim.geo.geography.get_shapes" class="nav-link" data-scroll-target="#starsim.geo.geography.get_shapes">get_shapes</a></li>
+  <li><a href="#starsim.geo.geography.plot" id="toc-starsim.geo.geography.plot" class="nav-link" data-scroll-target="#starsim.geo.geography.plot">plot</a></li>
+  <li><a href="#starsim.geo.geography.positions" id="toc-starsim.geo.geography.positions" class="nav-link" data-scroll-target="#starsim.geo.geography.positions">positions</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.geo.gravity" id="toc-starsim.geo.gravity" class="nav-link" data-scroll-target="#starsim.geo.gravity">gravity</a>
+  <ul class="collapse">
+  <li><a href="#parameters-6" id="toc-parameters-6" class="nav-link" data-scroll-target="#parameters-6">Parameters</a></li>
+  <li><a href="#examples-3" id="toc-examples-3" class="nav-link" data-scroll-target="#examples-3">Examples</a></li>
+  <li><a href="#methods-2" id="toc-methods-2" class="nav-link" data-scroll-target="#methods-2">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.geo.gravity.matrix" id="toc-starsim.geo.gravity.matrix" class="nav-link" data-scroll-target="#starsim.geo.gravity.matrix">matrix</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.geo.radiation" id="toc-starsim.geo.radiation" class="nav-link" data-scroll-target="#starsim.geo.radiation">radiation</a>
+  <ul class="collapse">
+  <li><a href="#parameters-8" id="toc-parameters-8" class="nav-link" data-scroll-target="#parameters-8">Parameters</a></li>
+  <li><a href="#examples-4" id="toc-examples-4" class="nav-link" data-scroll-target="#examples-4">Examples</a></li>
+  <li><a href="#methods-3" id="toc-methods-3" class="nav-link" data-scroll-target="#methods-3">Methods</a>
+  <ul class="collapse">
+  <li><a href="#starsim.geo.radiation.matrix" id="toc-starsim.geo.radiation.matrix" class="nav-link" data-scroll-target="#starsim.geo.radiation.matrix">matrix</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#starsim.geo.register" id="toc-starsim.geo.register" class="nav-link" data-scroll-target="#starsim.geo.register">register</a>
+  <ul class="collapse">
+  <li><a href="#parameters-10" id="toc-parameters-10" class="nav-link" data-scroll-target="#parameters-10">Parameters</a></li>
+  <li><a href="#examples-5" id="toc-examples-5" class="nav-link" data-scroll-target="#examples-5">Examples</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../api/analyzers.html"><strong>Starsim</strong></a></li><li class="breadcrumb-item"><a href="../api/geo.html">geo</a></li></ol></nav></header>
+
+
+
+
+
+<section id="starsim.geo" class="level1">
+<h1>geo</h1>
+<p><a href="../api/geo.html#starsim.geo" title="0"><code>geo</code></a></p>
+<p>Places and the movement between them: a geography (<a href="../api/geo.html#starsim.geo.geography" title="0"><code>ss.geo.geography</code></a>), and movement between its places: a movement model (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation</code></a>), a matrix (<a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility</code></a>), or a register of moves on given dates (<a href="../api/geo.html#starsim.geo.register" title="0"><code>ss.geo.register</code></a>)</p>
+<p>These exist so that a model of more than one place can be built from named places and a standard movement model. Movement applies to a model stratified by place (<code>sir.stratify(patch=...)</code>), whose networks then pair people within each place; a geography can also be used by a network (<code>ssl.GeoNet</code>), for a disease of either kind.</p>
+<p>Used with: agents and compartments; declared and coded modules</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility">Mobility</a></td>
+<td>Movement between the levels of a spatial stratification, given as a matrix</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.geography">geography</a></td>
+<td>A geography: named places with populations and positions, used as the levels of a spatial stratification</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.gravity">gravity</a></td>
+<td>The gravity model of movement: the fraction of their time that a person from place <code>i</code> spends in place <code>j</code> (or, for migration,</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.radiation">radiation</a></td>
+<td>The radiation model of movement (Simini et al.&nbsp;2012), which has no parameters to fit: of the people from place <code>i</code> who travel,</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.register">register</a></td>
+<td>A movement register: a table of moves between places on given dates, e.g.&nbsp;livestock sales between farms</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.geo.Mobility" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.geo.Mobility">Mobility</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>geo.<span class="fu">Mobility</span>(<span class="va">matrix</span><span class="op">=</span><span class="va">None</span>, <span class="va">kind</span><span class="op">=</span><span class="va">None</span>, <span class="va">away</span><span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Movement between the levels of a spatial stratification, given as a matrix</p>
+<p>People either commute (they keep their home, and spend a fraction of their time in other places, where they are exposed and expose others), visit (the same, but they are exposed to the residents of the places they go to and do not expose anyone there, as flepiMoP has it), or migrate (they relocate). Or, with <code>kind='force'</code>, nobody moves and the force of infection does, as in LASER: with <code>M[i,k]</code> the movement from place i to place k, each place keeps <code>1 − Σ_k M[i,k]</code> of its own force of infection and receives <code>M[k,i]</code> of each other place’s.</p>
+<p>The movement models (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity()</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation()</code></a>) take the same <code>kind=</code> and <code>away=</code> themselves, and a register of moves on given dates is <a href="../api/geo.html#starsim.geo.register" title="0"><code>ss.geo.register()</code></a>.</p>
+<p>Other forms are written with the general pieces. Commuters who come back at a finite rate (Keeling and Rohani’s model 7.3) are a second spatial dimension of where people are now, with transfers between its levels at rates by home.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 88%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>matrix</td>
+<td><code>array</code></td>
+<td>the movement from each place (rows) to each place: for commuting the fraction of time spent there, and for migration the rate of moving there (a SciPy sparse array for many places, most pairs of which share no one)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>kind</td>
+<td><code>str</code></td>
+<td>‘commute’, ‘visit’, ‘migrate’, or ‘force’ (default ‘commute’)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>away</td>
+<td><code>float</code></td>
+<td>for commuting and visiting, the fraction of their time people spend away from home (for ‘force’, the fraction of each place’s force of infection that goes to the others); the movement is rescaled to give every place that fraction (to keep the differences between places, scale the matrix by hand and give no <code>away=</code>)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>([<span class="st">'a'</span>, <span class="st">'b'</span>], <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">Mobility</span>([[<span class="dv">0</span>, <span class="fl">0.1</span>], [<span class="fl">0.2</span>, <span class="dv">0</span>]])))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># LASER's coupling, with the force of infection moving: M[i,k] is the fraction of i's force that goes to k</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(places, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">Mobility</span>(M, <span class="va">kind</span><span class="op">=</span><span class="st">'force'</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility.blank">blank</a></td>
+<td>Whether an entry of a register is empty</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.Mobility.by_value">by_value</a></td>
+<td>A function of each entry of a column of a register, worked out once for each distinct value, since a register can have millions of rows</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility.coupling">coupling</a></td>
+<td>For a moving force of infection: the fraction of the force of infection of each level (columns) that each level (rows) receives, as a sparse array</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.Mobility.events">events</a></td>
+<td>The register, resolved against the levels and the timeline of a sim</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility.fitted">fitted</a></td>
+<td>The parameters (<code>ss.par</code>) in the movement, by attribute (<code>away</code>, and the movement model’s <code>scale</code>, and gravity’s <code>source_power</code>, <code>dest_power</code>, <code>distance_power</code>), which set the mixing when a sim is built</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.Mobility.from_model">from_model</a></td>
+<td>The movement of a movement model (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity()</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation()</code></a>), with its kind and amount</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility.load">load</a></td>
+<td>Read a movement register, with a blank <code>from</code> or <code>to</code> (or a blank <code>states</code>) as None</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.Mobility.matrix">matrix</a></td>
+<td>The movement between each pair of levels, with nothing on the diagonal</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.Mobility.setup">setup</a></td>
+<td>Check the kind and amount, and set them</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.Mobility.time_frac">time_frac</a></td>
+<td>For commuting: the fraction of their time that people from each level (rows) spend in each level; rows sum to 1. A sparse array, since most pairs of places share no one</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.geo.Mobility.blank" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.blank">blank</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">blank</span>(v)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Whether an entry of a register is empty</p>
+</section>
+<section id="starsim.geo.Mobility.by_value" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.by_value">by_value</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">by_value</span>(vals, func, missing)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A function of each entry of a column of a register, worked out once for each distinct value, since a register can have millions of rows</p>
+<p>Returns the results for the distinct values, then <code>missing</code> (for None and NaN), and the index of each entry’s result.</p>
+</section>
+<section id="starsim.geo.Mobility.coupling" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.coupling">coupling</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">coupling</span>(strat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For a moving force of infection: the fraction of the force of infection of each level (columns) that each level (rows) receives, as a sparse array</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 26%">
+<col style="width: 29%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strat</td>
+<td><code>Strat</code></td>
+<td>the stratification</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.geo.Mobility.events" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.events">events</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">events</span>(strat, sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The register, resolved against the levels and the timeline of a sim</p>
+<p>Returns the step at whose start each event happens, the position of the place each leaves (-1 for none) and goes to (-1 for none), the number of people, and the states it names (None for the default), in the order of the table within each step. Events before the start or after the last step are dropped, with a note. Also the distinct pairs of <code>states</code> and <code>to_states</code> (<code>sets</code>, in the order they first appear), and which of them each event names (<code>set_of</code>).</p>
+</section>
+<section id="starsim.geo.Mobility.fitted" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.fitted">fitted</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">fitted</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The parameters (<code>ss.par</code>) in the movement, by attribute (<code>away</code>, and the movement model’s <code>scale</code>, and gravity’s <code>source_power</code>, <code>dest_power</code>, <code>distance_power</code>), which set the mixing when a sim is built</p>
+</section>
+<section id="starsim.geo.Mobility.from_model" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.from_model">from_model</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">from_model</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The movement of a movement model (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity()</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation()</code></a>), with its kind and amount</p>
+</section>
+<section id="starsim.geo.Mobility.load" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.load">load</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">load</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Read a movement register, with a blank <code>from</code> or <code>to</code> (or a blank <code>states</code>) as None</p>
+</section>
+<section id="starsim.geo.Mobility.matrix" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.matrix">matrix</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">matrix</span>(strat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The movement between each pair of levels, with nothing on the diagonal</p>
+<section id="parameters-2" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 26%">
+<col style="width: 29%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strat</td>
+<td><code>Strat</code></td>
+<td>the stratification</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="starsim.geo.Mobility.setup" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.setup">setup</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">setup</span>(<span class="va">kind</span><span class="op">=</span><span class="va">None</span>, <span class="va">away</span><span class="op">=</span><span class="va">None</span>, <span class="va">model</span><span class="op">=</span><span class="va">None</span>, <span class="va">given</span><span class="op">=</span><span class="va">None</span>, <span class="va">data</span><span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check the kind and amount, and set them</p>
+</section>
+<section id="starsim.geo.Mobility.time_frac" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.Mobility.time_frac">time_frac</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>geo.Mobility.<span class="fu">time_frac</span>(strat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For commuting: the fraction of their time that people from each level (rows) spend in each level; rows sum to 1. A sparse array, since most pairs of places share no one</p>
+<section id="parameters-3" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 26%">
+<col style="width: 29%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strat</td>
+<td><code>Strat</code></td>
+<td>the stratification</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.geo.geography" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.geo.geography">geography</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>geo.<span class="fu">geography</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">data</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">names</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">populations</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">x</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">y</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">lat</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">lon</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">distances</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="va">adjacency</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="va">level</span><span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="va">year</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">places</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A geography: named places with populations and positions, used as the levels of a spatial stratification</p>
+<p>A country’s administrative units come from <code>starsim_data</code> by name (<code>ss.geo.geography('Kenya', level=1)</code>): their names, populations, centroids, areas, p-codes, and which share a border. Levels 0 and 1 are bundled (for 184 countries and territories), so they need no download; level 2 is downloaded on first use.</p>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>data</td>
+<td><code>dataframe</code> / <code>str</code> / <code>list</code></td>
+<td>a country (or a list of them) by name or code, e.g.&nbsp;‘Kenya’ or ‘KE’; or a table (or the name of a file holding one) with a column <code>name</code>, and optionally <a href="../api/data.html#starsim.data.population" title="0"><code>population</code></a> (or <code>pop</code>), and <code>x</code> and <code>y</code> or <code>lat</code> and <code>lon</code>; or your own shapes, as a GeoDataFrame or a .shp, .geojson, or .gpkg file (read with geopandas), whose places are at the centroids of their shapes (in degrees, if it has a coordinate reference system)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>level</td>
+<td><code>int</code> / <code>str</code></td>
+<td>for a country, the administrative level: 1 (the default) for its first-level units (counties, provinces, states), 2 for the next (fetched), 0 for the country itself</td>
+<td><code>1</code></td>
+</tr>
+<tr class="odd">
+<td>year</td>
+<td><code>int</code></td>
+<td>for a country, the year of the populations (default: those bundled, for 2020; another year is fetched)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>places</td>
+<td><code>list</code></td>
+<td>for a country, only these units, by name, <code>dot_name</code> (‘Kenya:Nairobi’), or p-code</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>names</td>
+<td><code>list</code></td>
+<td>the name of each place (instead of <a href="../api/data.html#starsim.data" title="0"><code>data</code></a>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>populations</td>
+<td><code>list</code></td>
+<td>the number of people in each place; sets the fraction of people who start in each (for a country, in place of the bundled ones), and the sizes of the places for movement between them (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation</code></a>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>x</td>
+<td><code>list</code></td>
+<td>a position for each place, in any unit of distance</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>y</td>
+<td><code>list</code></td>
+<td>the other coordinate</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>lat</td>
+<td><code>list</code></td>
+<td>latitudes in degrees (instead of <code>x</code> and <code>y</code>); distances are then great-circle distances in km</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>lon</td>
+<td><code>list</code></td>
+<td>longitudes in degrees</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>distances</td>
+<td><code>array</code></td>
+<td>the distance between each pair of places (instead of positions)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>adjacency</td>
+<td><code>array</code></td>
+<td>whether each pair of places shares a border</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>kenya <span class="op">=</span> ss.geo.<span class="fu">geography</span>(<span class="st">'Kenya'</span>, <span class="va">level</span><span class="op">=</span><span class="dv">1</span>) <span class="co"># Its 47 counties</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>towns <span class="op">=</span> ss.geo.<span class="fu">geography</span>(<span class="va">names</span><span class="op">=</span>[<span class="st">'north'</span>, <span class="st">'south'</span>, <span class="st">'east'</span>], <span class="va">populations</span><span class="op">=</span>[<span class="dv">50_000</span>, <span class="dv">30_000</span>, <span class="dv">20_000</span>], <span class="va">x</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">40</span>], <span class="va">y</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">30</span>, <span class="dv">0</span>])</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>districts <span class="op">=</span> ss.geo.<span class="fu">geography</span>(<span class="st">'districts.shp'</span>) <span class="co"># Your own shapes, with columns name and population</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="dv">3</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>sir <span class="op">=</span> ss.<span class="fu">Disease</span>(<span class="va">infection</span><span class="op">=</span>S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">0.3</span><span class="op">*</span>I, <span class="va">recovery</span><span class="op">=</span>ss.<span class="fu">Transition</span>(I, R, <span class="va">dur</span><span class="op">=</span><span class="dv">10</span>), <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.01</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">gravity</span>(<span class="va">scale</span><span class="op">=</span><span class="fl">0.01</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods-1" class="level4">
+<h4 class="anchored" data-anchor-id="methods-1">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.geo.geography.by_place">by_place</a></td>
+<td>Values in the order of the places, from an array, or a dict or series by name</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.geography.draw">draw</a></td>
+<td>Draw the places into axes, as shapes or as points sized by population, for <code>plot()</code> and maps of results; returns what was drawn, whose colors <code>map()</code> updates</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.geography.get_shapes">get_shapes</a></td>
+<td>The shapes of the places to draw, if any: those the geography was made from, or for a country, its boundaries (<code>shapes=True</code>, which downloads them, and needs geopandas)</td>
+</tr>
+<tr class="even">
+<td><a href="#starsim.geo.geography.plot">plot</a></td>
+<td>Draw a map of the places, colored by a value for each place if given</td>
+</tr>
+<tr class="odd">
+<td><a href="#starsim.geo.geography.positions">positions</a></td>
+<td>Where each place is, as x and y: the positions given, or longitudes and latitudes</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.geo.geography.by_place" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.geography.by_place">by_place</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>geo.geography.<span class="fu">by_place</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Values in the order of the places, from an array, or a dict or series by name</p>
+</section>
+<section id="starsim.geo.geography.draw" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.geography.draw">draw</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>geo.geography.<span class="fu">draw</span>(ax, <span class="va">colors</span><span class="op">=</span><span class="va">None</span>, <span class="va">shapes</span><span class="op">=</span><span class="va">None</span>, <span class="va">names</span><span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Draw the places into axes, as shapes or as points sized by population, for <code>plot()</code> and maps of results; returns what was drawn, whose colors <code>map()</code> updates</p>
+</section>
+<section id="starsim.geo.geography.get_shapes" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.geography.get_shapes">get_shapes</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>geo.geography.<span class="fu">get_shapes</span>(<span class="va">shapes</span><span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The shapes of the places to draw, if any: those the geography was made from, or for a country, its boundaries (<code>shapes=True</code>, which downloads them, and needs geopandas)</p>
+</section>
+<section id="starsim.geo.geography.plot" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.geography.plot">plot</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>geo.geography.<span class="fu">plot</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">values</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">label</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">shapes</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">names</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">cmap</span><span class="op">=</span><span class="st">'Reds'</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">vmin</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">vmax</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">ax</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Draw a map of the places, colored by a value for each place if given</p>
+<p>Places are drawn as shapes if the geography has them (it was made from shapes, or <code>shapes=True</code> for a country), and otherwise as points at their positions, with areas in proportion to their populations. For a map of a result over time, use the result’s <code>map()</code>, e.g.&nbsp;<code>sim.results.sir.prevalence.map()</code>.</p>
+<section id="parameters-5" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>values</td>
+<td><code>array</code> / <code>dict</code> / <code>series</code></td>
+<td>a value for each place, in order or by name, e.g.&nbsp;a summary of a result by place</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td><code>str</code></td>
+<td>what the values are, for the color bar</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>shapes</td>
+<td><code>bool</code></td>
+<td>whether to draw shapes (by default, if the geography has them); <code>True</code> for a country downloads its boundaries, which needs geopandas</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>names</td>
+<td><code>bool</code></td>
+<td>whether to label the places by name (by default, if there are 15 or fewer)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>cmap</td>
+<td><code>str</code></td>
+<td>the colormap of the values</td>
+<td><code>'Reds'</code></td>
+</tr>
+<tr class="even">
+<td>vmin</td>
+<td><code>float</code></td>
+<td>the value at the bottom of the color scale (by default, 0, or the smallest value if it is negative)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>vmax</td>
+<td><code>float</code></td>
+<td>the value at the top of the color scale (by default, the largest value)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>ax</td>
+<td><code>Axes</code></td>
+<td>if given, draw into these axes</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td><code>dict</code></td>
+<td>passed to <a href="../api/utils.html#starsim.utils.plot_args" title="0"><code>ss.plot_args()</code></a>, e.g.&nbsp;<code>figsize</code> or <code>filename</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-2" class="level6 doc-section doc-section-examples">
+<h6 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h6>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>towns <span class="op">=</span> ss.geo.<span class="fu">geography</span>(<span class="va">names</span><span class="op">=</span>[<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>], <span class="va">populations</span><span class="op">=</span>[<span class="dv">50_000</span>, <span class="dv">30_000</span>, <span class="dv">20_000</span>], <span class="va">x</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">40</span>], <span class="va">y</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">30</span>, <span class="dv">0</span>])</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>towns.<span class="fu">plot</span>() <span class="co"># Where the places are, and their populations</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>towns.<span class="fu">plot</span>(<span class="va">values</span><span class="op">=</span>sim.results.sir.infection.<span class="fu">by</span>(<span class="st">'patch'</span>).<span class="fu">summarize</span>(), <span class="va">label</span><span class="op">=</span><span class="st">'Infections'</span>) <span class="co"># A summary of a result</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>ss.geo.<span class="fu">geography</span>(<span class="st">'Kenya'</span>).<span class="fu">plot</span>(<span class="va">shapes</span><span class="op">=</span><span class="va">True</span>) <span class="co"># Kenya's counties, with their boundaries</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="starsim.geo.geography.positions" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.geography.positions">positions</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>geo.geography.<span class="fu">positions</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Where each place is, as x and y: the positions given, or longitudes and latitudes</p>
+</section>
+</section>
+</section>
+<section id="starsim.geo.gravity" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.geo.gravity">gravity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>geo.<span class="fu">gravity</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">away</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">scale</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">kind</span><span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">source_power</span><span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">dest_power</span><span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">distance_power</span><span class="op">=</span><span class="fl">2.0</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The gravity model of movement: the fraction of their time that a person from place <code>i</code> spends in place <code>j</code> (or, for migration, the rate at which they move there) is <code>scale × pop[i]^(source_power−1) × pop[j]^dest_power / distance[i,j]^distance_power</code></p>
+<p>Populations and distances come from the geography of the dimension it is used on (<a href="../api/geo.html#starsim.geo.geography" title="0"><code>ss.geo.geography</code></a>). The model gives the shape of the movement, and <code>away=</code> its amount: the fraction of their time that people spend away from home, split between the other places by gravity. <code>scale</code> has units of distance^distance_power / pop^(source_power+dest_power−1), so no default fits both three towns and a country; give it only if it has been calibrated. With neither, people spend 10% of their time away. <code>kind=</code> says how people move (see <a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility</code></a>).</p>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>away</td>
+<td><code>float</code></td>
+<td>for commuting and visiting, the fraction of their time people spend away from home (for ‘force’, the fraction of each place’s force of infection that goes to the others; default 0.1, unless <code>scale</code> is given)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>scale</td>
+<td><code>float</code></td>
+<td>the overall amount of movement, instead of <code>away</code>; for migration, the scale of the rates (required)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kind</td>
+<td><code>str</code></td>
+<td>‘commute’ (the default), ‘visit’, ‘migrate’, or ‘force’ (see <a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility</code></a>)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>source_power</td>
+<td><code>float</code></td>
+<td>the exponent of the population of the place people come from</td>
+<td><code>1.0</code></td>
+</tr>
+<tr class="odd">
+<td>dest_power</td>
+<td><code>float</code></td>
+<td>the exponent of the population of the place they go to</td>
+<td><code>1.0</code></td>
+</tr>
+<tr class="even">
+<td>distance_power</td>
+<td><code>float</code></td>
+<td>the exponent of the distance between the two</td>
+<td><code>2.0</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-3" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">gravity</span>(<span class="va">away</span><span class="op">=</span><span class="fl">0.1</span>, <span class="va">source_power</span><span class="op">=</span><span class="fl">1.0</span>, <span class="va">dest_power</span><span class="op">=</span><span class="fl">1.0</span>, <span class="va">distance_power</span><span class="op">=</span><span class="fl">2.0</span>)))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">gravity</span>(<span class="va">scale</span><span class="op">=</span><span class="fl">2e-4</span>))) <span class="co"># A calibrated amount</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">gravity</span>(<span class="va">away</span><span class="op">=</span><span class="fl">0.1</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'visit'</span>))) <span class="co"># Travelers do not infect the people they visit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods-2" class="level4">
+<h4 class="anchored" data-anchor-id="methods-2">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.geo.gravity.matrix">matrix</a></td>
+<td>The movement between each pair of levels of a stratification, from its geography</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.geo.gravity.matrix" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.gravity.matrix">matrix</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>geo.gravity.<span class="fu">matrix</span>(strat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The movement between each pair of levels of a stratification, from its geography</p>
+<section id="parameters-7" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 16%">
+<col style="width: 63%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strat</td>
+<td><code>Strat</code></td>
+<td>the stratification, whose geography gives the populations and distances</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.geo.radiation" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.geo.radiation">radiation</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>geo.<span class="fu">radiation</span>(<span class="va">away</span><span class="op">=</span><span class="va">None</span>, <span class="va">scale</span><span class="op">=</span><span class="va">None</span>, <span class="va">kind</span><span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The radiation model of movement (Simini et al.&nbsp;2012), which has no parameters to fit: of the people from place <code>i</code> who travel, the fraction who go to place <code>j</code> is <code>pop[i] × pop[j] / ((pop[i] + s) × (pop[i] + pop[j] + s))</code>, where <code>s</code> is the population of the other places nearer to <code>i</code> than <code>j</code> is</p>
+<p>It is used as <a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity</code></a> is, with the populations and distances of the geography of the dimension it is used on (<a href="../api/geo.html#starsim.geo.geography" title="0"><code>ss.geo.geography</code></a>): the model gives where people go, and <code>away=</code> how much they travel. With neither <code>away</code> nor <code>scale</code>, people spend 10% of their time away. The fractions are normalized to sum to 1 for each place, so for migration <code>scale</code> is the rate at which each person moves. <code>kind=</code> says how people move (see <a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility</code></a>).</p>
+<section id="parameters-8" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>away</td>
+<td><code>float</code></td>
+<td>for commuting and visiting, the fraction of their time people spend away from home (for ‘force’, the fraction of each place’s force of infection that goes to the others; default 0.1, unless <code>scale</code> is given)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>scale</td>
+<td><code>float</code></td>
+<td>the overall amount of movement, instead of <code>away</code>: the fraction of their time away, or for migration the rate of moving (required)</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>kind</td>
+<td><code>str</code></td>
+<td>‘commute’ (the default), ‘visit’, ‘migrate’, or ‘force’ (see <a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility</code></a>)</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-4" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-4">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">radiation</span>(<span class="va">away</span><span class="op">=</span><span class="fl">0.1</span>)))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">patch</span><span class="op">=</span>ss.<span class="fu">levels</span>(towns, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">radiation</span>(<span class="va">scale</span><span class="op">=</span><span class="fl">2e-5</span>, <span class="va">kind</span><span class="op">=</span><span class="st">'migrate'</span>))) <span class="co"># 2e-5 moves per person per unit of time</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="methods-3" class="level4">
+<h4 class="anchored" data-anchor-id="methods-3">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#starsim.geo.radiation.matrix">matrix</a></td>
+<td>The movement between each pair of levels of a stratification, from its geography</td>
+</tr>
+</tbody>
+</table>
+<section id="starsim.geo.radiation.matrix" class="level5">
+<h5 class="anchored" data-anchor-id="starsim.geo.radiation.matrix">matrix</h5>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>geo.radiation.<span class="fu">matrix</span>(strat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The movement between each pair of levels of a stratification, from its geography</p>
+<section id="parameters-9" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h6>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 16%">
+<col style="width: 63%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>strat</td>
+<td><code>Strat</code></td>
+<td>the stratification, whose geography gives the populations and distances</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+</section>
+<section id="starsim.geo.register" class="level3">
+<h3 class="anchored" data-anchor-id="starsim.geo.register">register</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>geo.<span class="fu">register</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A movement register: a table of moves between places on given dates, e.g.&nbsp;livestock sales between farms</p>
+<p>It has columns <code>date</code>, <code>from</code>, <code>to</code>, <code>n</code>, and optionally <code>states</code> (and <code>to_states</code>). Each row moves <code>n</code> people from one place to another; a row with no <code>from</code> adds them to <code>to</code> (births, purchases), and one with no <code>to</code> removes them from <code>from</code> (deaths, sales out of the model). The people who move or leave are chosen at random from those in <code>states</code> (by default, everyone); people who are added go into <code>states</code> (by default, the first state). With <code>to_states</code>, they also move from each of <code>states</code> to the matching one of <code>to_states</code>. Each event happens at the start of the first step that begins on or after its date, before that step’s transitions, and the events of a step happen in the order of the table.</p>
+<p>Note: CRN safe as agents.</p>
+<section id="parameters-10" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 29%">
+<col style="width: 45%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>data</td>
+<td><code>str</code> / <code>df</code></td>
+<td>the register: a file name or a dataframe</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-5" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-5">Examples</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sir.<span class="fu">stratify</span>(<span class="va">herd</span><span class="op">=</span>ss.<span class="fu">levels</span>(herds, <span class="va">mobility</span><span class="op">=</span>ss.geo.<span class="fu">register</span>(<span class="st">'movements.csv'</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// The sidebar's sections: "Expand all" and "Collapse all", and which sections are open, and where the sidebar is scrolled, kept from page to page.
+// Sections listed in `collapsed` start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.querySelector('#quarto-sidebar');
+  const sections = sidebar ? [...sidebar.querySelectorAll('.sidebar-item-section')] : [];
+  if (!sections.length) return;
+  const collapsed = ['Architecture'];
+  const title = (section) => section.querySelector(':scope > .sidebar-item-container .menu-text')?.textContent.trim() ?? '';
+  const path = (section) => { // Its title and those of the sections it is in, so that the same title in two sidebars is not confused
+    const titles = [];
+    for (let s = section; s; s = s.parentElement.closest('.sidebar-item-section')) titles.unshift(title(s));
+    return titles.join(' / ');
+  };
+  const key = 'starsim-sidebar:' + sections.map(title).join('|'); // One per sidebar (user guide, API, ...)
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const setOpen = (section, open) => { // Without Bootstrap's animation
+    section.querySelector(':scope > ul.collapse')?.classList.toggle('show', open);
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.toggle('collapsed', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+  };
+  const isOpen = (section) => section.querySelector(':scope > ul.collapse')?.classList.contains('show') ?? false;
+  const save = (all) => { // all: true or false after "Expand all" or "Collapse all", since the current page's section stays open on screen
+    const state = {};
+    for (const section of sections) state[path(section)] = typeof all === 'boolean' ? all : isOpen(section);
+    localStorage.setItem(key, JSON.stringify(state));
+  };
+
+  // Open each section as it was left (or by default), always with the current page showing
+  for (const section of sections) {
+    const p = path(section);
+    const open = section.querySelector('.sidebar-link.active') ? true : p in saved ? saved[p] : !collapsed.includes(title(section)) && isOpen(section);
+    setOpen(section, open);
+  }
+  sidebar.addEventListener('shown.bs.collapse', () => save());
+  sidebar.addEventListener('hidden.bs.collapse', () => save());
+
+  // Expand all and collapse all
+  const bar = document.createElement('div');
+  bar.className = 'sidebar-expand-all';
+  for (const [text, open] of [['Expand all', true], ['Collapse all', false]]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      for (const section of sections) setOpen(section, open || !!section.querySelector('.sidebar-link.active'));
+      save(open);
+    });
+    bar.append(button);
+  }
+  sidebar.querySelector('.sidebar-menu-container')?.prepend(bar);
+
+  // Where the sidebar was scrolled, if the current page is still in view there
+  const scrollKey = key + ':scroll';
+  const top = Number(sessionStorage.getItem(scrollKey));
+  if (top) {
+    sidebar.scrollTop = top;
+    const active = sidebar.querySelector('.sidebar-link.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), s = sidebar.getBoundingClientRect();
+      if (a.top < s.top || a.bottom > s.bottom) active.scrollIntoView({block: 'center'});
+    }
+  }
+  window.addEventListener('pagehide', () => sessionStorage.setItem(scrollKey, sidebar.scrollTop));
+});
+</script>
+<script>
+// Tabs in a group sync by title (Python, R, Explicit), and Quarto leaves a tabset blank if it has no tab of the title chosen (e.g. Explicit in a tabset of Python and R); show its first tab instead
+function showFirstTabs() {
+  for (const tabset of document.querySelectorAll('.panel-tabset[data-group]')) {
+    const tabs = tabset.querySelectorAll(':scope > .nav-tabs > .nav-item > .nav-link');
+    if (!tabs.length || tabset.querySelector(':scope > .nav-tabs .nav-link.active')) continue;
+    tabs[0].classList.add('active');
+    document.getElementById(tabs[0].getAttribute('aria-controls'))?.classList.add('active');
+  }
+}
+window.addEventListener('pageshow', () => setTimeout(showFirstTabs, 0)); // After Quarto's own pageshow handler, which restores the saved tab (pageshow fires after load)
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.panel-tabset[data-group] .nav-link')) setTimeout(showFirstTabs, 0); // After Quarto's own handler
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var opensNewContext = (link) => {
+        var target = (link.getAttribute("target") || "").toLowerCase();
+        return target !== "" && !["_self", "_parent", "_top"].includes(target);
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+        if (opensNewContext(link)) {
+          describeNewWindow(link);
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../api/distributions.html" class="pagination-link" aria-label="distributions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">distributions</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../api/interventions.html" class="pagination-link" aria-label="interventions">
+        <span class="nav-page-text">interventions</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0rc4 (2026-11-12).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

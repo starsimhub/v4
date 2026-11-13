@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>v4_changelog – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-75bfa209afa5bea2820a722bb1d12033.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+<meta property="og:title" content="Starsim">
+<meta property="og:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta property="og:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta property="og:site_name" content="Starsim">
+<meta property="og:image:height" content="498">
+<meta property="og:image:width" content="2141">
+<meta name="twitter:title" content="Starsim">
+<meta name="twitter:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta name="twitter:image" content="https://starsim.org/v4/assets/starsim-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../user_guide.html"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsimhub.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#starsim-4-the-full-changelog" id="toc-starsim-4-the-full-changelog" class="nav-link active" data-scroll-target="#starsim-4-the-full-changelog">Starsim 4: the full changelog</a>
+  <ul>
+  <li><a href="#vocabulary-and-renames" id="toc-vocabulary-and-renames" class="nav-link" data-scroll-target="#vocabulary-and-renames">Vocabulary and renames</a>
+  <ul>
+  <li><a href="#the-sim-and-its-settings" id="toc-the-sim-and-its-settings" class="nav-link" data-scroll-target="#the-sim-and-its-settings">The sim and its settings</a></li>
+  <li><a href="#running-many-sims" id="toc-running-many-sims" class="nav-link" data-scroll-target="#running-many-sims">Running many sims</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#diseases-written-as-code" id="toc-diseases-written-as-code" class="nav-link" data-scroll-target="#diseases-written-as-code">Diseases written as code</a></li>
+  <li><a href="#distributions" id="toc-distributions" class="nav-link" data-scroll-target="#distributions">Distributions</a></li>
+  <li><a href="#time" id="toc-time" class="nav-link" data-scroll-target="#time">Time</a></li>
+  <li><a href="#networks" id="toc-networks" class="nav-link" data-scroll-target="#networks">Networks</a></li>
+  <li><a href="#demographics-and-pregnancy" id="toc-demographics-and-pregnancy" class="nav-link" data-scroll-target="#demographics-and-pregnancy">Demographics and pregnancy</a></li>
+  <li><a href="#interventions-and-products" id="toc-interventions-and-products" class="nav-link" data-scroll-target="#interventions-and-products">Interventions and products</a></li>
+  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a></li>
+  <li><a href="#namespace-and-options" id="toc-namespace-and-options" class="nav-link" data-scroll-target="#namespace-and-options">Namespace and options</a></li>
+  </ul></li>
+  <li><a href="#new-features" id="toc-new-features" class="nav-link" data-scroll-target="#new-features">New features</a>
+  <ul>
+  <li><a href="#declared-models-states-and-transitions" id="toc-declared-models-states-and-transitions" class="nav-link" data-scroll-target="#declared-models-states-and-transitions">Declared models: states and transitions</a></li>
+  <li><a href="#solvers" id="toc-solvers" class="nav-link" data-scroll-target="#solvers">Solvers</a></li>
+  <li><a href="#stratification-places-and-mixing" id="toc-stratification-places-and-mixing" class="nav-link" data-scroll-target="#stratification-places-and-mixing">Stratification, places, and mixing</a></li>
+  <li><a href="#strains" id="toc-strains" class="nav-link" data-scroll-target="#strains">Strains</a></li>
+  <li><a href="#partnerships-and-networks" id="toc-partnerships-and-networks" class="nav-link" data-scroll-target="#partnerships-and-networks">Partnerships and networks</a></li>
+  <li><a href="#interventions" id="toc-interventions" class="nav-link" data-scroll-target="#interventions">Interventions</a></li>
+  <li><a href="#modifiers-and-conditions" id="toc-modifiers-and-conditions" class="nav-link" data-scroll-target="#modifiers-and-conditions">Modifiers and conditions</a></li>
+  <li><a href="#demographics" id="toc-demographics" class="nav-link" data-scroll-target="#demographics">Demographics</a></li>
+  <li><a href="#results-summaries-and-plots" id="toc-results-summaries-and-plots" class="nav-link" data-scroll-target="#results-summaries-and-plots">Results, summaries, and plots</a></li>
+  <li><a href="#fitting-and-inference" id="toc-fitting-and-inference" class="nav-link" data-scroll-target="#fitting-and-inference">Fitting and inference</a></li>
+  <li><a href="#jax-and-gradients" id="toc-jax-and-gradients" class="nav-link" data-scroll-target="#jax-and-gradients">JAX and gradients</a></li>
+  <li><a href="#runs-and-scenarios" id="toc-runs-and-scenarios" class="nav-link" data-scroll-target="#runs-and-scenarios">Runs and scenarios</a></li>
+  <li><a href="#importing-and-exporting" id="toc-importing-and-exporting" class="nav-link" data-scroll-target="#importing-and-exporting">Importing and exporting</a></li>
+  <li><a href="#named-data" id="toc-named-data" class="nav-link" data-scroll-target="#named-data">Named data</a></li>
+  <li><a href="#library" id="toc-library" class="nav-link" data-scroll-target="#library">Library</a></li>
+  <li><a href="#command-line-ai-skills-and-docs" id="toc-command-line-ai-skills-and-docs" class="nav-link" data-scroll-target="#command-line-ai-skills-and-docs">Command line, AI skills, and docs</a></li>
+  </ul></li>
+  <li><a href="#changes-that-may-affect-results" id="toc-changes-that-may-affect-results" class="nav-link" data-scroll-target="#changes-that-may-affect-results">Changes that may affect results</a>
+  <ul>
+  <li><a href="#time-and-results" id="toc-time-and-results" class="nav-link" data-scroll-target="#time-and-results">Time and results</a></li>
+  <li><a href="#diseases" id="toc-diseases" class="nav-link" data-scroll-target="#diseases">Diseases</a></li>
+  <li><a href="#demographics-1" id="toc-demographics-1" class="nav-link" data-scroll-target="#demographics-1">Demographics</a></li>
+  <li><a href="#networks-and-transmission" id="toc-networks-and-transmission" class="nav-link" data-scroll-target="#networks-and-transmission">Networks and transmission</a></li>
+  <li><a href="#random-numbers-and-runs" id="toc-random-numbers-and-runs" class="nav-link" data-scroll-target="#random-numbers-and-runs">Random numbers and runs</a></li>
+  </ul></li>
+  <li><a href="#simplification-and-removals" id="toc-simplification-and-removals" class="nav-link" data-scroll-target="#simplification-and-removals">Simplification and removals</a></li>
+  <li><a href="#bugfixes-relative-to-starsim-3" id="toc-bugfixes-relative-to-starsim-3" class="nav-link" data-scroll-target="#bugfixes-relative-to-starsim-3">Bugfixes relative to Starsim 3</a></li>
+  <li><a href="#performance-relative-to-starsim-3" id="toc-performance-relative-to-starsim-3" class="nav-link" data-scroll-target="#performance-relative-to-starsim-3">Performance relative to Starsim 3</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+
+<section id="starsim-4-the-full-changelog" class="level1">
+<h1>Starsim 4: the full changelog</h1>
+<p>Every difference between Starsim 3 (3.7.4) and Starsim 4, in detail. The summary is in <code>CHANGELOG.md</code>, and the guide to moving code from Starsim 3, job by job, is <code>v3_v4.md</code>. Changes that may result in differences in model output are flagged with the term “Regression”; changes that may require updates to downstream code are flagged with the term “Migration”.</p>
+<p>Starsim 4 adds a way to write a model as declared states and transitions, which can then be run as an ODE, as a stochastic compartmental model, or as agents. Models written as code (<code>ssl.AgentSIR</code>, custom <code>step()</code> methods, etc.) still run, but their stocks (the counts of states) are recorded at the start of each step rather than after it, so they are one index later than in Starsim 3, and their infections are dated at the end of the step (see <em>Regression</em> below), so they agree with Starsim 3 statistically, not number for number. To reproduce published Starsim 3 numbers exactly, use <code>pip install starsim==3.7.4</code>.</p>
+<section id="vocabulary-and-renames" class="level2">
+<h2 class="anchored" data-anchor-id="vocabulary-and-renames">Vocabulary and renames</h2>
+<p>Names were renamed where they meant different things in different places, or where a short form hid what they were (<a href="https://github.com/starsimhub/starsim/issues/1547">#1547</a>). None of the old names is kept as an alias: a removed name or keyword raises an error that names what replaces it, and <code>python -m starsim.converters.migrate</code> rewrites most of the Starsim 3 ones (and lists, by file and line, what needs a person).</p>
+<section id="the-sim-and-its-settings" class="level3">
+<h3 class="anchored" data-anchor-id="the-sim-and-its-settings">The sim and its settings</h3>
+<ul>
+<li><em>Migration</em>: <a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a> takes the model as its first arguments (<code>ss.Sim(sir)</code>, or a list of modules), and the sim’s settings as keywords. <code>pars=</code> takes the sim’s settings and modules, as in Starsim 3, alongside the model’s parameters, told apart by name: <code>ss.Sim(sir, pars=dict(start=2000, dur=10, n_agents=1000, beta=0.1))</code>. A name is a setting only if no parameter of the model has it (so <code>pars=fit.pars</code> works with a parameter called <code>dur</code>), a keyword given outright wins over the same setting in <code>pars=</code>, and a name that is neither raises a <code>KeyError</code>; <code>ss.Sim(pars=ss.SimPars(...))</code> works as <code>ss.Sim(ss.SimPars(...))</code> does. A parameter of the model given as a keyword of the sim (<code>ss.Sim(sir, beta=0.1)</code>) raises, saying to give it in <code>pars=</code>. A dict in place of the model (<code>ss.Sim(dict(...))</code>) still gives the settings.</li>
+<li><em>Migration</em>: <code>pop_scale=</code> is removed: give the number of people, <code>total_pop=</code>, with <code>n_agents=</code>; <code>sim.pop_scale</code> (read-only) is their ratio, and <code>sim.pars.pop_scale</code> is <code>sim.pop_scale</code>. <code>n_agents=</code> is for agents: in a compartmental run it is an error (give <code>total_pop=</code>).</li>
+<li><em>Migration</em>: <code>rescale=True</code> or <code>rescale=dict(threshold=0.05, factor=1.2)</code> (were <code>rescale_threshold=</code> and <code>rescale_factor=</code>); another key is an error.</li>
+<li><em>Migration</em>: <code>aging=</code> (was <code>use_aging=</code>), <code>record_people=</code> (was <code>people_results=</code>), and <code>workers=</code> (was <code>n_cpus=</code> of <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> and <a href="../api/run.html#starsim.run.MultiSim" title="0"><code>ss.MultiSim</code></a>). <code>birth_rate=</code> and <code>death_rate=</code> of the sim are removed: give <code>demographics=[ss.Births(birth_rate=...), ss.Deaths(death_rate=...)]</code>, or <code>ss.birth(rate=...)</code> and <code>ss.death(rate=...)</code> (below); <code>demographics=True</code> gives declared births and deaths at 20 and 10 per 1,000 a year.</li>
+<li><em>Migration</em>: <code>custom=</code> of the sim is removed: give modules of no standard kind with <code>modules=</code> (they are in <code>sim.custom</code>); <code>step_order='given'</code> steps the modules in the order given.</li>
+<li><em>Migration</em>: <code>copy_inputs=</code> is removed: a sim always copies the modules it is given, together, when it is made (<code>copy_modules=False</code> runs the modules given themselves). Read the modules, and their results, from the sim (<code>sim.diseases.sir</code>, <code>sim.results.sir</code>); reading a result from the module given says where it is. A sim no longer rewrites the functions given to it: a function reads modules from the sim it is given (<code>lambda sim: sim.diseases.sir.I.n</code>).</li>
+<li><em>Migration</em>: <code>sim.run()</code> takes only <code>until=</code> and <code>verbose=</code>, and always returns the sim: <code>run(profile=True)</code> is <code>sim.profile(kind='loop')</code>, <code>run(shrink=True)</code> is <code>sim.shrink()</code>, and <code>check_method_calls=</code> is removed (as is the option). <code>run(until=)</code> includes the step that starts at <code>until</code>.</li>
+<li><em>Migration</em>: <code>verbose</code> is one integer for every solver: 0 prints nothing, 1 (the default) a line saying what runs, the notes, and a progress bar, and 2 everything (above 2 is everything too); <code>verbose=-1</code> is <code>verbose=0</code>. A fraction, as Starsim 3’s default <code>0.1</code>, is still accepted.</li>
+<li><em>Migration</em>: <code>sim.summary</code> is removed: <code>sim.summarize()</code> is a dataframe with a row per result and a <code>value</code> column, the same table as <code>msim.summarize()</code> (use <code>.loc</code>, or <code>sim.summarize('sir.infection')</code> for one result); <code>how='max'</code> and <code>how='min'</code> are new, and an unknown <code>how=</code> is an error.</li>
+<li><em>Migration</em>: <code>sim.profile()</code> takes <code>kind=</code>: <code>'line'</code> (the default) times each line of the functions followed, <code>'function'</code> each function, and <code>'loop'</code> each call of the integration loop. <code>sim.to_yaml()</code> and the unused <code>verbose=</code> of <code>sim.to_json()</code> are removed.</li>
+<li><em>Migration</em>: the internal methods of <a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a>, <a href="../api/results.html#starsim.results.Result" title="0"><code>ss.Result</code></a> and <a href="../api/run.html#starsim.run.MultiSim" title="0"><code>ss.MultiSim</code></a> are private, as are the phases of <a href="../api/sim.html#starsim.sim.Sim.init" title="0"><code>Sim.init()</code></a> that no package overrides (<code>init_people()</code>, <code>init_results()</code>, and the like stay public); <code>ss.Pars</code> and <code>ss.SimPars</code> stay public, for packages that subclass them.</li>
+</ul>
+</section>
+<section id="running-many-sims" class="level3">
+<h3 class="anchored" data-anchor-id="running-many-sims">Running many sims</h3>
+<ul>
+<li><em>Migration</em>: <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> is the one way to run many sims: <code>ss.parallel(s1, s2, n_runs=10)</code>, labeled by a dict rather than keywords (<code>ss.parallel({'Baseline': s1, 'Vaccine': s2})</code>), so that its keywords are only how to run them. <code>workers=1</code> runs them one after another in this process (<code>parallel=</code> and <code>MultiSim(debug=True)</code> are removed). <code>ss.parallel(sim, pars=dict(beta=[0.2, 0.3]))</code> is a sweep (replacing <code>ss.multi_run(iterpars=)</code>), with each set of values a scenario of its own.</li>
+<li><em>Migration</em>: <a href="../api/run.html#starsim.run.MultiSim" title="0"><code>ss.MultiSim</code></a> is what the runs give and the class to subclass: <code>ss.MultiSim(sim)</code> (or <code>ss.parallel(sim)</code>) of one sim with no <code>n_runs=</code> runs it once (Starsim 3 ran it 4 times; give <code>n_runs=4</code>), and <code>base_sim=</code> and <code>initialize=</code> are removed (<code>msim.init_sims()</code>); a subclass changes each run’s sim in <code>make_run()</code> and adds its own run options with <code>run_options</code>. <code>ss.single_run()</code> and <code>ss.multi_run()</code> are removed.</li>
+<li><em>Migration</em>: a MultiSim is its results: <code>msim.results.&lt;module&gt;.&lt;result&gt;</code> is an <a href="../api/results.html#starsim.results.Result" title="0"><code>ss.Result</code></a> with a run axis first, however the runs were made, with <code>select(run=, scenario=, &lt;swept parameter&gt;=)</code>, <code>quantiles()</code>, <code>median()</code>, <code>mean()</code>, <code>diff()</code>, <code>resample()</code>, <code>to_df()</code>, and <code>plot()</code>; these reduce each scenario separately, where Starsim 3 pooled every sim. <code>msim.reduce()</code>, <code>msim.mean()</code>, <code>msim.median()</code>, <code>msim.reset()</code>, and <code>ss.MultiResult</code> are removed, and raise an error that says what to write instead.</li>
+<li><em>Migration</em>: <code>msim.compare()</code> is <code>msim.summarize(each=True)</code> (a column for each run, with <code>t=</code> for the values at one time point), <code>msim.plot_compare()</code> is removed, and <code>msim.brief()</code> is <code>print(msim)</code>. <code>msim.show()</code> returns the summary as text that shows itself (<code>ss.display.Text</code>), so <code>msim.show(output=True)</code> is <code>text = msim.show()</code> (<code>output=</code> raises a <code>TypeError</code> saying so).</li>
+</ul>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
+<ul>
+<li><em>Migration</em>: the count of each state is the result named after the state, for every module: <code>sim.results.alive</code> (was <code>n_alive</code>), <code>res.infected</code> for a module written as code (was <code>n_infected</code>), and <code>sim.results.sir.I</code> for a declared disease. A flow has one name, its transition’s (<code>sim.results.sir.infection</code>), and its running total is <code>.cum</code>, worked out when asked for: <code>new_infections</code> and <code>cum_infections</code> are <code>infection</code> and <code>infection.cum</code>, for diseases written as code too, and a data column called <code>new_infections</code> no longer matches anything.</li>
+<li><em>Migration</em>: the sim’s <code>new_deaths</code>, <code>cum_deaths</code>, and <code>new_emigrants</code> are <code>died</code>, <code>died.cum</code>, and <code>emigrated</code>, so that they don’t shadow a disease’s <code>death</code> flow; <code>ssl.HIV</code> has the flow <code>death</code>. The <code>pop_scale</code> result is removed.</li>
+<li><em>Migration</em>: <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> and <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> have the flows <code>birth</code> and <code>death</code> (were <code>new</code>), with totals <code>birth.cum</code> and <code>death.cum</code> (were <code>cumulative</code>).</li>
+<li><em>Migration</em>: <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a>’s results are its flows and states: <code>conception</code>, <code>birth</code>, <code>miscarriage</code>, and <code>stillbirth</code> (were <code>pregnancies</code>, <code>births</code>, <code>miscarriages</code>, and <code>stillbirths</code>), <a href="../api/demographics.html#starsim.demographics.preterm" title="0"><code>preterm</code></a>, <code>very_preterm</code>, and <code>unborn</code> (were <code>n_preterm</code>, <code>n_very_preterm</code>, and <code>n_unborn</code>), and <code>maternal_death</code> and <code>neonatal_death</code> (were plural). <code>ssl.FetalHealth</code>’s results are <code>birth</code>, <code>lbw</code>, <code>vlbw</code>, <code>sga</code>, and <code>svn</code>.</li>
+<li><em>Migration</em>: <code>Result.col()</code> and <code>Result.by_column()</code> are removed: a 2D result’s column is <code>res['alpha']</code>, or <code>res.select(column='alpha')</code>.</li>
+<li><em>Migration</em>: <code>Result.annualize()</code> is <code>res.resample('year')</code> (a flow is summed, a stock taken at the start of each year, a ratio averaged). <code>res.to_df()</code> and <code>results.to_df()</code> are <code>to_df()</code>, which always includes the results of the modules (<code>descend=</code> is removed), with the times as the column <a href="../api/internals.time.html#starsim.internals.time" title="0"><code>time</code></a>; <a href="../api/results.html#starsim.results.Results.flatten" title="0"><code>Results.flatten()</code></a> always keeps the case of keys (<code>keep_case=</code> is removed), and <code>ss.utils.match_result_keys()</code> is removed.</li>
+<li><em>Migration</em>: <code>update_results()</code> is replaced by <code>record_states()</code>, called at the start of every step (after <code>start_step()</code>, before any module’s step) for the results that are the state then (<code>self.results.n_on_art[self.ti] = self.on_art.sum()</code>), and <code>record_events()</code>, called at the end (after the deaths, before the analyzers) for those about what happened in the step (doses, births, new cases). A result that needs both (births over the people alive) goes in <code>record_events()</code>, reading the stock from its result, or in <code>finalize_results()</code>. A flow can also be counted where it happens, in <code>step()</code>. A class that still defines <code>update_results()</code> raises a <code>TypeError</code> when it is created, saying how to split it; a result written in <code>finish_step()</code> comes after <code>record_events()</code>, so count it in <code>step()</code>.</li>
+<li><em>Migration</em>: every result has a kind (<code>kind='flow'</code>, <code>'stock'</code>, <code>'ratio'</code>, or <code>None</code> for one with no meaning over time), from <code>kind=</code> or from its name (<code>new_...</code> is a flow, <code>n_...</code> and <code>cum_...</code> are stocks, <code>...prevalence</code> is a ratio); otherwise it is guessed from the dtype, as in Starsim 3, but with a warning (<code>ss.Result('cases')</code> is taken as a ratio). The kind decides how it is scaled, compared with data, summarized, and resampled, and whether it has a running total (<code>.cum</code>); <code>scale=</code> and <code>summarize_by=</code> override what the kind sets. <a href="../api/results.html#starsim.results.Result" title="0"><code>ss.Result()</code></a> raises on an unknown keyword.</li>
+</ul>
+</section>
+<section id="diseases-written-as-code" class="level3">
+<h3 class="anchored" data-anchor-id="diseases-written-as-code">Diseases written as code</h3>
+<ul>
+<li><em>Migration</em>: <a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a> is the base of every disease, declared, written as code (Starsim 3’s <code>class X(ss.Disease)</code>, with <code>super().__init__()</code>, <code>define_pars()</code>, <code>define_states()</code>, and <code>step()</code>, works unchanged), or a mix of both. A subclass that declares no states, transitions, or outcomes is written as code; one with no states and no <code>step()</code> or <code>step_state()</code> raises at init.</li>
+<li><em>Migration</em>: <a href="../api/diseases.html#starsim.diseases.AgentDisease" title="0"><code>ss.AgentDisease</code></a> (was <code>ss.Infection</code>) is a disease written as code with transmission over the sim’s networks, which runs only as agents. Each piece of it is a short method on plain arrays to override: <code>transmissibility()</code> and <code>susceptibility()</code> (new), <code>route_betas()</code> (the beta of each network, as in Starsim 3), <code>transmit()</code> (who is infected; was <code>infect()</code>, and replaces <code>validate_beta()</code>, <code>infect_route()</code>, <code>compute_transmission()</code>, and <code>finalize_infections()</code>), and <code>set_prognoses()</code>. <code>transmit(rel_trans=..., rel_sus=..., beta=...)</code> is the same transmission as a declared disease’s run as agents, over every network and route, with the modifiers applied, and returns the new cases (recorded with their sources and routes in the infection log). New infections are counted by <code>infect(uids)</code> and the step, not by <code>set_prognoses()</code>, so infecting people from code is <code>self.infect(uids)</code>, for every disease, declared or written as code. An override of <code>transmit()</code> can call <code>super().transmit(rel_trans=..., rel_sus=...)</code> once for each of its own arrays (e.g.&nbsp;each strain).</li>
+<li><em>Migration</em>: an override of <code>step_die(uids)</code> is <code>on_death(uids)</code>, a hook of every kind of module (beside the new <code>on_birth()</code>); <code>people.step_die()</code> is the step that resolves the deaths.</li>
+<li><em>Migration</em>: <code>set_outcomes()</code> gives the newly infected their outcomes, as in Starsim 3, sending those infected before birth (age 0 or less, e.g.&nbsp;over <a href="../api/networks.html#starsim.networks.PrenatalNet" title="0"><code>ss.PrenatalNet</code></a>) to <code>set_congenital(uids, sources)</code> and the rest to <code>set_prognoses()</code>; <code>set_congenital()</code> now defaults to <code>set_prognoses()</code> (in Starsim 3 it did nothing), so a disease overrides it only for outcomes at birth. Starsim 3’s congenital outcomes on <code>ss.Infection</code> (<code>prenatal_death_keys</code> and the like) are in <a href="../api/library.mnch.html#starsim.library.mnch.CongenitalDisease" title="0"><code>ssl.mnch.CongenitalDisease</code></a>, which schedules the outcomes at birth.</li>
+<li><em>Migration</em>: an <a href="../api/diseases.html#starsim.diseases.AgentDisease" title="0"><code>ss.AgentDisease</code></a> with a nonzero <code>beta</code> and no network or mixing pool raises an error, rather than running with no transmission; one with no <code>beta</code> runs, transmitting nothing.</li>
+<li><em>Migration</em>: <code>ss.NCD</code> is <code>ssl.NCD</code>, and <code>ss.InfectionLog</code> is <a href="../api/diseases.html#starsim.diseases.InfectionLog" title="0"><code>ss.diseases.InfectionLog</code></a>; <code>ss.dynamics_by_age</code> is removed (stratify the sim by age, or write an analyzer).</li>
+</ul>
+</section>
+<section id="distributions" class="level3">
+<h3 class="anchored" data-anchor-id="distributions">Distributions</h3>
+<ul>
+<li><em>Migration</em>: the keywords of the distributions are their moments, where they have them: <code>ss.normal(mean=, std=)</code> (was <code>loc=</code>, <code>scale=</code>), <code>ss.expon(mean=)</code> (was <code>scale=</code>), <code>ss.poisson(mean=)</code> (was <code>lam=</code>), <code>ss.weibull(shape=, scale=)</code> (was <code>c=</code>), and <code>ss.gamma(shape=, scale=)</code> (was <code>a=</code>) or <code>ss.gamma(mean=, std=)</code>; the order by position is unchanged. <a href="../api/distributions.html#starsim.distributions.nbinom" title="0"><code>ss.nbinom()</code></a> can also be given by its mean and dispersion (<code>ss.nbinom(mean=20, n=0.5)</code>, the variance being mean + mean²/n). The parameters of every distribution can be arrays or lists (<code>ss.normal(mean=[3.5, 4.5], std=[0.9, 0.8])</code>), including those given by their moments (<code>ss.gamma(mean=, std=)</code>, <code>ss.beta_dist(mean=, std=)</code>).</li>
+<li><em>Migration</em>: <code>ss.lognormal(mean=, std=)</code> or <code>ss.lognormal(log_mean=, log_std=)</code> (were <code>ss.lognorm_ex()</code> and <code>ss.lognorm_im(mean=, sigma=)</code>, with the same draws); <code>ss.beta_dist(mean=, std=)</code> (was <code>ss.beta_mean(mean, var)</code>: a standard deviation, not a variance); <code>ss.constant(value=)</code> (was <code>v=</code>).</li>
+<li><em>Migration</em>: <code>ss.rand_raw</code>, <code>ss.scale_types</code>, <code>ss.link_dists</code>, <code>ss.make_dist</code>, <code>ss.dist_list</code>, and <code>ss.Dists</code> are removed from the top level (the last four are in <a href="../api/internals.dists.html#starsim.internals.dists" title="0"><code>ss.dists</code></a> and <a href="../api/distributions.html#starsim.distributions" title="0"><code>ss.distributions</code></a>); <code>Dist.state_int</code> is removed, and <a href="../api/distributions.html#starsim.distributions.choose_n.rvs" title="0"><code>ss.choose_n().rvs()</code></a> raises for <code>round=</code> or <code>reset=</code>. <code>rvs(uids, repeats=True)</code> draws independently for UIDs that repeat in a call.</li>
+</ul>
+</section>
+<section id="time" class="level3">
+<h3 class="anchored" data-anchor-id="time">Time</h3>
+<ul>
+<li><em>Migration</em>: <code>ss.Duration</code> is the class of a duration (was <code>ss.dur</code>), and <code>ss.dur(3)</code> with no unit (which was years) is <code>ss.years(3)</code>; <code>ss.Duration(3)</code> needs a unit. <code>ss.datedur</code> is removed: whole <code>ss.months(n)</code> and <code>ss.years(n)</code> added to a date follow the calendar (<code>ss.datedur(months=1)</code> is <code>ss.months(1)</code>), and monthly dates from the 31st stay at the end of each month.</li>
+<li><em>Migration</em>: the Starsim 2 names <code>ss.rate</code>, <code>ss.time_prob</code>, and <code>ss.rate_prob</code>, deprecated in Starsim 3, are removed (<code>ss.peryear()</code>, <code>ss.probperyear()</code>, or <code>ss.freqperyear()</code> for a count per unit time). The time vocabulary is otherwise as in Starsim 3: <code>ss.days</code> to <code>ss.years</code>, <code>ss.perday</code> to <code>ss.peryear</code>, <code>ss.probperday</code> to <code>ss.probperyear</code>, <code>ss.freqperday</code> to <code>ss.freqperyear</code>, and the one-unit instances <code>ss.day</code> to <code>ss.year</code>; a probability per period is <code>ss.prob(0.1, 'day')</code> (and prints so). A frequency times a duration is a number of events, a rate times a duration a probability, and adding one to the other is an error.</li>
+<li><em>Migration</em>: the time between two dates (<code>ss.date(2010) - ss.date(1990)</code>) is <code>ss.days</code> (here <code>ss.days(7305)</code>). <code>ss.days(1) + 1</code> raises, as <code>ss.perday(1) + 1</code> does; <code>float()</code> of a rate or duration is refused (its number is <code>.value</code>). <code>ss.date('2020.5')</code> is an error, since a string with a decimal point could be the middle of the year or May (<code>ss.date(2020.5)</code> is the middle of the year, and <code>ss.date('2020-05')</code> is May). <code>.days</code> of a whole number of days is an int, and <code>ss.days(14).weeks</code> is exactly 2.</li>
+<li><em>Migration</em>: <code>stop=</code> is a time, read as the start is, and the length of the run is <code>dur=</code>, of the sim or an <code>ss.Timeline</code> (<code>ss.Sim(start=2000, dur=10)</code>, a bare number in years in a sim of calendar years and else in the sim’s unit, or <code>start='2020-01-01', dur=ss.days(90)</code>); any two of <code>start=</code>, <code>stop=</code> and <code>dur=</code> define the third (<code>ss.Sim(stop=2035, dur=10)</code> starts in 2025), as in Starsim 3, and all three may be given if they agree, else a <code>ValueError</code> (with a start, Starsim 3 dropped the <code>dur</code>). In a sim with a calendar, <code>stop=ss.years(10)</code> is an error that suggests <code>dur=ss.years(10)</code>. <code>sim.new(stop=)</code> replaces a <code>dur=</code>, and <code>sim.new(dur=)</code> a <code>stop=</code>.</li>
+<li><em>Migration</em>: the options <code>date_sep</code>, <code>time_eps</code> and <code>warn_convert</code> are removed; the step-count warning is <code>ss.options.max_steps</code> (0 turns it off).</li>
+</ul>
+</section>
+<section id="networks" class="level3">
+<h3 class="anchored" data-anchor-id="networks">Networks</h3>
+<ul>
+<li><em>Migration</em>: <code>ss.MFNet</code> (and <code>ss.SexualNetwork</code>) is <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>, between men and women by default; <code>ss.MSMNet</code> is <code>ss.SexualNet(between='mm')</code>, whose defaults are those of <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> (give <code>participation=0.1, dur=ss.lognormal(mean=ss.years(2), std=ss.years(1))</code> for Starsim 3’s). Its name is <code>sexualnet</code> unless given one, so a beta keyed <code>'mf'</code> is keyed <code>'sexual'</code>. <code>dur=</code> (was <code>duration=</code>, also as <code>net.pars.dur</code>); <code>rel_part_rates=</code> is removed (its multiplier goes in <code>participation=</code>). <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> forms partnerships itself; a subclass that forms its own overrides <code>step()</code>.</li>
+<li><em>Migration</em>: <code>ss.RandomExactNet</code> is <code>ss.RandomNet(method='exact')</code>, <code>ss.RandomSafeNet</code> is <code>ss.RandomNet(method='safe')</code> (with <code>n_contacts</code> twice its <code>n_edges</code>), and <code>uniform_targets=True</code> is <code>method='uniform'</code>. <code>ss.RandomNet(dur=)</code> is in the sim’s unit when a bare number, and its contacts last one step by default (Starsim 3’s <code>dur=0</code>).</li>
+<li><em>Migration</em>: <code>ss.StaticNet</code>, <code>ss.ClusterNet</code>, and <code>ss.HybridNet</code> moved to the library (<code>ssl.</code>); <code>ssl.HybridNet</code> makes schools and workplaces clusters by default (<code>clustered=False</code> for random networks) and takes <code>n_contacts=</code> (was <code>contacts=</code>). <code>ssl.ErdosRenyiNet</code> is removed (<code>ssl.StaticNet(p=)</code> is a fixed random graph), <code>ssl.StaticNet</code> keeps a graph it is given as <code>nx_graph</code> (was <a href="../api/internals.graph.html#starsim.internals.graph" title="0"><code>graph</code></a>), and <code>ssl.HouseholdNet(update_freq=)</code> is removed (give the network its own <code>dt=</code>). <code>ss.MaternalNet</code> is <a href="../api/networks.html#starsim.networks.PrenatalNet" title="0"><code>ss.PrenatalNet</code></a> (named <code>prenatalnet</code>, so a beta keyed <code>maternalnet</code> is now <code>prenatalnet</code>).</li>
+<li><em>Migration</em>: who takes part in a network is <code>who=</code>, a condition over people (was <code>age_range=</code>): <code>ss.RandomNet(who=(ss.person.age &gt;= 15) &amp; (ss.person.age &lt; 50))</code>, <code>ssl.ClusterNet(who=)</code>, and <code>net.eligible(who=)</code>. <code>ss.AgeGroup</code> is removed: a group of a mixing pool is a condition on people, e.g.&nbsp;<code>(ss.person.age &gt;= 5) &amp; (ss.person.age &lt; 15)</code>.</li>
+<li><em>Migration</em>: a route takes no <code>beta=</code> (<a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a>, <code>ssl.ClusterNet</code>, <code>ssl.HybridNet</code>, <a href="../api/networks.html#starsim.networks.MixingPool" title="0"><code>ss.MixingPool</code></a>, <a href="../api/networks.html#starsim.networks.MixingPools" title="0"><code>ss.networks.MixingPools</code></a>): a route’s transmissibility is the disease’s, by route (<code>ss.SIS(beta=dict(randomnet=0.05, h=0.15))</code>); <code>ssl.HybridNet</code>’s Covasim weights are <code>ssl.HybridNet.rel_betas</code> (<code>dict(h=3, s=0.6, w=0.6, c=0.3)</code>), and <code>ssl.HybridNet.betas(beta=ss.perday(0.016))</code> is a disease’s beta by layer (<code>ss.SIR(beta=ssl.HybridNet.betas())</code>); <code>ssl.HybridNet(beta=)</code> raises, naming it. <code>ss.MixingPool(diseases=)</code> is removed (a beta of 0 keeps a disease off it). The weight of each edge is <code>weight</code> (was <code>beta</code>: <code>self.append(p1=, p2=, weight=)</code>, <code>net.edges.weight</code>).</li>
+<li><em>Migration</em>: mixing pools take <code>source=</code>/<code>target=</code> (were <code>src=</code>/<code>dst=</code>) and <code>n_contacts=</code> (was <code>contacts=</code>); <code>ss.MixingPools</code> is <a href="../api/networks.html#starsim.networks.MixingPools" title="0"><code>ss.networks.MixingPools</code></a>, and <code>ss.Route</code> is <a href="../api/networks.html#starsim.networks.Route" title="0"><code>ss.networks.Route</code></a>. <code>Network.validate(force=)</code> is removed (it did nothing); <code>net_beta()</code> is called for a disease written as code as <code>net_beta(disease_beta=None, inds=None, disease=None)</code>.</li>
+<li><em>Regression</em>: an edge transmits with probability 1 − (1 − p)^(<code>rel_trans</code>·<code>rel_sus</code>·weight·modifiers), where p is the network’s chance for the step (<code>net_beta()</code>), rather than Starsim 3’s p·<code>rel_trans</code>·<code>rel_sus</code>·weight: every factor scales the hazard, so a contact infects at most once in a step, and an effect gives the same answer whether it is in <code>beta</code>, <code>rel_sus</code>, or a modifier. Results differ from Starsim 3 where a factor is far from 1 and the chance per contact is large; they agree as the chance per step goes to 0. A chance of 1 per contact stays 1 under any factor above 0. As an ODE on a network, each transmission (e.g.&nbsp;a reinfection at a relative risk) saturates by its own rate, and each source state by its own coefficient, as agents do.</li>
+<li><em>Migration</em>: a <code>beta</code> pair on <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> (Starsim 3’s <code>beta={'mf': [m2f, f2m]}</code>) is <code>ss.peract(m2f=..., f2m=...)</code>, a probability per act in each direction (<code>net.directions</code> lists them); a mother-to-child network transmits one way, so a pair <code>[b, 0]</code> on it is <code>b</code>. A beta pair in a declared disease raises.</li>
+</ul>
+</section>
+<section id="demographics-and-pregnancy" class="level3">
+<h3 class="anchored" data-anchor-id="demographics-and-pregnancy">Demographics and pregnancy</h3>
+<ul>
+<li><em>Migration</em>: <code>rate_per=</code> (was <code>rate_units=</code>, now 1000 rather than 1e-3, or 1) and <code>columns=</code> (was <code>metadata=dict(data_cols=...)</code>) on <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a>, <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> and <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a>.</li>
+<li><em>Migration</em>: <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a> is declared (below), with Starsim 3’s arguments, renamed where they were unclear: <code>p_female=</code> (was <code>sex_ratio=</code>, as on <a href="../api/people.html#starsim.people.People" title="0"><code>ss.People</code></a> and <code>ss.birth()</code>), <code>children=</code> (was <code>embryos_per_pregnancy=</code>), <code>loss_rate=</code> (was <code>p_loss=</code>, now a hazard, e.g.&nbsp;<code>ss.probperweek(p)</code>), and <code>preterm=ss.preterm(threshold=, very_threshold=, rel=, by_age=)</code> (were <code>preterm_threshold=</code>, <code>very_preterm_threshold=</code>, <code>rr_ptb=</code>, and <code>rr_ptb_age=</code>); <code>fertility_rate=</code> also takes a table of rates, a place (<code>fertility_rate='Nigeria'</code>), or a function. <code>p_maternal_death=</code> is the chance of a maternal death at delivery (agents only), an <a href="../api/distributions.html#starsim.distributions.bernoulli" title="0"><code>ss.bernoulli</code></a> that can be set during a run (<code>preg.pars.p_maternal_death.set(p=0.002)</code>), as in Starsim 3; the new <code>maternal_death_rate=</code> is the hazard of a maternal death while pregnant, and both can be given (<code>maternal_death=</code> raises, naming the two). Its parameters are named as its keywords (<code>preg.pars.p_maternal_death</code>, <code>preg.pars.preterm.by_age</code>). <code>slot_scale=</code>, <code>min_slots=</code>, <code>p_survive_maternal_death=</code>, and <code>trimesters=</code> are removed, since nothing read them (the gestational age is <code>preg.P.time_in</code>). The old keywords raise, naming the new ones.</li>
+<li><em>Migration</em>: Starsim 3’s pregnancy written as code is removed, with its methods (<code>make_embryos()</code>, <code>process_delivery()</code>, …: a subclass that overrides them does nothing, and the migration script lists them) and its arrays: <code>preg.pregnant</code> is <code>preg.P</code>, <code>ti_pregnant</code> is <code>ti_P</code>, the scheduled delivery <code>ti_delivery</code> is <code>ti_exit_P</code> (fractional: <code>np.ceil(preg.ti_exit_P)</code> is Starsim 3’s step), <code>tri1_uids</code> and the like, <code>gestation</code>, <code>n_miscarriages</code>, <code>n_stillbirths</code>, and <code>carrying_multiple</code> are removed (the gestational age is <code>preg.P.time_in</code>), and <code>preg.breastfeeding</code> is <code>preg.lactating</code>. Its seams are its rates (<code>fertility_rate=</code>, <code>loss_rate=</code>, <code>infant_death_rate=</code>, and <code>conception_rate()</code>), <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> of its transitions, and its events.</li>
+<li><em>Migration</em>: <code>ss.PregnancyPars</code> is removed (<code>ss.Pregnancy().pars</code> has the parameters). <code>add_conception_callback(fn)</code> is <code>preg.add_callback(preg.conception, fn)</code>, and <code>add_delivery_callback(fn)</code> is <code>preg.add_callback(preg.birth, fn)</code>, called with the newborns (their mothers are <code>sim.people.parent[newborns]</code>).</li>
+<li><em>Migration</em>: <code>People.find_children()</code> and the pregnancy’s <code>find_unborn_children()</code> are removed (<code>ss.uids(ppl.auids[np.isin(ppl.parent, parents)])</code>; fetuses as agents are <code>preg.fetal</code>), and <code>ss.parse_age_range()</code> and <code>ss.utils.apply_age_range()</code> moved to STIsim (an age band is a condition, <code>(ppl.age &gt;= 15) &amp; (ppl.age &lt; 25)</code>, or a stratification). <code>People.filter()</code> and <code>ss.Filter</code> are removed (use the states as arrays and conditions, e.g.&nbsp;<code>(ppl.female &amp; (ppl.age &gt; 5)).uids</code>).</li>
+<li><em>Migration</em>: <code>sim.people.get_person(5)</code> (was <code>sim.people.person(5)</code>); <code>ss.Person</code> is <a href="../api/people.html#starsim.people.Person" title="0"><code>ss.people.Person</code></a>. <code>ss.People.age</code> and the like are not conditions: a condition on people written with no people made is <code>ss.person.age &lt; 15</code> (also <code>.female</code>, <code>.alive</code>).</li>
+<li><em>Migration</em>: <code>ssl.mnch.treat_pregnant(disease=, coverage=, who=, when=, growth_reversal=, timing_reversal=)</code> is a delivery (was <code>start_year=</code>, <code>end_year=</code>, and its own probabilities), and <code>ssl.mnch.NeonatalSepsis(p_at_birth=)</code> (was <code>init_prev=</code>, which also infected 30% of the people at the start; now nobody).</li>
+</ul>
+</section>
+<section id="interventions-and-products" class="level3">
+<h3 class="anchored" data-anchor-id="interventions-and-products">Interventions and products</h3>
+<ul>
+<li><em>Migration</em>: Starsim 3’s interventions and products are removed (<code>ss.routine_vx</code>, <code>ss.campaign_vx</code>, <code>ss.simple_vx</code>, <code>ss.routine_screening</code>, <code>ss.campaign_screening</code>, <code>ss.routine_triage</code>, <code>ss.campaign_triage</code>, <code>ss.treat_num</code>, <code>ss.Vx</code>, <code>ss.Dx</code>, <code>ss.Tx</code>, and the base classes <code>ss.RoutineDelivery</code>, <code>ss.CampaignDelivery</code>, <code>ss.BaseTest</code>, <code>ss.BaseScreening</code>, <code>ss.BaseTriage</code>, <code>ss.BaseTreatment</code>, and <code>ss.BaseVaccination</code>). A delivery of a product replaces them: <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a> (below), of the products <code>ss.Vaccine(efficacy=)</code>, <a href="../api/products.html#starsim.products.Diagnostic" title="0"><code>ss.Diagnostic()</code></a>, and <code>ss.Treatment(cure=)</code>. Who is eligible is <code>who=</code> (was <code>eligibility=</code>), and when is <code>when=</code>, <code>start=</code> and <code>stop=</code> (were <code>years=</code>, <code>start_year=</code>, and <code>end_year=</code>): <code>when=['2020']</code> for a campaign, <code>when=ss.schedule(every=ss.years(1), start='2005')</code> for yearly rounds; <code>prob=p</code> is <code>coverage=</code>. A product written as code is a subclass of <a href="../api/products.html#starsim.products.Product" title="0"><code>ss.Product</code></a> with <code>administer(self, uids)</code>, returning its outcomes (e.g.&nbsp;<code>dict(positive=uids)</code>).</li>
+<li><em>Migration</em>: an intervention written as code takes <code>who=</code> (was <code>eligibility=</code>, which raises a <code>TypeError</code> naming <code>who=</code>): a condition on people, a state by its path, or a function of the sim (and of the intervention, as <code>self</code>) returning UIDs or a mask, read as a delivery’s <code>who=</code> is. <code>check_eligibility()</code> still returns the UIDs of those alive it holds for (everyone alive with no <code>who=</code>), and can still be overridden: <code>Isolate(who='flu.I')</code>, then <code>uids = self.check_eligibility()</code> in <code>step()</code>.</li>
+<li><em>Migration</em>: <code>ss.seasonality</code> is removed: <code>ss.modify(dis.rel_trans, multiply=ss.seasonal(amplitude=a, peak=p))</code>, or <code>beta=ss.seasonal(mean=..., amplitude=..., peak=...)</code>.</li>
+<li><em>Migration</em>: <code>ssl.ART(coverage=, who=, when=, art_delay=)</code> is a delivery (was <code>ART(year, coverage)</code>), and <code>ssl.HIV(death_rate=)</code> (was <code>p_death=</code>, a rate).</li>
+</ul>
+</section>
+<section id="calibration" class="level3">
+<h3 class="anchored" data-anchor-id="calibration">Calibration</h3>
+<ul>
+<li><em>Migration</em>: Starsim 3’s calibration is removed (<code>ss.Calibration</code>, <code>ss.CalibComponent</code>, and its likelihoods <code>ss.BetaBinomial</code>, <code>ss.Binomial</code>, <code>ss.DirichletMultinomial</code>, <code>ss.GammaPoisson</code>, and <code>ss.Normal</code>, and <code>linear_interp</code>, <code>linear_accum</code>, and <code>step_containing</code>): give bounds on the parameters (<code>ss.par(0.1, bounds=[0.01, 0.3])</code>), the data on the sim (<code>ss.Sim(..., data=df)</code>, with columns named after results), and call <code>sim.fit()</code> (below). A likelihood is a distribution, by series (<code>sim.fit(likelihood=dict(prevalence=ss.normal(std=0.02)))</code>) or on an <code>ss.outcome()</code>. <code>ss.Samples</code> and <code>ss.Dataset</code> are removed (<code>ss.parallel(sim, n_runs=n)</code> gives the runs). <code>seaborn</code> is no longer installed with Starsim.</li>
+</ul>
+</section>
+<section id="namespace-and-options" class="level3">
+<h3 class="anchored" data-anchor-id="namespace-and-options">Namespace and options</h3>
+<ul>
+<li><em>Migration</em>: internal helpers are in their submodules, not at the top level: <a href="../api/internals.modules.html#starsim.internals.modules.Base" title="0"><code>ss.modules.Base</code></a>, <a href="../api/internals.loop.html#starsim.internals.loop.Loop" title="0"><code>ss.loop.Loop</code></a>, <a href="../api/internals.arrays.html#starsim.internals.arrays.IndexArr" title="0"><code>ss.arrays.IndexArr</code></a> and <code>BaseArr</code>, <a href="../api/internals.modules.html#starsim.internals.modules.module_map" title="0"><code>ss.modules.module_map</code></a>, <code>module_types</code> and <code>find_modules</code>, <a href="../api/results.html#starsim.results.validate_sim_data" title="0"><code>ss.results.validate_sim_data</code></a>, <a href="../api/utils.html#starsim.utils.standardize_data" title="0"><code>ss.utils.standardize_data</code></a> and <code>shrink</code>, <a href="../api/networks.html#starsim.networks.find_contacts" title="0"><code>ss.networks.find_contacts</code></a> and <code>standardize_netkey</code>, <a href="../api/settings.html#starsim.settings.load_fonts" title="0"><code>ss.settings.load_fonts</code></a>, and <a href="../api/internals.debugtools.html#starsim.internals.debugtools.metadata" title="0"><code>ss.debugtools.metadata</code></a>, <code>diff_sims</code>, <code>check_sims_match</code>, <code>Profile</code>, <code>Diagnostics</code>, and the <code>mock_*</code> functions. <code>ss.Debugger</code>, <code>ss.check_version()</code>, <code>ss.check_requires()</code>, and <code>Module.requires</code> are removed. The API index (<code>llms.txt</code>) lists an explicit set of supported names, marking those for extending Starsim.</li>
+<li><em>Migration</em>: <code>import starsim</code> no longer imports <code>starsim.library</code>: <code>import starsim.library as ssl</code>, then <code>ssl.X</code> (was <code>ss.library.X</code>).</li>
+<li><em>Migration</em>: <code>ss.uids.cat()</code> and <code>concat()</code> are <code>concatenate()</code>; <code>Pars.dict_update()</code> and <code>Arr.notnanvals</code> are removed.</li>
+<li><em>Migration</em>: the options <code>license</code>, <code>numba_indexing</code>, <code>check_method_calls</code>, <code>install_fonts</code> and <code>sep</code> are removed, as is <code>ss.options.set(use=)</code>; new options are <code>threads</code> (Starsim’s own threads, for the passes over agents and the particles of a particle filter, <code>STARSIM_THREADS</code>; 0, the default, for as many as Numba has), <code>blas_threads</code> (BLAS’s, <code>STARSIM_BLAS_THREADS</code>), <code>kernels</code> (<code>'auto'</code>, <code>'rust'</code>, <code>'numba'</code> or <code>'python'</code>; <code>STARSIM_KERNELS</code>), <code>jax</code>, <code>keep_times</code>, <code>max_steps</code>, <code>max_years</code>, <code>max_joint</code>, and <code>uncompiled_warning</code>.</li>
+<li><em>Migration</em>: Starsim 4’s errors and warnings: <a href="../api/internals.errors.html#starsim.internals.errors" title="0"><code>ss.errors</code></a> keeps 5 error classes (<code>CapabilityError</code>, <code>AlreadyRunError</code>, <code>DistNotInitializedError</code>, <code>DistSeedRepeatError</code>, <code>BooleanOperationError</code>) and a few warnings (<code>ImportIncomplete</code>, <code>LossyExport</code>, <code>NotConverged</code>, <code>AtBound</code>); every other error is a built-in exception (<code>ValueError</code>, <code>KeyError</code>, <code>TypeError</code>, …). Errors name current spellings only, and “did you mean” lists only the closest names.</li>
+<li><em>Migration</em>: a name of Starsim 3’s that Starsim 4 does not have raises an error saying what replaces it; these are all in <code>ss.v3_deprecations</code>, by class, method, and name. <code>ss.SimPars</code> is defined in <code>starsim/simpars.py</code>.</li>
+</ul>
+</section>
+</section>
+<section id="new-features" class="level2">
+<h2 class="anchored" data-anchor-id="new-features">New features</h2>
+<section id="declared-models-states-and-transitions" class="level3">
+<h3 class="anchored" data-anchor-id="declared-models-states-and-transitions">Declared models: states and transitions</h3>
+<ul>
+<li><a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a> can be built from <code>ss.State</code> and <code>ss.Transition</code> objects, written with operators (<code>S &gt;&gt; I @ beta*I</code>) or explicitly (<code>ss.Transition(S, I, rate=beta*I)</code>, with <code>source=</code>, <code>dest=</code>, <code>rate=</code>, <code>dur=</code>, <code>p=</code>, <code>stages=</code>, <code>who=</code>, <code>when=</code>, <code>move=</code>, <code>increment=</code>, <code>min_stay=</code>, <code>acquisition=</code>, and <code>per_strain=</code>), in four forms that build the same objects: a class with states and transitions in its body, <code>ss.Disease(...)</code> with them as arguments (positionally, as a list, or as <code>transitions=</code>, <code>outcomes=</code> and <code>results=</code>), <code>define_states()</code> and <code>define_transitions()</code> in <code>__init__()</code> (for structure that depends on the arguments, e.g.&nbsp;transitions made in a loop), or <code>ss.Sim(infection, recovery)</code>, which makes one disease whose results are also at the top (<code>sim.results.I</code>).</li>
+<li>States: <code>ss.states('S I R')</code>, <code>ss.states(3)</code>, or <code>ss.states(S=0.99, I=0.01, R=0)</code> with the fraction who start in each; <code>include_sum=True</code> also gives their total (<code>S, I, R, N = ss.states('S I R', include_sum=True)</code>), so that a rate can be written with the fraction, <code>beta*I/N</code>, which is <code>beta*I.frac</code>. A rate is read as written: a bare state (<code>beta*I</code>) is contact, through a network or contact matrix if there is one; <code>beta*I.frac</code> (or <code>beta*I/N</code>) the fraction of people in <code>I</code>; and <code>beta*I.n</code> the number, density-dependent. A contact matrix acts on all three; a network only on contact, so a sim with networks refuses a transmission at a rate on the fraction or number, rather than ignoring them. Transmission at a rate on the fraction or number is a transmission like any other: named <code>infection</code> if it is the only one, with <code>beta</code> as its parameter, and 1% infected at the start by default. The first argument of <code>ss.State</code> is its label (<code>S = ss.State('Susceptible')</code>); its name is taken from the variable or keyword it is given as (<code>name=</code> sets it otherwise), and a state that already has a name, given under a keyword of another name (<code>ss.Disease(..., first=S)</code>), raises rather than being renamed. <code>ss.unborn</code> is where births come from, <code>ss.dead</code> where deaths go, and <code>ss.outside</code> where people arrive from and leave to alive (counted as arrivals and emigrants), and where an amount that is not people comes from or goes to (e.g.&nbsp;shedding, <code>ss.outside &gt;&gt; W</code>). States that no transition connects to the first state (a water reservoir, mosquitoes) are counts, not people, and are real numbers under every solver; their <code>init=</code> can read the number of people (<code>init=dict(Sv=m*N)</code>).</li>
+<li>Where people start is <code>default_state=</code>, a state or its name (<code>default_state=S</code>; in a class, <code>default_state = 'N'</code>), else the state named <code>S</code> or <code>susceptible</code>, else the one state transmission infects people from, else the state nothing moves people into; <code>describe()</code> says when it was guessed. A transmission’s starting values: <code>init_prev=</code> is always a fraction (above 1 raises, pointing to <code>init_n=</code>), <code>init_n=10</code> seeds 10 people through the transmission (a parameter that can be fitted), <code>init=dict(I=0.01)</code> and <code>init_n=dict(I=10)</code> are by state, and given to an instance they replace those of its class. With none, a disease with a transmission seeds 1% (marked as a guess). <code>init_prev=</code> takes a function of the sim (and the agents), or an <code>ss.by</code> over people’s own properties.</li>
+<li>Rates: a rate can be written as the whole flow, as most frameworks write it (<code>S &gt;&gt; I @ beta*S*I/N</code> is <code>beta*I.frac</code>, frequency-dependent; <code>beta*S*I</code> is <code>beta*I.n</code>, density-dependent), and can use NumPy functions of counts (<code>np.clip(0.5*I.frac, 0, 0.02)</code>), comparisons (<code>Q.n &lt; 20</code>), a set of states (<code>Ih/(Ia | Is | Ih)</code>; <code>|</code> and <code>+</code> both mean a set of states), and properties of people (<code>rate=ss.peryear(1)*expit(b0 + b_urban*ss.person.urban)</code>, as agents). In a rate, nothing divided by anything is nothing (the infectious fraction of an empty group is 0). A rate on another disease’s state counts that disease’s state. An incidence in a rate raises an error that says what to write instead.</li>
+<li>Transitions: a duration after <code>@</code> is a time in the state (<code>I &gt;&gt; R @ ss.days(10)</code>), a number given as a duration is the mean of an exponential (<code>describe()</code> marks it), and a distribution is used as given (as Erlang stages in a compartmental run); <code>dur=0</code> is immediate under every solver. A split is a dict of destinations and probabilities (<code>I &gt;&gt; {ss.dead: p_death, R: None} @ dur</code>, <code>None</code> for the rest); each destination has a flow of its own (<code>res.cin.X</code>, also by group), which can be the source of an outcome and a data column. Separate transitions out of a state with <code>p=</code> are branches, decided as people enter it, each with its own duration; <code>p=None</code> marks the one that takes the rest, and branches that don’t sum to 1 without one raise. After <code>@</code>, a dict gives a transition’s keywords (<code>I &gt;&gt; R @ dict(dur=ss.days(8), p=None)</code>). Several sources are a sum or a set (<code>(Ia | Iw) &gt;&gt; R</code>). <code>min_stay=</code> waits for a minimum stay in the source; <code>X.time_in</code> (the time in a state) can be read in a rate or in <code>p=</code> of a split out of it; <code>acquisition=True</code> says outright whether a transition is an acquisition. A transition with no rate, duration, <code>p=</code> or trigger is an error when the disease is built; <code>@ 0</code> is the intentional form (e.g.&nbsp;a cure only a treatment drives). In a class body, a name starting with an underscore is a private intermediate.</li>
+<li>Triggers: <code>ss.Transition(PP, NP, when=ss.on(preg.delivery, delay=ss.months(6)))</code> (of which <code>@ ss.on(...)</code> is the shorthand) moves people when an event happens to them: a transition (<code>tr</code>, <code>tr.to(B)</code>), entering or leaving a state (<code>X.enter</code>, <code>(A | B).exit</code>), or an outcome of a product (<code>when=drug.failed</code>), under every solver. <code>who=</code> restricts any transition to some people. A trigger on an event of a module that isn’t in the sim (e.g.&nbsp;<code>ss.ref('pregnancy.birth')</code> with no <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a>) never fires, with a note.</li>
+<li>Events and memory: every transition, delivery, outcome, product and <a href="../api/interventions.html#starsim.interventions.Event" title="0"><code>ss.Event</code></a> has <code>.ever</code>, <code>.n_times</code>, and <code>.since</code> (<code>who=vx.ever &amp; (vx.since &gt;= ss.months(6))</code>); clocks are <code>X.time_in</code> and <code>X.progress</code>; <code>X.stays</code> is how long each person who has been through a state stayed there (e.g.&nbsp;<code>np.mean(seir.E.stays)</code>). Counters: <code>increment='parity'</code> on transitions, deliveries and transfers. Attributes: <code>ss.attr(dist, when=..., combine='max')</code> (a value per person, set at an event) and <code>ss.lifelong(func)</code> (a value per person for life, e.g.&nbsp;by sex). The times of agents are <code>ss.TimeArr</code> (float32 step numbers, NaN for never, with <code>.years</code>): <code>ti_x.due()</code> gives whose time has come, <code>ti_x.isclose(ti)</code> whose time is at the step nearest <code>ti</code>, and <code>ti_x.eq(t)</code> exact equality, while <code>==</code>, <code>!=</code> and <code>isin()</code> raise, since a time drawn between steps never equals one exactly. A function given as a rate, parameter, condition, coverage, <code>who=</code>, or <code>init_prev=</code> takes any of <code>self</code> (its module), <a href="../api/sim.html#starsim.sim" title="0"><code>sim</code></a>, and <code>uids</code>, by name, as a distribution’s does.</li>
+<li>Conditions: <code>.n</code> of a state or condition is the number it holds for under every solver (<code>(hiv.L | hiv.A).n</code>), with <code>.frac</code> and <code>.total</code> (the whole population, every place); conditions are written against the people and modules themselves (<code>(ss.person.age &gt; 65) &amp; sir.S</code>) and evaluated as the sim runs, or are functions of the sim, and can combine a function with a condition. <code>ss.ref('hiv.I')</code> names a state by its path.</li>
+<li><code>ss.par()</code> is a named parameter with bounds, a prior, a label, a source and a doc (<code>beta = ss.par(ss.perday(0.3), bounds=[0.1, 1])</code>); bounds make it fittable. A value may vary in time (<code>ss.timeseries()</code>, <code>ss.seasonal()</code>), by group (<code>ss.by(age=[...])</code>), or between people (a distribution, which as agents gives each agent their own value). <code>ss.pars()</code> takes such values in place of a rate or duration.</li>
+<li>A declared disease can write any of its transmissions as code: its own <code>transmit(transition)</code> gives who is infected in the step (as agents, UIDs; as compartments, the number in each group), and <code>super().transmit(transition)</code> is what the solver would do. <code>ss.move(sir.I &gt;&gt; sir.R, p=0.5)</code> (also <code>p=</code>, <code>n=</code>, <code>uids=</code>, <code>who=</code>, and <code>disease.move()</code>) is a one-off move from code, the same under every solver.</li>
+<li>A disease with transmission has the results <code>infected</code> (the number in its infected states) and <code>prevalence</code> (their fraction of everyone in its states), unless it defines its own. The infected states are those of the force of infection (<code>E</code> and <code>I</code> in <code>S &gt;&gt; E @ beta*I</code>), or those the model names: <code>ss.State('Severe', infected=True)</code>, <code>ss.states('S E I H R', infected='E I H')</code>, or <code>infected = E + I + H</code>. A disease without transmission (e.g.&nbsp;a staged cancer) has neither unless it says which states are infected. A transition divided by something in a result is its flow (<code>incidence = infection/S</code>), by group too, and <code>ss.outcome()</code> declares reported quantities (with a weight, delay, <code>dur=</code>, reporting period, and likelihood), stratified like the flows they come from.</li>
+<li>Display: <code>describe()</code> (in sections, in color in a terminal, as tables in a notebook) shows each parameter’s bounds, each outcome’s definition, each stratification’s split, distributions as they were given, and in plain words what each transition does and which solver can run it, and why; <code>diagram()</code> draws a Matplotlib figure, with values on the arrows (<code>diagram('text')</code> gives a Mermaid flowchart, which draws itself in a notebook and in Quarto); <code>equations()</code> writes the model, saying what its symbols stand for; <code>sim.diagram()</code> and <code>sim.equations()</code> show every disease of a sim, and how they act on each other. <code>sim.describe()</code> also says what runs where, why a compartmental run is taken a step at a time if it is, and each rate per step (it had <code>verbose=</code>, and <code>sim.kernel_reason()</code> and <code>sim.kernel_only()</code>, which are removed). <code>describe()</code>, <code>equations()</code>, <code>sim.what_modifies()</code>, and <code>sim.check_dt()</code> return text (<code>ss.display.Text</code>) that shows itself; <code>sim.check_dt()</code> says whether the step is too long for the model’s rates.</li>
+<li>Reproduction numbers: <code>disease.R0()</code> (printed when a run starts, with R at the start when people start immune), <code>disease.Rt()</code> (R at each time point of a run, from a run of any solver); density-dependent transmission and vector models have an R0.</li>
+<li>For modules written as code: categorical states (<code>ss.CatArr</code>, read and set by category), schedules (<code>ss.schedule()</code>: dates, a cadence with <code>every=</code>, or a function of the date; a lone duration by position is an error asking for <code>every=</code> or <code>at=</code>, and <code>ss.schedule()</code> with no arguments is due at every step), and <code>on_birth()</code> and <code>on_death()</code> hooks in any module.</li>
+<li><code>ss.Sim(keep_times=True)</code> (or <code>ss.options.keep_times</code>) keeps the times of entering every state for one sim; by default a declared disease run as agents keeps only those it needs.</li>
+</ul>
+</section>
+<section id="solvers" class="level3">
+<h3 class="anchored" data-anchor-id="solvers">Solvers</h3>
+<ul>
+<li><code>ss.Sim(solver=...)</code> runs a declared model as an ODE, a chain binomial, by Gillespie’s method, by tau-leaping, or as agents: <code>ss.solvers.ode()</code>, <code>binomial()</code>, <code>gillespie()</code>, <code>tau()</code>, and <code>abm()</code>, each with only its own options (<code>solver=ss.solvers.ode(integrator='euler', substeps=4, dwells='exact')</code>, <code>ss.solvers.binomial(substeps=1)</code>, <code>ss.solvers.abm(step='wholestep')</code>); a name (<code>solver='ode'</code>) gives that solver with its defaults. The default, <code>'auto'</code>, uses an ODE if every part of the model has a compartmental form, and agents otherwise, and says why (<code>ss.solvers.choose_solver()</code>, <code>ss.solvers.why_not()</code>, and <code>ss.solvers.solver_table()</code>, the one table of rules). <code>sim.solver</code> is the solver that runs (<code>isinstance(sim.solver, ss.solvers.abm)</code>), and <code>sim.pars.solver</code> is <code>'auto'</code> or a solver.</li>
+<li>As agents, <code>ss.solvers.abm(step='midstep')</code> (the default) lets people who arrive in a state during a step face its rates for the rest of it; <code>step='wholestep'</code> takes rates over whole steps, for those in the state at the start of each step, as code with <a href="../api/distributions.html#starsim.distributions.bernoulli" title="0"><code>ss.bernoulli()</code></a> does (faster, a little less exact at a coarse step); and <code>step='events'</code> (a prototype) takes agents event by event in continuous time within each step, exact for values constant within a step, with its own random numbers per agent and a Rust copy. A module’s own solver is <code>ss.Disease(..., solver=ss.solvers.abm(step=...))</code>, and a class can suggest one (<code>suggested_solver = ss.solvers.abm(step='wholestep')</code>), which a sim’s solver that names a step overrides.</li>
+<li>The ODE takes RK4 steps, with substeps where compartments turn over fast, and a step too fast for RK4 by Dormand–Prince 5(4); a fixed delay (<a href="../api/distributions.html#starsim.distributions.constant" title="0"><code>ss.constant</code></a> as a dwell) is a conveyor of whole steps, exact rather than approximate. The chain binomial takes substeps so that about a tenth of a compartment at most leaves in one (<code>substeps=1</code> for whole steps, as discrete-time models are written). Gillespie takes tau leaps when an exact run would take more than about a second, with a note, and places that do not affect each other are always run exactly.</li>
+<li>Every compartmental run is taken by compiled kernels (Numba, or their Rust copy), whole where it can be (<code>sim.describe()</code> says why not); the kernels compile once per install (<code>starsim init compile</code>, or <code>ss.compile()</code>), say so as they start (<code>ss.compile()</code> with one bar of its progress), and <code>require_kernels=True</code> raises rather than falling back to Python. <code>@ss.jit</code> compiles users’ own code with Numba, and raises when it can’t (<code>nopython=False</code> runs it as Python).</li>
+<li><code>approximations='note'</code>, <code>'allow'</code> or <code>'error'</code> says what to do when a solver approximates part of the model (e.g.&nbsp;a non-exponential dwell as Erlang stages, a trait at its mean, a network as homogeneous mixing); the notes are kept in <code>sim.notes</code>.</li>
+<li>Code beside a declared model: an analyzer, a plain <code>ss.Module</code>, a function given as a module, and a declared disease’s own <code>step()</code> run beside the compartments without changing them from an ODE; a function that needs agents says so when it runs, and <code>compartmental = False</code> on a module says it needs agents.</li>
+<li>Code means the same under every solver: <code>people.n</code> (the same as <code>people.alive.n</code>) is the number of people alive (as agents, the people they stand for), as <code>.n</code> of any state is (<code>sir.I.n</code>, and a state of a module written as code too), and <code>sir.I.frac</code>, <code>(sir.I | sir.R).frac</code> and <code>(sir.I &amp; (ss.person.age &lt; 15)).n</code> work as agents as they do as compartments. <code>people.alive.sum()</code> and <code>.count()</code> count agents, so they raise in a compartmental run, naming <code>people.n</code>. <code>len(people)</code> is the number of rows: the agents, or in a compartmental run, the groups.</li>
+<li>Code can add and remove people under every solver: <code>ss.move(sir.I, ss.dead, p=0.1)</code> (or to <code>ss.outside</code>, who leave), and <code>ss.move(ss.unborn, sir.S, n=100)</code> (or from <code>ss.outside</code>, who arrive). They leave or join every disease: as agents, agents die at the end of the step or are made in each other disease’s first state; in a compartmental run, diseases tracked jointly lose and gain the same people, and a disease run apart loses them from its states in proportion, by group (exact on average, since its states do not depend on the others’). Added people are placed in groups as declared births and arrivals are.</li>
+<li><code>ss.Transition(..., noise=)</code> is drawn by tau-leaping (for each leap) and as agents (once a step for each group) too, not only by the chain binomial; only the exact (Gillespie) solver refuses it.</li>
+<li>The class that tracks diseases jointly in a compartmental run is <code>ss.solvers.JointStates</code> (in <code>solvers/joint_states.py</code>; was <code>Crossing</code>, in <code>crossing.py</code>), kept in <code>sim.joint_states</code> (was <code>sim.crossings</code>) and <code>engine.joint</code> (was <code>engine.cross</code>).</li>
+<li><em>Migration</em>: <code>people.n_alive</code> (the number of agents alive) was removed, with an error saying what replaces it: <code>people.n</code>, or <code>people.alive.count()</code> for agents.</li>
+</ul>
+</section>
+<section id="stratification-places-and-mixing" class="level3">
+<h3 class="anchored" data-anchor-id="stratification-places-and-mixing">Stratification, places, and mixing</h3>
+<ul>
+<li><code>sim.stratify(age=[0, 15, 65])</code> (or <code>sir.stratify(...)</code>, or <code>stratify=</code> of <a href="../api/sim.html#starsim.sim.Sim" title="0"><code>ss.Sim</code></a> and <a href="../api/diseases.html#starsim.diseases.Disease" title="0"><code>ss.Disease</code></a>, a dict of dimensions) splits a model into groups by a property of people, with aging between age groups (age edges may be durations), results by group (<code>res.by('age')</code>, <code>res.select(age='0-14')</code>), and values by level (<code>ss.by(risk=[1, 3])</code>, for one or several dimensions, a table, or an array with named axes, with arithmetic). Fractions are the levels as a dict (<code>risk={'low': 0.8, 'high': 0.2}</code>); other options are in <code>ss.levels(levels, states=, who=, kind=, mobility=, fractions=)</code>, e.g.&nbsp;a dimension of some states only, or some groups only. <code>ss.transfer()</code> moves people between levels at a rate or with a duration, and <code>sim.groups</code> holds the groups.</li>
+<li>Contact matrices: <code>ss.contacts(M, ages=[0, 15, 65])</code> for a matrix by age (row <code>i</code> the contacts of a person in group <code>i</code>, as a contact survey has it), <code>ss.contacts(risk=M)</code> for another stratification, <code>ss.contacts(age=A, area=B)</code> for a product of one matrix per stratification, <code>dims=['sex', 'risk']</code> for one matrix over several, and <code>ss.contacts(10)</code> for homogeneous mixing; <code>ss.contacts('Kenya', layer='home')</code> gives a country’s matrices, from Prem et al.&nbsp;(2021), bundled, or Prem et al.&nbsp;(2017) where 2021 lacks the country.</li>
+<li>Places: a stratification by place (<code>sir.stratify(patch=ss.geo.geography(...))</code>) mixes people within each place, with commuting, visiting, or migration between places from a movement model (<a href="../api/geo.html#starsim.geo.gravity" title="0"><code>ss.geo.gravity()</code></a>, <a href="../api/geo.html#starsim.geo.radiation" title="0"><code>ss.geo.radiation()</code></a>, with <code>away=</code> for the fraction of time away) or a matrix (<a href="../api/geo.html#starsim.geo.Mobility" title="0"><code>ss.geo.Mobility()</code></a>), or with the force of infection itself moving between places, as in LASER (<code>kind='force'</code>); <a href="../api/geo.html#starsim.geo.register" title="0"><code>ss.geo.register()</code></a> is a register of people moved between places on given dates, as in SimInf. As agents, a contact matrix, a mixing pool and a random network act within each place. <a href="../api/geo.html#starsim.geo.geography" title="0"><code>ss.geo.geography()</code></a> takes a country and level, a GeoDataFrame, or a <code>.shp</code>, <code>.geojson</code>, or <code>.gpkg</code> file; <code>res.map()</code> draws a result on a map of its places (at given dates, at several times, or as an animation), and <code>geo.plot()</code> draws a geography. Movement can be fitted (<code>ss.geo.Mobility(away=ss.par(...))</code>, and the gravity model’s parameters).</li>
+<li>Diseases tracked jointly: a condition in one disease on a state of another (<code>ss.modify(hiv.rel_trans, multiply=3, who=syph.I)</code>) works in a compartmental run too, with the states of the two tracked jointly, as a dimension of the sim for each (<code>hiv.results.I.by('syph')</code>).</li>
+</ul>
+</section>
+<section id="strains" class="level3">
+<h3 class="anchored" data-anchor-id="strains">Strains</h3>
+<ul>
+<li><code>ss.Disease(strains=ss.Strains(...))</code> gives a disease strains, which people can carry several of at once (<code>max_strains=2</code>, with sets such as <code>'DS+INH'</code>), with <code>fractions=</code> for the fractions seeded; someone who carries several passes on each in proportion to its infectiousness. A transition can change a person’s strains (<code>move=DS &gt;&gt; (DS, RIF)</code>, <code>strains.change()</code>), <code>per_strain='each'</code> gives an outcome for each strain carried and <code>per_strain='first'</code> each strain its own rate, and <code>ss.immunity(due_to=..., protection=..., combine=)</code> gives the protection between strains, including from memory of past strains, under the compartmental solvers too. <code>ss.Delivery(what=S &gt;&gt; E, strain='alpha')</code> imports a strain. Strains with courses of their own are one disease per strain, connected by a connector; <code>ssl.Dengue()</code> is a set of serotypes, with results <code>sim.results.den1</code> and so on.</li>
+<li>A disease written as code can have strains too: <code>ss.AgentDisease(strains=ss.Strains(...))</code> (or <code>define_strains()</code>, or <code>strains=</code> to a subclass that passes its keywords to <code>update_pars()</code>, e.g.&nbsp;<code>ssl.AgentSIR(strains=...)</code>). Each person carries one strain at a time (<code>dis.strain</code>), passed on at each strain’s <code>rel_trans</code> from a source drawn among those who reached them, with protection from <code>ss.immunity(due_to=..., ...)</code> (or the disease’s own <code>strain_sus()</code>), by the same code and random numbers as a declared disease’s strains; <code>strain_value(key, uids)</code> reads a strain’s values, and <code>infect(uids, strain='b')</code> infects with one from code.</li>
+</ul>
+</section>
+<section id="partnerships-and-networks" class="level3">
+<h3 class="anchored" data-anchor-id="partnerships-and-networks">Partnerships and networks</h3>
+<ul>
+<li><a href="../api/networks.html#starsim.networks.DegreeNet" title="0"><code>ss.DegreeNet()</code></a> is a network of partnerships that form and dissolve, described by targets for the number of partners people have at a time (<code>n_contacts</code>, also by level as EpiModel’s nodefactor, <code>concurrency</code>, <code>max_contacts</code>), the fraction of partnerships within a level of each of several properties (<code>match=dict(risk=0.9, region=0.7)</code>), and how long partnerships last, as in EpiModel; <code>net.check()</code> compares the network it makes with the targets. <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> is its subclass, adding debut and participation, so both take the same targets, between men and women, men (<code>between='mm'</code>), or two groups. With <code>acts=</code>, beta is a probability per act (<code>ss.peract</code>), the same at any time step. <code>memory=</code> keeps the partnerships that ended within it, so contact tracing reaches past partners.</li>
+<li><a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> and lasting <a href="../api/networks.html#starsim.networks.DegreeNet" title="0"><code>ss.DegreeNet</code></a> run under the ODE, binomial, and Gillespie solvers by the partnership approximation (close to agents for risk groups with short partnerships, too low with concurrency); <a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a> and other individual-level networks run as homogeneous mixing, each edge transmitting at most once in a step, as it does as agents.</li>
+<li><code>ss.RandomNet(remove_self_loops=, memory=)</code>, <code>ss.RandomNet(n_contacts=0)</code> makes no edges, <code>ssl.StaticNet()</code> with no graph makes its random graph without NetworkX, and the library adds <code>ssl.SmallWorldNet(n_contacts=, rewire=)</code>, <code>ssl.ScaleFreeNet(n_contacts=)</code>, <code>ssl.GridNet</code>, and <code>ssl.GeoNet</code>; <code>ssl.HouseholdNet</code>’s households evolve by default only if the sim has <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a>, so <code>ssl.HouseholdNet(dhs_data='default')</code> works alone. <a href="../api/networks.html#starsim.networks.Network.mean_contacts" title="0"><code>Network.mean_contacts()</code></a>; networks can be given by name (<code>networks=dict(main=..., casual=...)</code>).</li>
+</ul>
+</section>
+<section id="interventions" class="level3">
+<h3 class="anchored" data-anchor-id="interventions">Interventions</h3>
+<ul>
+<li>Deliveries: <a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>, <a href="../api/interventions.html#starsim.interventions.screen" title="0"><code>ss.screen()</code></a>, and <a href="../api/interventions.html#starsim.interventions.treat" title="0"><code>ss.treat()</code></a> (and <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery()</code></a>, for a move or no product) deliver a product to people: in rounds (<code>when=['2020']</code> or <code>when=ss.schedule(every=ss.years(1), start='2005', stop=...)</code>), routinely (with no <code>when=</code>: each person is offered it once, at the first step they are eligible), at an age (<code>who=ss.at_age(ss.months(9))</code>), or on an event (<code>when=sir.infection</code>, <code>when=screening.positive</code>, or <code>when=ss.on(event, delay=...)</code>), within a window if given <code>start=</code> and <code>stop=</code> (shorthand for <code>when=ss.schedule(start=, stop=)</code>, and with any <code>when=</code>, e.g.&nbsp;<code>ss.screen(test, when=onset, start=2001, stop=2010)</code>, Starsim 3’s <code>on=onset, start=2001</code>), to those in <code>who=</code> (a condition, or a function of the sim; one that reads only the time raises, pointing to <code>start=</code> and <code>stop=</code>), with <code>coverage=</code> (a fraction, an <code>ss.by</code>, a typed rate, or a function) and <code>capacity=</code> (a number, a rate, or <code>ss.capacity(n, priority=..., queue=...)</code> for who is served first and whether the rest wait). They make their own product from its keywords (<code>ss.vaccinate(efficacy=0.9, coverage=0.8, when=['2025-02-01'])</code>, <code>ss.treat(cure=0.95, ...)</code>, <code>ss.screen(sensitivity=0.9, ...)</code>), or take one shared by several deliveries. Each runs under every solver.</li>
+<li>Care cascades: a follow-up is a delivery of its own, triggered by an outcome (<code>ss.treat(drug, when=screening.positive)</code>), and runs after it in the same step; a delayed one can be in a cycle of triggers (a test repeated a year after each negative result). <code>trace=</code> delivers to the contacts, in a network, of the people reached (contact tracing, partner notification; agents only), <code>skip_reached_within=</code> skips people reached less than that long ago, <code>strain=</code> imports a strain, and <code>increment=</code> counts the people reached.</li>
+<li>Products: <code>ss.Vaccine(efficacy=, leaky=True)</code> (leaky by default; <code>leaky=False</code> fully protects a fraction), with <code>efficacy=dict(hpv16=0.95, hpv18=0.9)</code> by strain, <code>doses=</code>, waning (<code>waning=</code> a function of the time since delivery, or <code>ss.boxcar(plateau=, decay=)</code>), and <code>vx.held</code> as a condition; <code>ss.Diagnostic(sensitivity=, specificity=, outcomes=dict(high_grade=..., ascus=..., normal=None), result_delay=, detects=)</code>, whose outcomes (<code>positive</code>, <code>negative</code>, and each result) are events; <code>ss.Treatment(cure=, moves=)</code>, where <code>cure=</code> is a probability, a dict by state, or a dict by transition (<code>cure={I + CIN &gt;&gt; S: 0.9}</code>), and <code>moves=</code> moves people along named transitions (often undriven) of one or several diseases. Products act on diseases written as code too (tests detect <code>infected</code>, cures call <code>clear_infection()</code>, vaccines scale <code>rel_sus</code> and <code>rel_trans</code>).</li>
+<li>Events: <code>ss.Event(what=, who=, when=, start=, stop=, n=, p=, strain=, increment=)</code> is something that happens to people (a move between states, on a schedule or when another event happens); <a href="../api/interventions.html#starsim.interventions.Delivery" title="0"><code>ss.Delivery</code></a> is an event with what interventions need.</li>
+</ul>
+</section>
+<section id="modifiers-and-conditions" class="level3">
+<h3 class="anchored" data-anchor-id="modifiers-and-conditions">Modifiers and conditions</h3>
+<ul>
+<li><code>ss.modify(target, multiply=, add=, set=, who=, when=, start=, stop=, until=)</code> changes a named quantity (a parameter, a transition’s rate or one destination’s chance, <code>sir.rel_sus</code>, <code>sir.rel_trans</code>, a network’s contacts, a contact matrix) for everyone or the people in <code>who=</code>, at the times in <code>when=</code> (a schedule, or a time series as its amount: <code>multiply=ss.timeseries({'2020-03-15': 0.5})</code>) or between <code>start=</code> and <code>stop=</code> (<code>ss.modify(school, multiply=0, start=ss.days(200), stop=ss.days(260))</code>; a window given both ways raises), keeping it on for someone for <code>until=</code> once its condition holds; <code>efficacy=</code>, <code>frac=</code> and <code>network=</code> give a method’s use on one route (condoms, microbicides, needle programs). A modifier on a transition chosen with <code>p=</code> changes its probability, the other branches sharing the rest. Modifiers from several modules combine on a base value that none overwrites. <code>sim.what_modifies()</code> lists what acts on a quantity, and <code>current_value()</code> gives a value with its modifiers applied.</li>
+<li><a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> works on modules written as code: on their <code>rel_sus</code> and <code>rel_trans</code>, and on their parameters, which the module reads from <code>self.pars</code> (or <code>self.current_value('x', uids)</code> where it differs between people, listing it in <code>allow_modifiers</code>). A condition can name the arrays of a module written as code (<code>who=hiv.cd4 &lt; 200</code>).</li>
+<li><code>tr.incidence(over=, by=)</code> is a condition on how many went through a transition over a window, as a fraction of the people at the same level of a stratification (MEmilio’s dynamic NPIs). A modifier, change or product that nothing would apply raises when the sim is built.</li>
+</ul>
+</section>
+<section id="demographics" class="level3">
+<h3 class="anchored" data-anchor-id="demographics">Demographics</h3>
+<ul>
+<li>Births, deaths, and migration of everyone are declared once for the population, <code>ss.Sim(demographics=[ss.birth(rate=...), ss.death(rate=...)])</code>, and run under every solver; the same people are born into and die from every disease. A rate of everyone is read as <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> and <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> read theirs (per 1,000 if above 1, else per person), and a place by name (<code>ss.birth(rate='Kenya')</code>) is <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> or <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> with its UN rates. A state’s births and deaths are transitions: <code>ss.birth(state, rate=, when=, children=, p_female=)</code>, <code>ss.death(state, rate=, dur=, lifetable=)</code> (a life table is a death rate for each age band, by each person’s age, under every solver), <code>ss.immigration(state, n=)</code> (a number of people per unit time, at ages like the population’s), <code>ss.emigration()</code>, and <code>ss.migration(rate=)</code> (net migration of everyone at a rate of either sign, e.g.&nbsp;<code>ss.migration(rate='Albania')</code> for the UN’s rates).</li>
+<li><code>ss.Births(birth_rate='Nigeria')</code>, <code>ss.Deaths(death_rate='Nigeria')</code>, and <code>ss.Pregnancy(fertility_rate='Nigeria')</code> read a country’s UN rates (<code>ss.data.rates(place, 'fertility')</code>); tables take <code>AgeGrp</code> or <code>AgeGrpStart</code>, and life tables by year and sex. <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> and <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> note when the data’s years are more than 5 apart during the run.</li>
+<li><a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a> is declared: the states <code>NP</code> and <code>P</code>, with conception, abortion, losses by gestational age, delivery, maternal and infant deaths, preterm births (<a href="../api/demographics.html#starsim.demographics.preterm" title="0"><code>ss.preterm()</code></a>), burn-in, <code>tfr</code> and <code>asfr</code>, parity, lactation (<code>preg.lactating</code>, read by <a href="../api/networks.html#starsim.networks.BreastfeedingNet" title="0"><code>ss.BreastfeedingNet</code></a>), and the events <code>conception</code>, <code>delivery</code>, <code>birth</code>, and <code>loss</code>, under every solver; fetuses are agents when something reads them (<code>fetal_agents='auto'</code>, <code>ss.mother()</code>). <code>ss.mother(cond, include_born=True)</code> reads a condition on the mother of anyone who has one. <a href="../api/networks.html#starsim.networks.PrenatalNet" title="0"><code>ss.PrenatalNet</code></a> and <a href="../api/networks.html#starsim.networks.PostnatalNet" title="0"><code>ss.PostnatalNet</code></a> need an <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a>; it warns when given with <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> or <code>ss.birth()</code>.</li>
+<li>A death has one cause per person, kept in <code>people.cause_of_death</code>.</li>
+</ul>
+</section>
+<section id="results-summaries-and-plots" class="level3">
+<h3 class="anchored" data-anchor-id="results-summaries-and-plots">Results, summaries, and plots</h3>
+<ul>
+<li><code>sim.summarize()</code> and <code>msim.summarize()</code> are tables of each result (over the runs, the median, a 95% interval, the mean, and the standard deviation, by scenario), in sensible units without rounding; <code>msim.summarize(baseline='No intervention')</code> and <code>msim.diff('Baseline')</code> give each scenario’s difference from a baseline, run by run.</li>
+<li><code>res.select(age=[0, 1])</code> sums levels; <code>select(to=, edge=, disease=)</code> holds through <code>take()</code>, medians, quantiles, <code>resample()</code>, and <code>.cum</code>, across runs; <code>res.by(dim)</code> across runs is a result with a column for each level; <code>sim.results.find(name)</code> finds a result however it is spelled (<code>'sis.infection.cum'</code>); <code>sim.results.I</code> finds a result in a sim’s only disease, and <code>msim.results.I</code> in each sim’s one disease.</li>
+<li>Results by group are kept at every step while they fit in about 100 MB a module, and beyond that at coarser periods, with a note (<code>group_results=['I', 'cases']</code> keeps only the named ones). With dynamic rescaling, the people no agent stands for yet are counted (<code>sim.results.unrepresented</code>), so every ratio is of the whole population from the start.</li>
+<li><code>sim.plot()</code> and <code>msim.plot()</code> are drawn by one function: <code>msim.plot()</code> shows the median and a 95% interval of each result for each scenario, each scenario in the same color in every axes; both mark when interventions act (<code>show_interventions=True</code>), match data columns to results as <code>fit()</code> does, and show a flow against data at a longer period as its totals over the data’s periods. Plots return the figure when not shown, plot into a figure given with <code>fig=</code>/<code>ax=</code>, take <code>filename=</code> and <code>log=True</code>, and leave out results that never change; a module’s <code>plot()</code> takes <code>'states'</code>, <code>'flows'</code>, <code>'all'</code>, or names of results.</li>
+<li><code>sim.to_synthetic_data('cases', resample='week')</code> draws data from a run, as Poisson counts, in the form <code>ss.Sim(data=...)</code> takes (<a href="../api/results.html#starsim.results.SimData" title="0"><code>ss.SimData</code></a>).</li>
+<li>A run prints one line saying what it runs (<code>Sim: sir, 10,000 people, as an ODE, days 0 to 100</code>), R0, its notes, a progress bar redrawn in place, and a closing line with the time taken and each disease’s infections and peak; a MultiSim shows its progress. Dates print as <code>2000-01-07</code>.</li>
+</ul>
+</section>
+<section id="fitting-and-inference" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-and-inference">Fitting and inference</h3>
+<ul>
+<li><code>sim.fit()</code> fits every parameter that has bounds (<code>ss.par(..., bounds=)</code>, wherever it is used, including networks, the movement between places, a modifier’s amount, a value per level, typed values, and sim settings such as <code>n_agents</code>) to every result that has data, returning an <code>ss.fitting.Fit</code>. A method’s settings are given with it: <code>method=ss.fitting.method('pmcmc', particles=500, chains=2)</code>, and a list of methods runs staged fitting. Methods: SciPy’s <code>'nelder-mead'</code>, <code>'l-bfgs-b'</code> (with gradients in JAX), <code>'powell'</code>, and <code>'slsqp'</code>; <code>'nuts'</code> (the No-U-Turn sampler, BlackJAX), <code>'pmcmc'</code> (particle MCMC on a stochastic compartmental sim, with <code>ss.fitting.ParticleFilter</code>), <code>'if2'</code> (iterated filtering), <code>'abc-smc'</code> (<code>samples=</code>), and <code>'optuna'</code> (for agents). A fit with likelihoods for every series (on an <code>ss.outcome()</code>, or <code>likelihood=</code>) maximizes the likelihood, fitting the likelihood’s own parameters too; otherwise it minimizes <code>loss=</code>. Some series with a likelihood and some without is an error.</li>
+<li><code>fit.samples</code>, each parameter’s median, 95% interval, R-hat, and effective sample size, <code>fit.diagnostics</code>, <code>fit.plot(residuals=True)</code>, <code>fit.project(scenarios)</code> (runs with the posterior’s draws, each with its own seed), and notes of parameters the data cannot tell apart; <code>ss.fitting.profile(sim, 'beta')</code> gives a profile likelihood, <code>ss.fitting.compare_models()</code> compares models on held-out data, <code>sim.sensitivity()</code> gives partial rank correlations, <code>ss.fitting.loglik()</code> scores a sim that has run, and <code>sim.optimize(ss.fitting.maximize('all_vs', at=2030))</code> (or <code>ss.fitting.minimize()</code>) reallocates spending between programs. <code>ss.parallel(sim, priors=True)</code> draws the parameters from their priors.</li>
+<li>NUTS and particle MCMC draw until the chains agree (R-hat at most 1.01) and every parameter has 400 effective draws (<code>draws='auto'</code>, the default; <code>ess=</code>, <code>rhat=</code>, <code>max_draws=</code>, <code>batch=</code>), rather than a fixed number; a number for <code>draws=</code> takes exactly that many. NUTS learns a dense mass matrix for up to 50 parameters (the correlations between them too, which fitted parameters often have) and warms up for 300 draws. R-hat and the effective sample size are computed in NumPy (matching BlackJAX’s), so they need no JAX.</li>
+<li>Whatever Starsim compiles (Numba’s kernels, JAX’s runs, gradients and samplers, the Rust kernels when built) is said with an estimate of how long it takes, and then how long it took.</li>
+<li>Data by stratum is given in long form, with columns named after dimensions; data at a longer period than the step (weekly cases from a daily model) are compared as totals over the data’s periods.</li>
+<li>From a review of fitting and inference (<a href="https://github.com/starsimhub/starsim/issues/1591">#1591</a>):
+<ul>
+<li>The JAX log-density checks, when it is built, that the numbers it takes as linear in the fitted parameters (initial values, fractions, inflows) are linear, and refuses a model where they are not, rather than fitting an approximation (#1575).</li>
+<li>Optuna scores each trial of a stochastic sim by the particle filter’s log-likelihood (200 particles, <code>particles=</code>) where the filter can run the sim, rather than by the mean log-likelihood of 4 runs; <code>fit.measure</code> says what was minimized; the default number of trials is 50 per fitted parameter, at least 100 (#1578).</li>
+<li><code>method='pmcmc'</code> samples a deterministic sim (an ODE, including one JAX can’t run) by random-walk Metropolis on the exact likelihood, and is the suggested posterior for an ODE without gradients, whose default best fit is L-BFGS-B by finite differences for more than two parameters (#1576).</li>
+<li><code>method='abc-smc'</code> is refused for a deterministic sim, and its convergence is not assessed (<code>fit.converged</code> is None), with the final tolerance, acceptance rate and number of generations reported instead (#1577).</li>
+<li>NUTS chains start from draws of the Laplace approximation (its covariance doubled) at the best optima, and particle MCMC chains from different points of the scan, so that R-hat can see chains that fail to mix (#1581).</li>
+<li>Particle MCMC and ABC-SMC keep a run with each draw (<code>fit.trajectories</code>), which <code>fit.project()</code> continues from the last data point; <code>restart=True</code> runs each draw from the start (#1579).</li>
+<li><code>ss.fitting.compare_models()</code> scores a stochastic model by the mean likelihood of <code>n_runs=</code> runs, not one run (#1580).</li>
+<li><code>ss.fitting.prior_draws()</code> draws from the prior truncated to the bounds, not clipped to them (#1582); ABC-SMC no longer makes 10⁸ seeds up front (#1583); <code>ss.fitting.ParticleFilter</code> restarts a sim that has already run, rather than filtering from its end; fitting a sim with a product’s effect (e.g.&nbsp;<a href="../api/interventions.html#starsim.interventions.vaccinate" title="0"><code>ss.vaccinate()</code></a>) no longer fails when looking for parameters seen only as a product.</li>
+<li><code>ss.Transition(..., noise=sigma)</code>: gamma white noise on a rate (as pomp’s <code>rgammawn</code>), drawn each step by the chain binomial in the kernels, so the particle filter, IF2 and particle MCMC see it; He et al.&nbsp;(2010) runs declared through the built-in filter. The camdl importer translates <code>overdispersed()</code> as <code>noise=</code>, translates events that add people as an inflow, and lists everything else it doesn’t translate (#1587, #1588).</li>
+<li>Data on a flow by period whose last row starts at <code>stop</code> (so its period runs past the end of the run, a sign of data labeled by the period’s end) warn, rather than being dropped silently (#1589).</li>
+<li>Slow developer tests are marked <code>slow</code> (<code>pytest -m slow</code>), replacing <code>STARSIM_SLOW</code>, with a particle-filter test against a brute-force likelihood (#1586); <code>[jax]</code> requires <code>blackjax&gt;=1.7</code> (#1584).</li>
+</ul></li>
+</ul>
+</section>
+<section id="jax-and-gradients" class="level3">
+<h3 class="anchored" data-anchor-id="jax-and-gradients">JAX and gradients</h3>
+<ul>
+<li>An ODE can be run in JAX, which <code>sim.gradient()</code> (derivatives of results with respect to parameters), <code>sim.log_density()</code>, gradient fits, NUTS, and <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> with many sets of values use without being asked; JAX is optional (<code>pip install "starsim[jax]"</code>), with <code>ss.options.jax</code> for the platform (the CPU by default, which runs these long loops of small steps several times faster than a GPU). What JAX compiles is kept for later sessions, in <code>~/.cache/starsim/jax</code>.</li>
+</ul>
+</section>
+<section id="runs-and-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="runs-and-scenarios">Runs and scenarios</h3>
+<ul>
+<li><a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> runs sims with different steps, plotting each on its own time axis; <code>sim.run()</code> on a finished sim runs it again from the start, with any parameters changed since, and <code>sim.restart(pars=, rand_seed=)</code> takes it back to its start; <code>sim.new()</code> is a copy of the sim as it was when <code>init()</code> started, plus the changes given to it (for subclassed sims too, keeping <code>sim.stratify()</code>). Many runs of a compartmental sim are taken in the kernels in one call (<code>ss.parallel(sim, n_runs=)</code>, <code>pars=</code>, <code>priors=</code>), and <code>msim.runs</code> has a <code>rand_seed</code> column.</li>
+</ul>
+</section>
+<section id="importing-and-exporting" class="level3">
+<h3 class="anchored" data-anchor-id="importing-and-exporting">Importing and exporting</h3>
+<ul>
+<li><code>ss.import_from(file)</code> reads a model from EMULSION, odin (odin2 too), SBML, SimInf, flepiMoP, summer2, Atomica (with program books), camdl, EpiModel, epipack, epydemix, epymorph, or MEmilio, by writing it as Starsim code (<code>sim.imported.code</code>) and running it; it prints how each rate was read, and lists what it could not translate (<code>ss.errors.ImportIncomplete</code>, with a ready request for an AI assistant with the <code>convert-model</code> skill in <code>sim.imported.prompt</code>). <code>ss.export_to(sim, 'sbml', 'sir.xml')</code> writes the compartmental form of a sim for each of these frameworks (and Starsim’s own JSON, which <code>ss.import_from('model.json')</code> reads, running no code from the file), listing what the format cannot carry (<code>ss.errors.LossyExport</code>); each has been run in its framework and compared with Starsim’s (<code>ss.converters.tested</code> gives the versions). <code>ss.converters.to_hub(msim)</code> writes a forecast hub submission.</li>
+<li><a href="../api/utils.html#starsim.utils.load" title="0"><code>ss.load()</code></a> and <a href="../api/utils.html#starsim.utils.save" title="0"><code>ss.save()</code></a> are for Starsim’s own objects (<code>sim.save()</code> works with no filename, and after a run under every solver).</li>
+</ul>
+</section>
+<section id="named-data" class="level3">
+<h3 class="anchored" data-anchor-id="named-data">Named data</h3>
+<ul>
+<li><code>ss.population('Kenya', year=2024)</code> gives a country’s population (size, age structure, and sex ratio, from the UN World Population Prospects), for agents or as the size and age split of a compartmental model; <code>ss.geo.geography('Kenya', level=1)</code> gives its administrative units, and <code>ss.contacts('Kenya', layer='home')</code> its contact matrix by age; a US state by name (<code>'United States:Massachusetts'</code>) works too. <a href="../api/data.html#starsim.data.population" title="0"><code>ss.data.population()</code></a> and <a href="../api/data.html#starsim.data.contacts" title="0"><code>ss.data.contacts()</code></a> return dataframes labeled by age group, with the source in <code>.attrs['ref']</code>. These come from <code>starsim_data</code>, installed with Starsim.</li>
+</ul>
+</section>
+<section id="library" class="level3">
+<h3 class="anchored" data-anchor-id="library">Library</h3>
+<ul>
+<li><code>starsim.library</code> (<code>ssl</code>) holds simple models of HIV, cholera, Ebola, measles, malaria, TB, COVID (by age, with MEmilio’s values for Germany), influenza, RSV, pertussis, dengue, typhoid, polio, syphilis, and gonorrhea, mostly declared; maternal and newborn health (<a href="../api/library.mnch.html#starsim.library.mnch" title="0"><code>ssl.mnch</code></a>); more networks; and health economics (<code>ssl.Costs</code>, <code>ssl.DALYs</code>, <code>ssl.discount()</code>, and <code>ssl.ICER</code>). Starsim 3’s SIR, SIS, and SEIR, written as code, are <code>ssl.AgentSIR</code>, <code>ssl.AgentSIS</code>, and <code>ssl.AgentSEIR</code>.</li>
+</ul>
+</section>
+<section id="command-line-ai-skills-and-docs" class="level3">
+<h3 class="anchored" data-anchor-id="command-line-ai-skills-and-docs">Command line, AI skills, and docs</h3>
+<ul>
+<li><code>starsim init</code> sets Starsim up: <code>starsim init compile</code> compiles the kernels ahead of time, <code>starsim init ai</code> (or <code>starsim ai install</code>) links the skills for AI coding agents into the project (<code>--global</code> for a short skill for all projects), and <code>starsim init dev</code> sets up a clone for development. <code>starsim convert model.R</code> converts a model between Starsim and another framework, or between two others (<code>starsim import</code> and <code>starsim export</code> are its shorthands; <code>--ai</code> has an agent do it), <code>starsim help RandomNet</code> prints a docstring or finds the pages that mention a term, and <code>starsim ai "how would I model a leaky vaccine?"</code> asks an AI coding agent. The command starts at once, importing Starsim only when needed. The skills are in <code>starsim/.agents/skills/</code>, installed with Starsim; they replace the <a href="https://github.com/starsimhub/starsim_ai">starsim_ai</a> plugin.</li>
+<li><code>python -m starsim.converters.migrate &lt;path&gt;</code> rewrites Starsim 3 code for Starsim 4 in place (also the code cells of <code>.ipynb</code>, <code>.qmd</code>, and <code>.md</code> files; <code>--check</code> only lists), and lists what needs a person; the migrate-starsim3 skill starts from it.</li>
+<li>Docs: “Starsim 4 in ten minutes”, the migration guide (<code>docs/migration/v3_v4.md</code>), the tutorials and user guide ported to Starsim 4, and a “Coming from” page for each of 13 frameworks; <code>llms.txt</code> lists every tutorial and user guide page, with a summary and a link, and the whole API. Each built-in module’s docstring says whether it keeps common random numbers.</li>
+<li>The test suite is split into the core tests (<code>tests/test_*.py</code>, about 400, under a minute in parallel) and the slower developer tests (<code>tests/devtests/</code>).</li>
+</ul>
+</section>
+</section>
+<section id="changes-that-may-affect-results" class="level2">
+<h2 class="anchored" data-anchor-id="changes-that-may-affect-results">Changes that may affect results</h2>
+<section id="time-and-results" class="level3">
+<h3 class="anchored" data-anchor-id="time-and-results">Time and results</h3>
+<ul>
+<li><em>Regression</em>: each time point is a period (<a href="https://github.com/starsimhub/starsim/issues/1548">#1548</a>: 2020 means the whole of 2020). A step is taken from every time point, the last included, as in Starsim 3, so a sim from 0 to <code>T</code> in steps of 1 has <code>T + 1</code> time points and takes <code>T + 1</code> steps. Row <code>ti</code> of a result is the step from time point <code>ti</code>: a stock (<code>I[ti]</code>) is the state at its start, and a flow (<code>recovery[ti]</code>) the total over it, so <code>R[ti+1] - R[ti] == recovery[ti]</code>. Starsim 3 recorded stocks at the end of the step but labeled them with its start, so Starsim 3’s <code>infected[ti]</code> is Starsim 4’s <code>infected[ti + 1]</code>; <code>infected[0]</code> is now the number before any step, and the state after the last step is not recorded (<code>sim.people</code> is one step past the last row). Flows are as before.</li>
+<li><em>Regression</em>: during step <code>ti</code>, in every module and every phase, <code>sim.ti == ti</code> and <code>sim.now</code> is time point <code>ti</code> (the step’s start, at which it reads inputs that change in time); the first step is <code>ti == 0</code>, as in Starsim 3. Code in a step reads this step’s stocks at <code>[sim.ti]</code> (was <code>[sim.ti - 1]</code>), and the last step’s flows at <code>[sim.ti - 1]</code>. Analyzers run at the end of each step and see the people as at the next time point. <code>sim.started</code> says whether a run has begun.</li>
+<li><em>Regression</em>: a disease written as code dates an infection at the end of its step (<code>self.ti + 1</code>), as a declared disease does, and its seeds by the step before the first (<code>self.ti == -1</code> in <code>init_post()</code>), where Starsim 3 dated them by the first step. <code>ssl.AgentSIR</code>, <code>AgentSIS</code>, <code>AgentSEIR</code> and <code>ssl.HIV</code> set <code>ti_infected</code> from it and schedule each course in whole steps as the agent engine does (rounding at random by each agent’s phase, keeping the mean), so infected agents are counted one step longer than in Starsim 3, an infection lasting one step transmits, and they agree with <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>/<a href="../api/diseases.html#starsim.diseases.SEIR" title="0"><code>ss.SEIR</code></a> run as agents. Infection logs record infections at the end of the step.</li>
+<li><em>Regression</em>: with coarse steps, a model can differ by more than one step: in Starsim 3 a person could pass through several states within one step, each taken for a whole step; in Starsim 4 people infected in a step face the exits of the state they enter from the next step on (unless the exit is immediate), and someone moved by a rate during a step faces half a step of the rates out of the state they arrive in. For tbsim at <code>dt=0.1</code> years, latent TB is 36% higher and active TB 13% higher than in Starsim 3; at <code>dt=0.005</code> they agree.</li>
+<li><em>Regression</em>: <code>res.resample()</code> labels each period by its start (1 January for a year); a flow is summed over the period, a stock takes its value at the start (Starsim 3’s <code>annualize()</code> gave the mean), a ratio is averaged, and a running total (<code>.cum</code>, inclusive) takes its value at the end. Only whole periods are kept (a monthly run from 2000 to 2020 has 20 years), and a sim’s results resampled together are one dataframe of the periods they all have. Data at a time is read as the start of its period, so data dated by the end of each period (“week ending”) needs its dates moved back one period, while data by calendar year is compared with the year it names.</li>
+<li><em>Regression</em>: a result’s <code>scale</code> follows its kind by default (flows and stocks scale with the population, ratios don’t), so a coded <code>prevalence</code> is no longer scaled; a result whose kind is guessed warns. With agents of different weights (<code>people.scale</code>), results are weighted.</li>
+<li><em>Regression</em>: a bare number given as a time is a calendar year from 1800 on (was 1900), for long burn-ins, in a sim with dates as in one with numeric years, and otherwise a time in the sim’s unit counted from 0; one above 1000 and below 1800 warns that it is ambiguous. Whether a sim has a calendar is decided once, from its start. A duration given as a time (<code>when=ss.days(10)</code>, <code>start=ss.days(200)</code>, <code>sim.run(until=ss.years(5))</code>, <code>ss.schedule(every=ss.years(1), start=ss.months(6))</code>) is that long after the sim’s start in a sim with a calendar, as in Starsim 3, and a time on the sim’s axis from 0 in a sim with none; one of 1800 years or more (<code>ss.years(2005)</code>, as in <code>sim.t.tvec</code>) is that calendar year. A periodic <code>ss.timeseries</code> keyed by durations (<code>period=ss.years(1)</code>, e.g.&nbsp;monthly values) is read within each cycle from the sim’s start. A time outside the run is an error, and a time at the stop is applied in the last step. With no start, a bare stop is a year only if the unit is years: <code>ss.Sim(unit='day', stop=3650)</code> runs 3,650 days from 0.</li>
+<li><em>Regression</em>: the unit of a model’s bare numbers comes from the model (<code>unit=</code>, else its typed values, else dates), not from <code>dt</code> or a typed <code>stop</code>; bare numbers alongside typed values in different units raise, asking for <code>unit=</code>, and a sim written only as code honors <code>unit=</code>. A sim whose diseases are all declared counts time from 0 by default; a run in days with no stop lasts 100 days (50 in other units).</li>
+<li><em>Regression</em>: delivery rounds and dates on the step grid are timed by date with a tolerance, so yearly rounds on weekly steps no longer drift, and whole days are added to dates as days.</li>
+</ul>
+</section>
+<section id="diseases" class="level3">
+<h3 class="anchored" data-anchor-id="diseases">Diseases</h3>
+<ul>
+<li><em>Regression</em>: <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>, <a href="../api/diseases.html#starsim.diseases.SIS" title="0"><code>ss.SIS</code></a> and <a href="../api/diseases.html#starsim.diseases.SEIR" title="0"><code>ss.SEIR</code></a> are declared textbook models (exponential <code>dur_inf</code> and <code>dur_exp</code>, <code>p_death=0</code>) with a respiratory infection’s defaults, in days: <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a> has <code>beta=ss.perday(0.3)</code> and <code>dur_inf=ss.days(10)</code> (R0 = 3 without a network; with one, <code>beta</code> is per contact), <a href="../api/diseases.html#starsim.diseases.SEIR" title="0"><code>ss.SEIR</code></a> adds <code>dur_exp=ss.days(3)</code>, and <a href="../api/diseases.html#starsim.diseases.SIS" title="0"><code>ss.SIS</code></a> has <code>beta=ss.perday(0.2)</code> and no waning immunity (R0 = 2). Starsim 3’s were in years (0.1 a year and a lognormal of 6 years for <a href="../api/diseases.html#starsim.diseases.SIR" title="0"><code>ss.SIR</code></a>, with <code>p_death=0.01</code>), and are <code>ssl.AgentSIR</code>, <code>ssl.AgentSIS</code> (with <code>waning=</code> and <code>imm_boost=</code>), and <code>ssl.AgentSEIR</code>. A bare number given to them is in the unit of the model’s typed values, so <code>ss.SIR(beta=0.1, dur_inf=10)</code> is now per day and 10 days; <code>dur_inf=[mean, std]</code> raises; <code>init_prev=</code> is a fraction (Starsim 3’s <code>ss.bernoulli(0.01)</code> is <code>0.01</code>, <code>ss.choose_n(20)</code> is <code>init_n=20</code>); and their results are named after the states (<code>S</code>, <code>I</code>, <code>R</code>, <code>infection</code>, <code>recovery</code>, <code>death</code>, <code>infected</code>, <code>prevalence</code>). <a href="../api/sim.html#starsim.sim.demo" title="0"><code>ss.demo()</code></a> gives its SIR <code>beta=ss.perday(0.03)</code> on its random network. The migration script flags each use.</li>
+<li><em>Regression</em>: in a declared disease, a duration given as a number is the mean of an exponential, as in an ODE, where Starsim 3’s library diseases used a lognormal; give the distribution to keep it. A single value for a distribution’s main parameter (<code>dur_inf=ss.days(10)</code> for a lognormal) keeps its other parameters, and warns when it leaves any that shape it.</li>
+<li><em>Regression</em>: <code>ssl.Measles</code>, <code>ssl.Cholera</code> and <code>ssl.Ebola</code> are declared (any solver, no network needed): <code>beta</code> is a rate per day (per contact on a network), their durations are the distributions they had (approximated by Erlang stages in compartmental runs; a single duration given is an exponential’s mean), each probability a number (<code>p_death=0.005</code>), and their results are by state. An instance takes extra states, transitions, and outcomes beside its class’s (<code>ssl.Measles(cases=ss.outcome(0.5*ssl.Measles.onset))</code>).</li>
+<li><em>Regression</em>: in Starsim 3, <code>beta=0.05</code> was a rate per year but <code>beta={'randomnet': 0.05}</code> a probability per step; in Starsim 4 both are rates per unit time, so a dict copied verbatim is too low by a factor of about <code>1/dt</code> (give <code>ss.prob(0.05, 'month')</code>). A beta for each route may give <code>default=</code> for the routes it does not name.</li>
+<li><em>Regression</em>: the time in a state given to code reads correctly: <code>preg.P.time_in &lt; ss.weeks(13)</code> is a duration in the sim’s unit, NaN outside the state, and a declared disease’s <code>ti_X</code> is the index of the step the move happened in (<code>ti_X == self.ti</code> is “entered this step”).</li>
+<li><em>Regression</em>: <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a> gives women 46 to 49 the 45–49 rate, reads losses per week of pregnancy, applies the relative risk of preterm birth to the preterm fraction, leaves the unborn out of the people counts and out of seeding, loses a pregnancy to a death of another cause, and counts women pregnant at the start in <code>n_pregnancies</code>; <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> no longer applies to fetuses, and the deaths that a module’s <code>on_death()</code> requests (such as the fetuses of a mother who dies) happen in the same step, with their causes; deaths claimed by two modules in a step are counted once, with one cause chosen at random.</li>
+<li><em>Regression</em>: <code>ssl.FetalHealth</code>’s means over a step’s births are NaN on a step with none (they were 0), and the mean of a result over a period leaves out NaN time points.</li>
+</ul>
+</section>
+<section id="demographics-1" class="level3">
+<h3 class="anchored" data-anchor-id="demographics-1">Demographics</h3>
+<ul>
+<li><em>Regression</em>: <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a>, <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a>, and <a href="../api/demographics.html#starsim.demographics.Pregnancy" title="0"><code>ss.Pregnancy</code></a> read a rate as per 1,000 people a year if its typical value (one rate per year, or the median of a table or time series) is above 1, and per person otherwise, whether bare, typed, or a table: <code>ss.Births(birth_rate=20)</code>, <code>ss.peryear(20)</code>, and <code>ss.peryear(0.02)</code> are the same, as are the UN’s death rates by age per person and the same rates times 1,000. So <code>ss.Births(birth_rate=0.02)</code> is per person (in Starsim 3, 0.02 per 1,000); a rate above 1 is per 1,000, as in Starsim 3; <code>rate_per=1000</code> or <code>rate_per=1</code> says which. The defaults are 20, 10, and 100 per 1,000 a year, and the crude birth and death rates (<code>cbr</code>, <code>cmr</code>) are per 1,000 people a year, of the people alive at the start of each step.</li>
+<li><em>Regression</em>: <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> and <a href="../api/demographics.html#starsim.demographics.Deaths" title="0"><code>ss.Deaths</code></a> hold each period’s rate until the next (not the nearest year); <a href="../api/demographics.html#starsim.demographics.Births" title="0"><code>ss.Births</code></a> picks parents from women aged 15 to 49 (Starsim 3 picked them uniformly from everyone alive), and its newborns are placed by each dimension’s split. A newborn’s sex follows the sex drawn at birth; the traits of people made by code with <code>people.grow()</code> and no <code>age=</code> are drawn at the next step, from the age the code set (they were drawn from a default age).</li>
+<li><em>Regression</em>: people age in a model whose births are declared, and age only with births or deaths (or <code>aging=True</code>); with no population given, ages are the world’s.</li>
+</ul>
+</section>
+<section id="networks-and-transmission" class="level3">
+<h3 class="anchored" data-anchor-id="networks-and-transmission">Networks and transmission</h3>
+<ul>
+<li><em>Regression</em>: on a network with acts (<a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a>, Starsim 3’s <code>ss.MFNet</code>), <code>rel_trans</code>, <code>rel_sus</code>, source weights and modifiers multiply the hazard of each act, for a disease written as code as for a declared one (beta 0.03 with <code>rel_trans=10</code> gives 0.263 per act), rather than the chance over all acts; <code>net_beta()</code> is given the scaled chance for each edge. Its acts are a rate (lognormal, mean 80 a year), kept as real acts per step, so results no longer depend on the time step, and a typed rate as beta on such a network raises. Mother-to-child networks transmit one way.</li>
+<li><em>Regression</em>: <a href="../api/networks.html#starsim.networks.SexualNet" title="0"><code>ss.SexualNet</code></a> (Starsim 3’s <code>ss.MFNet</code> and <code>ss.MSMNet</code>) draws the age of debut for anyone who has none on each step (newborns, and people who arrive at any age, who in Starsim 3 never joined), and whether a person takes part when they reach their debut, so a participation probability by age is read at that age (it was drawn at birth); long runs with births have more partnerships. <code>mean_degree</code> and <code>concurrency</code> are per person, no longer multiplied by the population scale. <code>ss.SexualNet(dur=5)</code> (one value) is a mean, with partnerships ending at a constant rate, and a bare number is in the sim’s unit.</li>
+<li><em>Regression</em>: <code>ss.networks.MixingPools(n_contacts=)</code> is read as a contact survey, row <code>i</code> the contacts of a person in target group <code>i</code> (Starsim 3’s was <code>[source, target]</code>: transpose it); a number in it (with or without distributions elsewhere in the matrix) is the same for everyone in the group, as is a number in <code>ssl.HybridNet(n_contacts=)</code>, as in <a href="../api/networks.html#starsim.networks.RandomNet" title="0"><code>ss.RandomNet</code></a> (each was a Poisson mean). <code>ss.networks.MixingPools(n_contacts=ss.poisson(M))</code> gives Starsim 3’s per-person Poisson contacts, with no pool for each pair of groups, as does <code>ss.contacts(ss.poisson(M), ages=[...])</code>, or for a country, <code>ss.contacts(ss.poisson(ss.data.contacts('Kenya')))</code>; a negative number of contacts drawn is an error.</li>
+<li><em>Regression</em>: <a href="../api/networks.html#starsim.networks.MixingPool" title="0"><code>ss.MixingPool</code></a> with a disease written as code multiplies the hazard by the infectious fraction before turning it into a probability, as a declared disease does (it gave 0.33 instead of 0.4 per day for β = 0.4 per day).</li>
+<li><em>Regression</em>: infectious people placed at the start transmit for their whole stay on a network or a mixing pool (they lost the first step, and with a one-step stay never transmitted).</li>
+</ul>
+</section>
+<section id="random-numbers-and-runs" class="level3">
+<h3 class="anchored" data-anchor-id="random-numbers-and-runs">Random numbers and runs</h3>
+<ul>
+<li><em>Regression</em>: as agents, people who arrive by a declared inflow into a state (e.g.&nbsp;<code>ss.immigration(a.I)</code>) are put in that disease’s state only; another disease’s state of the same name (<code>b.I</code>) got them too, rather than its first state.</li>
+<li><em>Regression</em>: as agents, <code>ss.move(..., n=)</code> rounds the number of agents at random (it was to the nearest), so a fraction of an agent each step moves the right number of people on average.</li>
+<li><em>Regression</em>: random draws differ from Starsim 3, so results with a seed agree statistically, not number for number: declared models as agents draw by stream, step, and round of moves, keyed by each transition’s name (<code>STARSIM_CHECK_DRAWS=1</code> checks that no agent is drawn twice from a stream in a round), and each stochastic compartmental run draws from a generator of its own module, in an order set by the names of its states and transitions. Each run of <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> draws from its own seed, and each posterior or prior draw in a sweep is a run with its own seed.</li>
+<li><em>Regression</em>: <code>ss.Sim(even_draws=True)</code> spaces each call’s random numbers evenly for agents, which reduces the variance between runs (about 3 to 10 times in final size for a simple SIR), though outbreaks die out less often than they should and means can shift.</li>
+</ul>
+</section>
+</section>
+<section id="simplification-and-removals" class="level2">
+<h2 class="anchored" data-anchor-id="simplification-and-removals">Simplification and removals</h2>
+<ul>
+<li><em>Migration</em>: one mechanism for each job: <code>sim.new()</code> for a copy with changes (edits to an initialized sim belong to that run), <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> for many sims, <code>sim.fit()</code> for calibration, <a href="../api/connectors.html#starsim.connectors.modify" title="0"><code>ss.modify()</code></a> for changes to a quantity (replacing connectors and interventions that write arrays, which erase what other modules set), and deliveries for interventions. Agents and diseases written as code share one transmission, so the same model written either way gives the same results.</li>
+<li><em>Migration</em>: <code>sim.run()</code> on a finished sim runs it again from the start (Starsim 3 raised <code>AlreadyRunError</code>, which now names <code>sim.new()</code> where a run can’t be repeated), and <code>sim.init()</code> on a sim already initialized returns it.</li>
+<li><code>n_agents=None</code> means not given (the default); <code>n_agents=0</code> raises a clear error. A number of agents that is not whole is rounded to the nearest (it was truncated).</li>
+<li>A module named after its variable keeps that name (<code>sim.&lt;name&gt;</code>, e.g.&nbsp;<code>sim.sir</code>, finds every module), a second module with a default name is numbered (<code>clip_edges_1</code>) with no warning, and a module named like a setting of the sim no longer overwrites it. An unknown keyword to any module names the module, and points to <code>define_pars()</code>; a name that clashes with a method or attribute of the module raises.</li>
+<li><code>sim.current_scale</code> is public, module lists take one level of nesting, and <code>networks=</code> and <code>diseases=</code> accept only networks and diseases.</li>
+<li>Docstrings, notes and error messages no longer mention Starsim 3, outside the migration tools.</li>
+<li><code>pip install starsim</code> includes the compiled Rust kernels on all major platforms; <code>import starsim</code> limits BLAS to one thread (<code>ss.options.blas_threads</code>), no longer imports <code>scipy.stats</code>, and loads fonts once; <code>starsim_data</code> and <code>openpyxl</code> (for Atomica’s workbooks) are installed with Starsim. Until Starsim is compiled, importing it says so (<code>STARSIM_UNCOMPILED_WARNING=0</code> to hide).</li>
+</ul>
+</section>
+<section id="bugfixes-relative-to-starsim-3" class="level2">
+<h2 class="anchored" data-anchor-id="bugfixes-relative-to-starsim-3">Bugfixes relative to Starsim 3</h2>
+<ul>
+<li><code>ss.debugtools.diff_sims(die=True)</code> raises when the keys differ, not only when values do.</li>
+<li>A Poisson draw with a NaN input or a mean too large for exact draws gives NaN (<code>poisson(1e19)</code> gave -2^63); so does the new <a href="../api/distributions.html#starsim.distributions.binom" title="0"><code>ss.binom()</code></a>.</li>
+<li>Several <a href="../api/analyzers.html#starsim.analyzers.infection_log" title="0"><code>ss.infection_log</code></a> analyzers share the infection log (the first to finalize took it from the disease, so the others got None); for a disease with strains, the log has the strain transmitted, and <code>disease.infection_log.to_df(ti=...)</code> gives the entries of one step.</li>
+<li><code>sim.loop.insert()</code> after <code>sim.init()</code> runs the function once per step (it ran twice).</li>
+<li><a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> on a subclassed sim (<code>fp.Sim</code>, <code>sti.Sim</code>, <code>hpv.Sim</code>) rebuilds the subclass, or raises, and settings changed after construction (<code>sim.pars.stop = 30</code>) survive it; it works with diseases and sims subclassed in a script, starts its workers by fork or (once JAX or Numba’s threads have started) forkserver, and runs BLAS on one thread in its workers.</li>
+<li><code>ss.MultiSim(sims)</code> of sims that have run has their results across runs (<code>msim.results</code>) without running them again.</li>
+<li><code>sim.save()</code> works after a run: modules, distributions and networks no longer keep the sim or per-agent arrays, and <code>sim.shrink()</code> measures each module without the sim, other modules, and results (a disease written as code no longer holds the sim after it).</li>
+<li>A bare <code>dt</code> beside calendar-year <code>start</code> and <code>stop</code> is in years, with a warning, when the model’s typed values are in another unit; <a href="../api/distributions.html#starsim.distributions.choice" title="0"><code>ss.choice</code></a> and <a href="../api/distributions.html#starsim.distributions.histogram" title="0"><code>ss.histogram</code></a> take <code>unit=</code>, and <a href="../api/distributions.html#starsim.distributions.choice" title="0"><code>ss.choice</code></a> takes typed values (<code>a=ss.weeks([...])</code>), so either can be a dwell time.</li>
+<li>A distribution with a unit draws in that unit outside a sim (<code>ss.erlang(k=4, mean=ss.days(10)).rvs(1000)</code> is in days), <code>plot_hist()</code> labels its axis with the unit (and works on a distribution not yet initialized), and its repr shows what it was made from.</li>
+<li>A module’s automatic results (<code>ss.BoolState</code>) are counted in one pass, which makes a daily sim of several modules written as code about 2× faster.</li>
+<li>Greek letters render in plots; a plot in a notebook no longer also prints <code>Figure(640x480)</code>; tables show once in a notebook; <code>Timeline.update()</code> takes <code>dur</code>.</li>
+</ul>
+</section>
+<section id="performance-relative-to-starsim-3" class="level2">
+<h2 class="anchored" data-anchor-id="performance-relative-to-starsim-3">Performance relative to Starsim 3</h2>
+<ul>
+<li>The kernels exist in Numba and in Rust (<code>starsim/solvers/rust/</code>), with the same arguments and the same numbers, bit for bit: the passes over agents, the compartmental kernels, the draws, and the small kernels of arrays, networks and distributions. Compiled ahead of time, Rust’s need no compiling on a first run and are as fast as Numba’s or faster; <code>ss.options.kernels='auto'</code> uses them once built, and <code>tests/test_kernel_sets.py</code> checks that the sets agree.</li>
+<li>Large agent-based sims are faster: dead agents are removed without sorting every agent’s ID, <code>arr.true()</code>, <code>arr.false()</code>, and <code>arr.count()</code> read the active agents’ values without gathering them first, the deaths in a step are counted in one pass, deaths from a life table are filed under the step they happen in when drawn, and the passes over the population are split between threads above 200,000 agents (<code>ss.options.threads</code>; the workers of <a href="../api/run.html#starsim.run.parallel" title="0"><code>ss.parallel()</code></a> and of a fit use one). Starsim 3 sims give the same results, no slower.</li>
+<li>Agent-based sims use less memory: <code>people.auids</code> are 32-bit integers (<code>ss.uids</code> keeps 32-bit integers as they are), <code>people.uid</code> takes no memory (a UID is its index), <code>people.slot</code>, <code>people.parent</code>, <code>people.scale</code>, and a disease’s <code>rel_sus</code> and <code>rel_trans</code> take none until something sets them (<code>ss.Arr(shared=True)</code>), a People not yet in a sim holds no arrays per agent, arrays grow by 20% at a time rather than 50%, a declared disease run as agents keeps the time of entering a state only if something reads it, and a distribution no longer keeps the UIDs or slots of its last draw. LASER’s England and Wales model uses about 48 bytes per agent at the peak.</li>
+<li><code>ss.uids</code> set operations skip NumPy’s sort when both sides are sorted with no repeats (<code>&amp;</code> and <code>-</code> 2–26× faster, <code>|</code> 1.3–13×), <code>ss.uids.unique()</code> is 5–10 times faster than <code>np.unique()</code>, <code>Arr</code> arithmetic is 5–13× faster at 100,000 agents, and reading a result is a plain dict lookup.</li>
+<li><code>Dist.rvs()</code> is about twice as fast for a small draw, and checks the parameters of functions of the agents once; <a href="../api/distributions.html#starsim.distributions.histogram" title="0"><code>ss.histogram</code></a> draws through its CDF directly; <a href="../api/distributions.html#starsim.distributions.choice" title="0"><code>ss.choice</code></a> takes a row of <code>p</code> per agent (FPsim’s method choice 27–126 times faster).</li>
+<li>Transmission over a network whose edges have not changed since the last step (e.g.&nbsp;<code>ssl.StaticNet</code>) visits only the edges of the people infectious, or of those susceptible, whichever are fewer (<a href="../api/networks.html#starsim.networks.Network.edge_index" title="0"><code>ss.Network.edge_index()</code></a>), and so does contact tracing, with the same results; networks whose edges last one step no longer remove the dead’s edges each step (1.3–1.4× faster a step at 1M agents with births and deaths).</li>
+<li><a href="../api/people.html#starsim.people.People.age_bins" title="0"><code>People.age_bins()</code></a> works out only the agents who left their age bin; <code>sim.init()</code> no longer walks results, timelines, or the copy of the inputs in its search for distributions and time parameters; <code>msim.to_df()</code> is 17 times faster.</li>
+<li>Declared models run as agents keep pace with the same models written as code: an SIS on a network is within about 5% of the version written as code, STIsim’s six declared diseases take about 1.1 times as long as written as code, and STIsim’s SEIS case takes 3.8 s at 5,000 agents, as with Starsim 3 and STIsim 1.7.</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+// The sidebar's sections: "Expand all" and "Collapse all", and which sections are open, and where the sidebar is scrolled, kept from page to page.
+// Sections listed in `collapsed` start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.querySelector('#quarto-sidebar');
+  const sections = sidebar ? [...sidebar.querySelectorAll('.sidebar-item-section')] : [];
+  if (!sections.length) return;
+  const collapsed = ['Architecture'];
+  const title = (section) => section.querySelector(':scope > .sidebar-item-container .menu-text')?.textContent.trim() ?? '';
+  const path = (section) => { // Its title and those of the sections it is in, so that the same title in two sidebars is not confused
+    const titles = [];
+    for (let s = section; s; s = s.parentElement.closest('.sidebar-item-section')) titles.unshift(title(s));
+    return titles.join(' / ');
+  };
+  const key = 'starsim-sidebar:' + sections.map(title).join('|'); // One per sidebar (user guide, API, ...)
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const setOpen = (section, open) => { // Without Bootstrap's animation
+    section.querySelector(':scope > ul.collapse')?.classList.toggle('show', open);
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.toggle('collapsed', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+  };
+  const isOpen = (section) => section.querySelector(':scope > ul.collapse')?.classList.contains('show') ?? false;
+  const save = (all) => { // all: true or false after "Expand all" or "Collapse all", since the current page's section stays open on screen
+    const state = {};
+    for (const section of sections) state[path(section)] = typeof all === 'boolean' ? all : isOpen(section);
+    localStorage.setItem(key, JSON.stringify(state));
+  };
+
+  // Open each section as it was left (or by default), always with the current page showing
+  for (const section of sections) {
+    const p = path(section);
+    const open = section.querySelector('.sidebar-link.active') ? true : p in saved ? saved[p] : !collapsed.includes(title(section)) && isOpen(section);
+    setOpen(section, open);
+  }
+  sidebar.addEventListener('shown.bs.collapse', () => save());
+  sidebar.addEventListener('hidden.bs.collapse', () => save());
+
+  // Expand all and collapse all
+  const bar = document.createElement('div');
+  bar.className = 'sidebar-expand-all';
+  for (const [text, open] of [['Expand all', true], ['Collapse all', false]]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      for (const section of sections) setOpen(section, open || !!section.querySelector('.sidebar-link.active'));
+      save(open);
+    });
+    bar.append(button);
+  }
+  sidebar.querySelector('.sidebar-menu-container')?.prepend(bar);
+
+  // Where the sidebar was scrolled, if the current page is still in view there
+  const scrollKey = key + ':scroll';
+  const top = Number(sessionStorage.getItem(scrollKey));
+  if (top) {
+    sidebar.scrollTop = top;
+    const active = sidebar.querySelector('.sidebar-link.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), s = sidebar.getBoundingClientRect();
+      if (a.top < s.top || a.bottom > s.bottom) active.scrollIntoView({block: 'center'});
+    }
+  }
+  window.addEventListener('pagehide', () => sessionStorage.setItem(scrollKey, sidebar.scrollTop));
+});
+</script>
+<script>
+// Tabs in a group sync by title (Python, R, Explicit), and Quarto leaves a tabset blank if it has no tab of the title chosen (e.g. Explicit in a tabset of Python and R); show its first tab instead
+function showFirstTabs() {
+  for (const tabset of document.querySelectorAll('.panel-tabset[data-group]')) {
+    const tabs = tabset.querySelectorAll(':scope > .nav-tabs > .nav-item > .nav-link');
+    if (!tabs.length || tabset.querySelector(':scope > .nav-tabs .nav-link.active')) continue;
+    tabs[0].classList.add('active');
+    document.getElementById(tabs[0].getAttribute('aria-controls'))?.classList.add('active');
+  }
+}
+window.addEventListener('pageshow', () => setTimeout(showFirstTabs, 0)); // After Quarto's own pageshow handler, which restores the saved tab (pageshow fires after load)
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.panel-tabset[data-group] .nav-link')) setTimeout(showFirstTabs, 0); // After Quarto's own handler
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var opensNewContext = (link) => {
+        var target = (link.getAttribute("target") || "").toLowerCase();
+        return target !== "" && !["_self", "_parent", "_top"].includes(target);
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+        if (opensNewContext(link)) {
+          describeNewWindow(link);
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0rc4 (2026-11-12).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

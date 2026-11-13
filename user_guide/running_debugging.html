@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Profiling and debugging – Starsim</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../user_guide.qmd#calibration" rel="next">
+<link href="../user_guide/running_branching.html" rel="prev">
+<link href="..//assets/favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0f5ae14c795e24316fbf8ddb40c5959a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-06f5743f0e5683afa6c2760e0cd825ed.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-75bfa209afa5bea2820a722bb1d12033.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3126babb4935b8ae8c4cb6718832b73f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/authorship-1.0.0/authorship.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SVDSQH04EM"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-SVDSQH04EM', { 'anonymize_ip': true});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../assets/styles.css">
+<meta property="og:title" content="Profiling and debugging – Starsim">
+<meta property="og:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta property="og:image" content="https://starsim.org/v4/user_guide/running_debugging_files/figure-html/cell-15-output-1.png">
+<meta property="og:site_name" content="Starsim">
+<meta property="og:image:height" content="940">
+<meta property="og:image:width" content="1324">
+<meta name="twitter:title" content="Profiling and debugging – Starsim">
+<meta name="twitter:description" content="A fast, flexible disease modeling framework, from compartments to agents">
+<meta name="twitter:image" content="https://starsim.org/v4/user_guide/running_debugging_files/figure-html/cell-15-output-1.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/starsim-logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tour.html"> 
+<span class="menu-text">Tour</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../tutorials.html"> 
+<span class="menu-text">Tutorials</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../user_guide.html" aria-current="page"> 
+<span class="menu-text">User guide</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../gallery.html"> 
+<span class="menu-text">Gallery</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../whatsnew.html"> 
+<span class="menu-text">What’s new</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contributing/index.html"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../api/index.html"> 
+<span class="menu-text">API</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/starsimhub/starsim" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+    <a href="mailto:info@starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-envelope-at-fill"></i></a>
+    <a href="https://starsimhub.slack.com" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-slack"></i></a>
+    <a href="https://starsim.org" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-globe"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide.html#running-models">Running models</a></li><li class="breadcrumb-item"><a href="../user_guide/running_debugging.html">Profiling and debugging</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#top" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>Home</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><strong>User guide</strong></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#introduction" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Introduction</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section: Introduction">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_starsim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What is Starsim?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_concepts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conceptual overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/intro_faq.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FAQ</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#building-models" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Building models</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section: Building models">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_writing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writing models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_declared.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What can be declared</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_parameters.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Parameters</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Time</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_stratification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stratification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_outcomes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Results and plotting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_modules.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Custom modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/building_import.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Import/export</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#populations-and-data" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Populations and data</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section: Populations and data">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_people.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">People and demographics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_mixing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mixing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/populations_places.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Places and data</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#interventions-and-analyzers" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Interventions and analyzers</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section: Interventions and analyzers">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_products.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Products</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_interventions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Interventions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_analyzers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyzers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/interventions_connectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Connectors</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#running-models" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Running models</span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section: Running models">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_sim.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running sims</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_scenarios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scenarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_solvers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solvers and backends</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_performance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Speed and scale</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_branching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Branching and rescaling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/running_debugging.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Profiling and debugging</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#calibration" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Calibration</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="Toggle section: Calibration">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting a model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_methods.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fitting methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fit diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_gradients.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gradients</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/calibration_optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Optimization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide/library_index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Library</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section: Library">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_diseases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Diseases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Networks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_mnch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Maternal-child health</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/library_econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Health economics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide.html#mechanics" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Mechanics</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="Toggle section: Mechanics">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_indexing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Array indexing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Distributions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/mechanics_random.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random numbers</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../user_guide/architecture_index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-9-label">Architecture</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false" aria-label="Toggle section: Architecture">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">From declaration to run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../user_guide/architecture_engines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Engines and transmission</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="99">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#errors-and-what-a-run-prints" id="toc-errors-and-what-a-run-prints" class="nav-link active" data-scroll-target="#errors-and-what-a-run-prints">Errors and what a run prints</a></li>
+  <li><a href="#checking-the-model" id="toc-checking-the-model" class="nav-link" data-scroll-target="#checking-the-model">Checking the model</a>
+  <ul>
+  <li><a href="#runs-that-should-match-but-dont" id="toc-runs-that-should-match-but-dont" class="nav-link" data-scroll-target="#runs-that-should-match-but-dont">Runs that should match but don’t</a></li>
+  <li><a href="#checking-the-numbers" id="toc-checking-the-numbers" class="nav-link" data-scroll-target="#checking-the-numbers">Checking the numbers</a></li>
+  <li><a href="#finding-what-changes-a-parameter" id="toc-finding-what-changes-a-parameter" class="nav-link" data-scroll-target="#finding-what-changes-a-parameter">Finding what changes a parameter</a></li>
+  </ul></li>
+  <li><a href="#common-pitfalls" id="toc-common-pitfalls" class="nav-link" data-scroll-target="#common-pitfalls">Common pitfalls</a></li>
+  <li><a href="#looking-inside-a-run" id="toc-looking-inside-a-run" class="nav-link" data-scroll-target="#looking-inside-a-run">Looking inside a run</a></li>
+  <li><a href="#profiling" id="toc-profiling" class="nav-link" data-scroll-target="#profiling">Profiling</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  <li><a href="#appendix-every-diagnostic-tool" id="toc-appendix-every-diagnostic-tool" class="nav-link" data-scroll-target="#appendix-every-diagnostic-tool">Appendix: every diagnostic tool</a></li>
+  <li><a href="#appendix-errors-and-warnings" id="toc-appendix-errors-and-warnings" class="nav-link" data-scroll-target="#appendix-errors-and-warnings">Appendix: errors and warnings</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../user_guide.html#running-models">Running models</a></li><li class="breadcrumb-item"><a href="../user_guide/running_debugging.html">Profiling and debugging</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Profiling and debugging</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="authorship" title="Authorship: Based on the Claude drafts on debugging and on common pitfalls, merged, with profiling and the loop adapted from the Starsim 3 user guide page on profiling and debugging; comparing sims and appendices of tools and errors added by AI; shortened on Nov 11 by AI; revised on Nov 12 by AI after the docs review">🧠8% 🤖92%</div>
+<p>A model can go wrong in three ways: it stops with an error, it runs but gives an answer that looks wrong, or it runs too slowly. This page goes through Starsim’s tools for each, and the mistakes that commonly catch people out.</p>
+<p>Where to look first, by symptom (the sections below cover each in turn):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symptom</th>
+<th>First checks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>An error before the run starts</td>
+<td>The message: it names the parameter, state, or module, and usually what to do</td>
+</tr>
+<tr class="even">
+<td>No epidemic</td>
+<td>R0 in the first lines printed; where the initial infections are (<code>init_prev</code> seeds the first infected state, not necessarily an infectious one); a rate written where a duration was meant</td>
+</tr>
+<tr class="odd">
+<td>An epidemic far too fast or too slow</td>
+<td>Units of rates and durations; β per contact multiplied by a number of contacts; the time step (<code>sim.check_dt()</code>)</td>
+</tr>
+<tr class="even">
+<td>The wrong population size</td>
+<td><code>total_pop</code> and <code>n_agents</code>; births, deaths, and migration; the number of people each agent stands for</td>
+</tr>
+<tr class="odd">
+<td>A fit that looks wrong</td>
+<td>Which result each data column is compared with, and over what period</td>
+</tr>
+<tr class="even">
+<td>Different results from run to run</td>
+<td>The seed, the solver, changes to the model, versions of Starsim</td>
+</tr>
+<tr class="odd">
+<td>A slow run</td>
+<td>The number of agents, steps, and runs; then profiling</td>
+</tr>
+</tbody>
+</table>
+<p>The examples on this page use the measles model from the <a href="../tutorials/t1_intro.html">tutorials</a> (β = 1.9 per day, infectious for 8 days, so R0 ≈ 15):</p>
+<div id="10f1d3c3" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> starsim <span class="im">as</span> ss</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I R'</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I        <span class="co"># β = 1.9 per day</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">8</span>)   <span class="co"># Infectious for 8 days on average</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>measles <span class="op">=</span> ss.<span class="fu">Disease</span>(infection, recovery, <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.001</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sim <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sim.<span class="fu">run</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: measles, 100,000 people, as an ODE, days 0 to 50
+  measles: R0 = 15.2, with 100 infectious at the start
+  Done in 0.0025 s; measles: 99,900 infections; at most 74,112 infectious, on day 6</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Sim(n=100000; 0—50; diseases=measles)</code></pre>
+</div>
+</div>
+<section id="errors-and-what-a-run-prints" class="level2">
+<h2 class="anchored" data-anchor-id="errors-and-what-a-run-prints">Errors and what a run prints</h2>
+<p>When Starsim can’t build or run a model, it raises an error that names what is wrong in the terms of the model, and says what to do about it. Here the parameter β is misspelled:</p>
+<div id="6aad38df" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ss.<span class="fu">Sim</span>(measles, <span class="va">pars</span><span class="op">=</span><span class="bu">dict</span>(<span class="va">betta</span><span class="op">=</span><span class="fl">2.0</span>), <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>)).<span class="fu">run</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">KeyError</span> <span class="im">as</span> error:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(error)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>pars= has a value for "betta", which matches no parameter. Parameters are measles.init_prev, measles.beta, measles.dur_I; did you mean measles.beta?</code></pre>
+</div>
+</div>
+<p>Most errors are Python’s own (<code>KeyError</code>, <code>TypeError</code>, <code>ValueError</code>); the few that code may want to catch by kind, such as <code>ss.CapabilityError</code> (the solver asked for can’t run part of the model), are classes of their own, listed in the <a href="#appendix-errors-and-warnings">appendix</a>. Most mistakes are caught when the sim is built (<code>sim.init()</code>, which <code>sim.run()</code> calls first), so an error usually comes at once rather than after a long run.</p>
+<p>A run prints what it is running and how, the R0 of each disease, any notes, and a closing line with the size and timing of the peak. Read these first: most surprises are explained there. A note is something Starsim assumed or noticed that is worth knowing, and doesn’t stop the run. For example, in an SEIR model, <code>init_prev</code> puts people in E, where a new infection starts, so nobody is infectious at first (to start people infectious, give <code>init=dict(I=0.001)</code> or <code>init_n=dict(I=100)</code>):</p>
+<div id="4b1b03cf" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>S, E, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S E I R'</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> E <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>latency   <span class="op">=</span> E <span class="op">&gt;&gt;</span> I <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">10</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">8</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>seir <span class="op">=</span> ss.<span class="fu">Disease</span>(infection, latency, recovery, <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.001</span>, <span class="va">name</span><span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>seir_sim <span class="op">=</span> ss.<span class="fu">Sim</span>(seir, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">100</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>seir_sim.<span class="fu">run</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: measles, 100,000 people, as an ODE, days 0 to 100
+  measles: R0 = 15.2, with 0 infectious at the start
+  Note: init_prev seeds E of "measles", where a new infection starts, so nobody is infectious at the start; to seed infectious people, use init=dict(I=...) (a fraction) or init_n= (a number)
+  Done in 0.0034 s; measles: 99,900 infections; at most 29,177 infectious, on day 33</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>Sim(n=100000; 0—100; diseases=measles)</code></pre>
+</div>
+</div>
+<p>The notes are kept in <code>sim.notes</code>, even when nothing is printed (<code>verbose=0</code>):</p>
+<div id="0d309a00" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>seir_sim.notes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>["unit='day' (from the typed values in the model)",
+ 'init_prev seeds E of "measles", where a new infection starts, so nobody is infectious at the start; to seed infectious people, use init=dict(I=...) (a fraction) or init_n= (a number)']</code></pre>
+</div>
+</div>
+<p>Some messages are warnings rather than notes: the run continues, but something probably needs attention (for example, a fitted parameter that ended at one of its bounds). To stop at the first warning instead, so that a script can’t carry on past one unnoticed, turn warnings into errors:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ss.<span class="fu">options</span>(<span class="va">warnings</span><span class="op">=</span><span class="st">'error'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="checking-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="checking-the-model">Checking the model</h2>
+<p>Starsim fills in whatever a model leaves out: the population size, the distribution of each duration, how people mix, the unit of time, and which solver to use. <code>describe()</code> lists the whole model as it was built, with each value that Starsim chose itself marked as guessed. If a result looks wrong, check here that the model is the one you meant:</p>
+<div id="5573e43a" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sim.<span class="fu">describe</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div style="font-size:0.9em; line-height:1.35">
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Sim <span style="opacity:0.6">1 module, 100,000 people, days 0 to 50</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">solver</td>
+<td style="text-align: left; padding: 0 1em 0 0;">ode</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: every part of the model has a compartmental form</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">unit</td>
+<td style="text-align: left; padding: 0 1em 0 0;">day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">from the typed values in the model</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Disease 'measles' <span style="opacity:0.6">3 states, 2 transitions</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">states</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, I, R</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">I infectious</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">init: init_prev = 0.001; the rest in S</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">infection</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S -&gt; I transmission, from I</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">beta = 1.9 per day</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">rate = 1.9 × I.n / N</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">homogeneous mixing</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">recovery</td>
+<td style="text-align: left; padding: 0 1em 0 0;">I -&gt; R spontaneous</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;"></td>
+<td style="text-align: left; padding: 0 1em 0 0;">time in I ~ exponential(mean = 8 days)</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: scalar duration</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Mixing and interventions</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">mixing</td>
+<td style="text-align: left; padding: 0 1em 0 0;">homogeneous, 1 contact per day</td>
+<td style="text-align: left;"><span style="opacity:0.6; font-style:italic">guessed: no network given</span></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Results and running</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">results</td>
+<td style="text-align: left; padding: 0 1em 0 0;">S, I, R, and one flow per transition; also infected, prevalence</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">plan</td>
+<td style="text-align: left; padding: 0 1em 0 0;">measles: as compiled code, the whole run in one call</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">schedule</td>
+<td style="text-align: left; padding: 0 1em 0 0;">every day: measles</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Notes</div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">note</td>
+<td style="text-align: left; padding: 0 1em 0 0;">unit='day' (from the typed values in the model)</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+<div style="font-weight:bold; margin:0.8em 0 0.2em 0">Per step of measles <span style="opacity:0.6">1 day</span></div>
+
+<table class="caption-top table table-sm table-striped small">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">infection</td>
+<td style="text-align: left; padding: 0 1em 0 0;">beta = 1.9 per day → 1.9 per step</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left; padding: 0 1em 0 0; font-weight: bold; vertical-align: top;">recovery</td>
+<td style="text-align: left; padding: 0 1em 0 0;">rate 0.125 per day → p = 1 - exp(-0.125 × 1) = 0.1175 per step</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><code>equations()</code> gives the same model as the equations of an ODE, which is often the quickest way to check that each rate is what you meant (for example, that a transmission is frequency-dependent, β S I / N, and not density-dependent, β S I):</p>
+<div id="a4014b32" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>measles.<span class="fu">equations</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>dS/dt = -beta * S * I / N
+dI/dt =  beta * S * I / N - I / dur_I
+dR/dt =  I / dur_I</code></pre>
+</div>
+</div>
+<section id="runs-that-should-match-but-dont" class="level3">
+<h3 class="anchored" data-anchor-id="runs-that-should-match-but-dont">Runs that should match but don’t</h3>
+<p>When two sims that should agree don’t, compare what each says about itself: <code>describe()</code> gives the text of each (a string), and a diff of the two shows only the lines where their states, transitions, parameters, and settings differ. Here a second sim has a lower β and a shorter step:</p>
+<div id="0cc6175f" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> difflib</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I R'</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>infection <span class="op">=</span> S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">1.5</span><span class="op">*</span>I</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>recovery  <span class="op">=</span> I <span class="op">&gt;&gt;</span> R <span class="op">@</span> ss.<span class="fu">days</span>(<span class="dv">8</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>other <span class="op">=</span> ss.<span class="fu">Disease</span>(infection, recovery, <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.001</span>, <span class="va">name</span><span class="op">=</span><span class="st">'measles'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>other_sim <span class="op">=</span> ss.<span class="fu">Sim</span>(other, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">dt</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="fl">0.5</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>before <span class="op">=</span> sim.<span class="fu">describe</span>().<span class="fu">splitlines</span>()</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>after <span class="op">=</span> other_sim.<span class="fu">describe</span>().<span class="fu">splitlines</span>()</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.<span class="fu">join</span>(difflib.<span class="fu">unified_diff</span>(before, after, <span class="st">'sim'</span>, <span class="st">'other_sim'</span>, <span class="va">lineterm</span><span class="op">=</span><span class="st">''</span>, <span class="va">n</span><span class="op">=</span><span class="dv">0</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- sim
++++ other_sim
+@@ -11,2 +11,2 @@
+-               beta = 1.9 per day
+-               rate = 1.9 × I.n / N                            [homogeneous mixing]
++               beta = 1.5 per day
++               rate = 1.5 × I.n / N                            [homogeneous mixing]
+@@ -22 +22 @@
+-  schedule     every day: measles
++  schedule     every 0.5 days: measles
+@@ -27,3 +27,3 @@
+-Per step of measles: 1 day
+-  infection    beta = 1.9 per day → 1.9 per step
+-  recovery     rate 0.125 per day → p = 1 - exp(-0.125 × 1) = 0.1175 per step
++Per step of measles: 0.5 days
++  infection    beta = 1.5 per day → 0.75 per step
++  recovery     rate 0.125 per day → p = 1 - exp(-0.125 × 0.5) = 0.0606 per step</code></pre>
+</div>
+</div>
+<p>The lines marked <code>-</code> are the first sim’s and those marked <code>+</code> the second’s. To compare the results of two runs, <a href="../api/internals.debugtools.html#starsim.internals.debugtools.diff_sims" title="0"><code>ss.debugtools.diff_sims()</code></a> lists each summary result that differs, with the ratio of the two, and <a href="../api/internals.debugtools.html#starsim.internals.debugtools.check_sims_match" title="0"><code>ss.debugtools.check_sims_match()</code></a> gives True if every result matches (see <a href="../api/internals.debugtools.html">debugtools</a>):</p>
+<div id="952240ff" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>other_sim.<span class="fu">run</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ss.debugtools.<span class="fu">diff_sims</span>(sim, other_sim)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+The following values differ between the two simulations:
+                         sim1       sim2    diff   ratio change
+measles_S               0.026      0.642   0.615  24.437   ↑↑↑↑
+measles_I             317.166    368.459  51.294   1.162     ↑↑
+measles_R           99682.808  99630.899 -51.909   0.999      ≈
+measles_recovery    99720.076  99653.223 -66.853   0.999      ≈
+measles_infected      317.166    368.459  51.294   1.162     ↑↑
+measles_prevalence      0.156      0.158   0.001   1.009      ↑</code></pre>
+</div>
+</div>
+<p>Where two runs of what should be the same model differ only from some step on (after a change to code written as a module, say), <code>sim.set_diagnostics()</code> before the run records every random draw and every agent’s states at every step, in <code>sim.diagnostics</code>, so the step where the two runs diverge can be found. It slows the run a great deal, so use it on a small sim.</p>
+</section>
+<section id="checking-the-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="checking-the-numbers">Checking the numbers</h3>
+<p>A few numbers can be checked by hand. The run prints R0, which for an SIR is β × the infectious period; if it is far from what you expected, a rate or a duration is wrong, often in its units (see <a href="#common-pitfalls">Common pitfalls</a>). Another check is to run the same model in another way, such as agents against the ODE: a large difference that doesn’t shrink with more agents points to the time step, or to something only one of them does (<a href="../user_guide/running_solvers.html#when-they-disagree">Solvers and backends</a> says when to expect them to differ). For the time step, <code>sim.check_dt()</code> runs the model with its step and with one half as long, and shows the largest difference in each result at any time, as a fraction of the result’s largest value:</p>
+<div id="0abfeb40" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>agent_sim <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">n_agents</span><span class="op">=</span><span class="dv">20_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>agent_sim.<span class="fu">check_dt</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>Change in each result when the timestep goes from 1 to 0.5 days (largest difference, as a fraction of the largest value):
+  measles.infection             64.1%   (peak 5365 → 6500)
+  measles.recovery              55.5%   (peak 1677 → 1789)
+  measles.prevalence            38.7%   (peak 0.7844 → 0.7603)
+  measles.I                     38.7%   (peak 15688 → 15206)
+  measles.infected              38.7%   (peak 15688 → 15206)
+  measles.S                     34.3%   (peak 19980 → 19980)
+  measles.R                     14.2%   (peak 19884 → 19909)</code></pre>
+</div>
+</div>
+<p>If the result you care about changes by more than a few percent, use a smaller step (<code>dt=ss.days(0.5)</code>) and check again. For a stochastic run, part of each change is chance.</p>
+</section>
+<section id="finding-what-changes-a-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="finding-what-changes-a-parameter">Finding what changes a parameter</h3>
+<p>Interventions and connectors change parameters while the model runs. When a parameter doesn’t seem to have the value you expect, <code>sim.what_modifies()</code> lists everything that changes it:</p>
+<div id="44b6e0c6" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>masks <span class="op">=</span> ss.<span class="fu">modify</span>(measles.pars.beta, <span class="va">multiply</span><span class="op">=</span><span class="fl">0.6</span>, <span class="va">start</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">10</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>masked <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">interventions</span><span class="op">=</span>masks, <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>masked.<span class="fu">what_modifies</span>(measles.pars.beta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>measles.pars.beta
+  modifiers
+    masks            multiply=0.6   when=ss.schedule(start=days(10))</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="common-pitfalls" class="level2">
+<h2 class="anchored" data-anchor-id="common-pitfalls">Common pitfalls</h2>
+<p>These are mistakes that have caught people out. Most don’t raise an error: the model runs and gives a wrong answer, though Starsim prints a note for many of them. The commonest is a number after <code>@</code>, which is a rate, not a duration: <code>I &gt;&gt; R @ 8</code> means leaving I at a rate of 8 per day (after an eighth of a day on average), not after 8 days. Starsim notes a duration shorter than the step, which is almost always this:</p>
+<div id="889ec70b" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>S, I, R <span class="op">=</span> ss.<span class="fu">states</span>(<span class="st">'S I R'</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>wrong <span class="op">=</span> ss.<span class="fu">Disease</span>(S <span class="op">&gt;&gt;</span> I <span class="op">@</span> <span class="fl">1.9</span><span class="op">*</span>I, I <span class="op">&gt;&gt;</span> R <span class="op">@</span> <span class="dv">8</span>, <span class="va">init_prev</span><span class="op">=</span><span class="fl">0.001</span>, <span class="va">name</span><span class="op">=</span><span class="st">'measles'</span>) <span class="co"># Meant: ss.days(8)</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>ss.<span class="fu">Sim</span>(wrong, <span class="va">total_pop</span><span class="op">=</span><span class="dv">100_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>)).<span class="fu">run</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sim: measles, 100,000 people, as an ODE, days 0 to 50
+  measles: R0 = 0.238, with 100 infectious at the start
+  Note: unit='day' (from start and stop)
+  Note: I_to_R has a mean dwell of 0.12 days, shorter than the step; a duration is written dur=, or ss.days(10)
+  Done in 0.0015 s; measles: 31 infections; at most 100 infectious, on day 0</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>Sim(n=100000; 0—50; diseases=measles)</code></pre>
+</div>
+</div>
+<p>R0 comes out at 0.24 instead of 15. Give a duration with its unit (<code>ss.days(8)</code>), or as <code>dur=</code> in <code>ss.Transition(I, R, dur=ss.days(8))</code>. The others, each covered in full on its own page:</p>
+<ul>
+<li><strong>A plain number is in the sim’s unit of time.</strong> If the model’s unit is days, <code>stop=2</code>, meant as two years, is two days. Give times with their units or as dates (<a href="../user_guide/building_time.html#units">Time</a>).</li>
+<li><strong>A number as a time is a calendar year if the sim has a calendar.</strong> With <code>start='2025-01-01'</code>, <code>when=2026</code> is the start of 2026, whatever the unit; with <code>start=0</code>, it is 2026 units from 0. A time outside the sim is an error that says how it was read (<a href="../user_guide/building_time.html#on-the-philosophy-of-time">Time</a>).</li>
+<li><strong>A rate times a duration is not a rate.</strong> The product itself is fine: <code>ss.peryear(0.1)*ss.days(3)</code> is a plain number, the chance of an event over 3 days. Using it as the rate of a transition raises a <code>TypeError</code> that shows the product and asks for the rate itself (<a href="../user_guide/building_time.html#rates-probabilities-and-durations">Time</a>).</li>
+<li><strong>An ODE always takes off.</strong> With R0 above 1 it takes off from any number infected, while a real outbreak started by a few cases often dies out by chance; for the chance of an outbreak, run a stochastic solver many times (<a href="../user_guide/running_solvers.html#whether-an-outbreak-takes-off">Solvers and backends</a>).</li>
+<li><strong>The median of many runs can hide that some died out.</strong> When some runs die out and the rest take off, the median or mean describes neither; count the runs with an outbreak, and summarize those (<a href="../user_guide/running_scenarios.html#reading-many-runs">Scenarios</a>).</li>
+<li><strong><code>n_agents=</code> runs the model as agents.</strong> To set the size of a compartmental model, use <code>total_pop=</code> (<a href="../user_guide/running_sim.html#what-a-sim-takes">Running sims</a>).</li>
+<li><strong>With contacts, β is per contact.</strong> Adding a network or contact matrix multiplies R0 by about the number of contacts, so scale β down to keep the same R0; the sim prints the new R0 (<a href="../user_guide/populations_mixing.html#pitfalls">Mixing</a>).</li>
+<li><strong><code>stratify()</code> changes the disease itself.</strong> Stratifying the same disease again in another way is an error; build the disease again each time (<a href="../user_guide/building_stratification.html#pitfalls-and-further-reading">Stratification</a>).</li>
+<li><strong>Vaccines are leaky unless told otherwise.</strong> <code>efficacy=0.9</code> reduces everyone’s chance of infection by 90%; <code>leaky=False</code> fully protects 90% instead, which for a fast disease such as measles gives far fewer infections (<a href="../user_guide/interventions_products.html#vaccines">Products</a>).</li>
+<li><strong>Data is matched to results by name.</strong> A column called <code>reported</code> is not compared with the result <code>cases</code> (Starsim notes it, and <code>sim.fit()</code> stops); rename it, or use <code>ss.SimData(data, aliases=dict(cases='reported'))</code> (<a href="../user_guide/calibration_fitting.html#the-data">Fitting a model</a>).</li>
+<li><strong>Counts over a period are compared with totals over the same period.</strong> Infections are summed between data points, while the number infectious is compared at each; check which kind each column is (<a href="../user_guide/calibration_fitting.html#the-data">Fitting a model</a>).</li>
+<li><strong>A method that forgot to call <code>super()</code>.</strong> A module written as code that overrides <code>init_pre()</code>, <code>init_post()</code>, <code>finish_step()</code>, and the like without calling the base class’s version leaves part of it unset; Starsim warns at the end of the run (<a href="../user_guide/building_modules.html#pitfalls">Custom modules</a>).</li>
+<li><strong><code>len(sim.people)</code> still counts those who died this step.</strong> For a fraction worked out in an analyzer, use <code>sim.people.n</code>, the number alive.</li>
+<li><strong>A date between two steps never equals <code>sim.now</code>.</strong> <code>if sim.now == ss.date('2025-03-01')</code> with weekly steps does nothing; compare with <code>&gt;=</code>, or give the module <code>start=</code>.</li>
+</ul>
+<p>More are in the pitfalls of <a href="../user_guide/building_modules.html#pitfalls">Custom modules</a> and <a href="../user_guide/interventions_interventions.html#pitfalls">Interventions</a>.</p>
+</section>
+<section id="looking-inside-a-run" class="level2">
+<h2 class="anchored" data-anchor-id="looking-inside-a-run">Looking inside a run</h2>
+<p>To look at a run partway through, <code>sim.run(until=...)</code> stops after the step that starts at that time, with the people and their states as they are at its end (<code>sim.people.to_df()</code>); a later <code>sim.run()</code> carries on (see <a href="../user_guide/running_sim.html#running-part-of-the-way">Running sims</a>).</p>
+<p>A model run as agents, or one with modules written as code, is run one step at a time, and within each step the modules are run in a fixed order: the loop. When a sim does something it shouldn’t, or doesn’t do something it should, <code>sim.loop</code> is your friend. <code>sim.loop.to_df()</code> lists every call in it, in order, for the whole run; the first rows are the first step:</p>
+<div id="f92668e7" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>agent_sim.<span class="fu">run</span>()</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>agent_sim.loop.<span class="fu">to_df</span>().<span class="fu">head</span>(<span class="dv">13</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">time</th>
+<th data-quarto-table-cell-role="th">ti</th>
+<th data-quarto-table-cell-role="th">func_order</th>
+<th data-quarto-table-cell-role="th">label</th>
+<th data-quarto-table-cell-role="th">module</th>
+<th data-quarto-table-cell-role="th">func_name</th>
+<th data-quarto-table-cell-role="th">cpu_time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.0</td>
+<td>0</td>
+<td>1</td>
+<td>sim.start_step</td>
+<td>sim</td>
+<td>start_step</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.0</td>
+<td>0</td>
+<td>2</td>
+<td>measles.start_step</td>
+<td>measles</td>
+<td>start_step</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.0</td>
+<td>0</td>
+<td>3</td>
+<td>people.record_states</td>
+<td>people</td>
+<td>record_states</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.0</td>
+<td>0</td>
+<td>4</td>
+<td>measles.record_states</td>
+<td>measles</td>
+<td>record_states</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.0</td>
+<td>0</td>
+<td>5</td>
+<td>measles.step_state</td>
+<td>measles</td>
+<td>step_state</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>0.0</td>
+<td>0</td>
+<td>6</td>
+<td>measles.step</td>
+<td>measles</td>
+<td>step</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>0.0</td>
+<td>0</td>
+<td>7</td>
+<td>people.step_die</td>
+<td>people</td>
+<td>step_die</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0.0</td>
+<td>0</td>
+<td>8</td>
+<td>people.record_events</td>
+<td>people</td>
+<td>record_events</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.0</td>
+<td>0</td>
+<td>9</td>
+<td>measles.record_events</td>
+<td>measles</td>
+<td>record_events</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>0.0</td>
+<td>0</td>
+<td>10</td>
+<td>measles.finish_step</td>
+<td>measles</td>
+<td>finish_step</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.0</td>
+<td>0</td>
+<td>11</td>
+<td>people.finish_step</td>
+<td>people</td>
+<td>finish_step</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>0.0</td>
+<td>0</td>
+<td>12</td>
+<td>sim.finish_step</td>
+<td>sim</td>
+<td>finish_step</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>1.0</td>
+<td>1</td>
+<td>0</td>
+<td>sim.advance</td>
+<td>sim</td>
+<td>advance</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>To see what happens during a run, a function of the sim can be inserted into the loop, after (or, with <code>before=True</code>, before) any call in it. Here it prints the number infectious every ten days, just after the disease has taken its step:</p>
+<div id="0340d749" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> <span class="fu">show_infectious</span>(sim):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sim.ti <span class="op">%</span> <span class="dv">10</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'Day'</span>, sim.ti, <span class="st">'infectious:'</span>, sim.diseases.measles.I.<span class="bu">sum</span>())</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>probed <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">n_agents</span><span class="op">=</span><span class="dv">20_000</span>, <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>probed.<span class="fu">init</span>()</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>probed.loop.<span class="fu">insert</span>(show_infectious, <span class="va">label</span><span class="op">=</span><span class="st">'measles.step'</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>probed.<span class="fu">run</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Day 0 infectious: 46
+Day 10 infectious: 13552
+Day 20 infectious: 3951
+Day 30 infectious: 1162
+Day 40 infectious: 307
+Day 50 infectious: 102</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>Sim(n=20000; 0—50; diseases=measles)</code></pre>
+</div>
+</div>
+<p>A function given as an analyzer (<code>analyzers=show_infectious</code>) does the same, but always runs last in the step; for more than a quick look, write an <a href="../user_guide/interventions_analyzers.html">analyzer</a> that keeps results of its own. A compartmental model that Starsim runs whole has no loop to look into; inserting a function makes it run one step at a time, with the same results.</p>
+<p><code>sim.loop.plot()</code> draws the loop as a diagram, which is most useful when modules have time steps of their own (demographics once a year and a disease once a week, say), to see which runs when. <code>sim.run_one_step()</code> takes a single step, for stepping through a run by hand in a debugger.</p>
+</section>
+<section id="profiling" class="level2">
+<h2 class="anchored" data-anchor-id="profiling">Profiling</h2>
+<p>Compartmental models run in well under a second, so profiling is mostly for models run as agents, especially with networks or modules written as code. Start with how long each part of each step takes: <code>sim.profile(kind='loop')</code> runs the sim recording the time of each call of the loop, and plots the time spent in each (<code>sim.loop.plot_cpu()</code> plots it again):</p>
+<div id="10a58375" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>big <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">n_agents</span><span class="op">=</span><span class="dv">50_000</span>, <span class="va">networks</span><span class="op">=</span>ss.<span class="fu">RandomNet</span>(<span class="va">n_contacts</span><span class="op">=</span><span class="dv">10</span>), <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>big.<span class="fu">profile</span>(<span class="va">kind</span><span class="op">=</span><span class="st">'loop'</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="running_debugging_files/figure-html/cell-15-output-1.png" width="662" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To see which lines of a function take the time, follow it with <code>sim.profile()</code> (<code>kind='line'</code>, the default), which runs a copy of the sim with a line-by-line profiler on the functions given:</p>
+<div id="05bc1add" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>big <span class="op">=</span> ss.<span class="fu">Sim</span>(measles, <span class="va">n_agents</span><span class="op">=</span><span class="dv">50_000</span>, <span class="va">networks</span><span class="op">=</span>ss.<span class="fu">RandomNet</span>(<span class="va">n_contacts</span><span class="op">=</span><span class="dv">10</span>), <span class="va">stop</span><span class="op">=</span>ss.<span class="fu">days</span>(<span class="dv">50</span>), <span class="va">verbose</span><span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>prof <span class="op">=</span> big.<span class="fu">profile</span>(<span class="va">follow</span><span class="op">=</span>ss.RandomNet.add_pairs, <span class="va">plot</span><span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>prof.<span class="fu">disp</span>(<span class="va">maxentries</span><span class="op">=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre>Profiling 1 function(s):
+ &lt;function RandomNet.add_pairs at 0x77b4643d9300&gt; 
+
+Elapsed time: 0.722 s
+<span class="ansi-cyan-fg">
+
+——————————————————————————————————————————————————————————————
+Profile of networks.RandomNet.add_pairs: 0.246455 s (34.1092%)
+——————————————————————————————————————————————————————————————
+</span>
+Total time: 0.246455 s
+File: /home/cliffk/idm/ssv4/starsim/networks.py
+Function: RandomNet.add_pairs at line 1144
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1144                                               def add_pairs(self):
+  1145                                                   """ Add the new edges needed to bring each agent up to their number of contacts """
+  1146        51     138235.0   2710.5      0.1          p = self.pars
+  1147        51      86663.0   1699.3      0.0          people = self.sim.people
+  1148        51   19396465.0 380322.8      7.9          uids = self.eligible(p.who).uids
+  1149        51     278936.0   5469.3      0.1          current = len(self)
+  1150        51    1607825.0  31526.0      0.7          n_conn = self.same_contacts(len(uids), current)
+  1151        51      40596.0    796.0      0.0          if n_conn is None:
+  1152                                                       if isinstance(p.n_contacts, ss.Dist):
+  1153                                                           n_conn = p.n_contacts.rvs(uids)
+  1154                                                       else:
+  1155                                                           n_conn = np.full(len(people), p.n_contacts)
+  1156                                           
+  1157                                                       # See how many new edges we need
+  1158                                                       orig = n_conn.sum()
+  1159                                                       target = orig / 2 # Divide by 2 since bi-directional
+  1160                                                       needed = target - current
+  1161                                                       if needed &lt;= 0:
+  1162                                                           return
+  1163                                                       n_conn = n_conn*needed/orig
+  1164                                                       n_conn = p.n_contacts.randround(n_conn) # CRN-safe stochastic integer rounding
+  1165                                           
+  1166        51  208787550.0 4.09e+06     84.7          p1, p2 = self.pair(uids, n_conn)
+  1167        51     118242.0   2318.5      0.0          if p.remove_self_loops:
+  1168                                                       keep = p1 != p2 # One pass over the new edges; finding duplicates would need a sort of all of them
+  1169                                                       p1, p2 = p1[keep], p2[keep]
+  1170        51      85329.0   1673.1      0.0          n = len(p1)
+  1171        51    7804428.0 153028.0      3.2          weight = np.ones(n, dtype=ss_float)
+  1172        51    7060272.0 138436.7      2.9          dur = self.edge_steps(p1)
+  1173                                           
+  1174        51     200982.0   3940.8      0.1          p1 = p1.view(ss.uids) # No copy
+  1175        51     100746.0   1975.4      0.0          p2 = p2.view(ss.uids)
+  1176        51      45543.0    893.0      0.0          if current == 0: # Nothing to append to
+  1177        51     257173.0   5042.6      0.1              self.edges.p1 = p1
+  1178        51     135763.0   2662.0      0.1              self.edges.p2 = p2
+  1179        51     153123.0   3002.4      0.1              self.edges.weight = weight
+  1180        51     115964.0   2273.8      0.0              self.edges.dur = dur
+  1181                                                   else:
+  1182                                                       self.append(p1=p1, p2=p2, weight=weight, dur=dur)
+  1183        51      41451.0    812.8      0.0          return
+
+<span class="ansi-cyan-fg">
+
+——————————————————————————————————————————————————————————————
+Profile of networks.RandomNet.add_pairs: 0.246455 s (34.1092%)
+——————————————————————————————————————————————————————————————
+</span>
+Total time: 0.246455 s
+File: /home/cliffk/idm/ssv4/starsim/networks.py
+Function: RandomNet.add_pairs at line 1144
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1144                                               def add_pairs(self):
+  1145                                                   """ Add the new edges needed to bring each agent up to their number of contacts """
+  1146        51     138235.0   2710.5      0.1          p = self.pars
+  1147        51      86663.0   1699.3      0.0          people = self.sim.people
+  1148        51   19396465.0 380322.8      7.9          uids = self.eligible(p.who).uids
+  1149        51     278936.0   5469.3      0.1          current = len(self)
+  1150        51    1607825.0  31526.0      0.7          n_conn = self.same_contacts(len(uids), current)
+  1151        51      40596.0    796.0      0.0          if n_conn is None:
+  1152                                                       if isinstance(p.n_contacts, ss.Dist):
+  1153                                                           n_conn = p.n_contacts.rvs(uids)
+  1154                                                       else:
+  1155                                                           n_conn = np.full(len(people), p.n_contacts)
+  1156                                           
+  1157                                                       # See how many new edges we need
+  1158                                                       orig = n_conn.sum()
+  1159                                                       target = orig / 2 # Divide by 2 since bi-directional
+  1160                                                       needed = target - current
+  1161                                                       if needed &lt;= 0:
+  1162                                                           return
+  1163                                                       n_conn = n_conn*needed/orig
+  1164                                                       n_conn = p.n_contacts.randround(n_conn) # CRN-safe stochastic integer rounding
+  1165                                           
+  1166        51  208787550.0 4.09e+06     84.7          p1, p2 = self.pair(uids, n_conn)
+  1167        51     118242.0   2318.5      0.0          if p.remove_self_loops:
+  1168                                                       keep = p1 != p2 # One pass over the new edges; finding duplicates would need a sort of all of them
+  1169                                                       p1, p2 = p1[keep], p2[keep]
+  1170        51      85329.0   1673.1      0.0          n = len(p1)
+  1171        51    7804428.0 153028.0      3.2          weight = np.ones(n, dtype=ss_float)
+  1172        51    7060272.0 138436.7      2.9          dur = self.edge_steps(p1)
+  1173                                           
+  1174        51     200982.0   3940.8      0.1          p1 = p1.view(ss.uids) # No copy
+  1175        51     100746.0   1975.4      0.0          p2 = p2.view(ss.uids)
+  1176        51      45543.0    893.0      0.0          if current == 0: # Nothing to append to
+  1177        51     257173.0   5042.6      0.1              self.edges.p1 = p1
+  1178        51     135763.0   2662.0      0.1              self.edges.p2 = p2
+  1179        51     153123.0   3002.4      0.1              self.edges.weight = weight
+  1180        51     115964.0   2273.8      0.0              self.edges.dur = dur
+  1181                                                   else:
+  1182                                                       self.append(p1=p1, p2=p2, weight=weight, dur=dur)
+  1183        51      41451.0    812.8      0.0          return
+
+</pre>
+</div>
+</div>
+</div>
+<p><code>sim.profile(kind='function')</code> profiles every function the run calls, for when you don’t yet know where to look. Only functions called during the run can be followed this way; for anything else, such as building the sim, use <code>sc.profile()</code> from Sciris directly. When the time is in your own code, <a href="../user_guide/running_performance.html#code-of-your-own">Speed and scale</a> has the remedies. A fit runs the model thousands of times, so profile the model before fitting it.</p>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<p>If none of this finds the problem, cut it down to the smallest script that shows it (a small population, a short run, one disease, no data files) and ask on the <a href="https://github.com/starsimhub/starsim/issues">Starsim GitHub issues</a>, with the script, what it printed, and what you expected; see <a href="../contributing/index.html">How to contribute</a>.</p>
+<ul>
+<li><a href="https://github.com/pyutils/line_profiler">line_profiler</a>: the line-by-line profiler behind <code>sim.profile()</code></li>
+<li><a href="https://docs.python.org/3/library/profile.html">Python: The Python profilers</a>: <code>cProfile</code>, behind <code>sim.profile(kind='function')</code></li>
+<li><a href="https://docs.python.org/3/library/pdb.html">Python: pdb</a>: the debugger, for stepping through a module written as code</li>
+</ul>
+</section>
+<section id="appendix-every-diagnostic-tool" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-every-diagnostic-tool">Appendix: every diagnostic tool</h2>
+<p>The tools on this page and elsewhere, by the question each answers. “Builds” means it calls <code>sim.init()</code> if the sim hasn’t been built, without running it.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Tool</th>
+<th>What it answers</th>
+<th>Runs the sim?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>The lines a run prints, and <code>sim.notes</code></td>
+<td>What Starsim assumed, approximated, or wants checked</td>
+<td>Notes are made as the sim is built and run</td>
+</tr>
+<tr class="even">
+<td><code>sim.describe()</code></td>
+<td>The model as built: every state, transition, parameter, and setting, with each guess marked</td>
+<td>Builds</td>
+</tr>
+<tr class="odd">
+<td><code>disease.equations()</code></td>
+<td>The model as the equations of an ODE</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>disease.diagram()</code></td>
+<td>The states and transitions, drawn</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><code>sim.solver</code>, <code>sim.solver_reason</code></td>
+<td>Which solver was chosen, and why</td>
+<td>Builds</td>
+</tr>
+<tr class="even">
+<td><code>sim.describe()</code>, <code>require_kernels=True</code></td>
+<td>Why a compartmental run is taken a step at a time rather than in one call (see <a href="../user_guide/running_performance.html">Speed and scale</a>)</td>
+<td>Builds</td>
+</tr>
+<tr class="odd">
+<td><code>ss.solvers.solver_table()</code></td>
+<td>Every rule that decides which engine runs a model (see <a href="../user_guide/running_solvers.html#appendix-what-needs-agents">Solvers and backends</a>)</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>sim.check_dt()</code></td>
+<td>How much each result changes with a step half as long</td>
+<td>Runs two copies</td>
+</tr>
+<tr class="odd">
+<td><code>sim.what_modifies()</code></td>
+<td>Everything that changes a parameter during the run</td>
+<td>Builds</td>
+</tr>
+<tr class="even">
+<td><code>describe()</code> with <code>difflib</code></td>
+<td>Where two models differ</td>
+<td>Builds</td>
+</tr>
+<tr class="odd">
+<td><a href="../api/internals.debugtools.html#starsim.internals.debugtools.diff_sims" title="0"><code>ss.debugtools.diff_sims()</code></a>, <code>check_sims_match()</code></td>
+<td>Which results of two runs differ, and by how much</td>
+<td>No (give it sims that have run)</td>
+</tr>
+<tr class="even">
+<td><code>sim.set_diagnostics()</code></td>
+<td>Every random draw and agent state at every step, to find where two runs diverge</td>
+<td>Records during the next run</td>
+</tr>
+<tr class="odd">
+<td><code>ss.options(warnings='error')</code></td>
+<td>Stops at the first warning</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>sim.run(until=...)</code>, <code>sim.people.to_df()</code></td>
+<td>The people and their states partway through a run</td>
+<td>Runs part of the way</td>
+</tr>
+<tr class="odd">
+<td><code>sim.run_one_step()</code></td>
+<td>One step at a time, for a debugger</td>
+<td>Runs one step</td>
+</tr>
+<tr class="even">
+<td><code>sim.loop.to_df()</code>, <code>sim.loop.plot()</code></td>
+<td>Every call in every step, in order</td>
+<td>Builds</td>
+</tr>
+<tr class="odd">
+<td><code>sim.loop.insert()</code></td>
+<td>Runs a function of your own at any point in the step</td>
+<td>No (it runs with the sim)</td>
+</tr>
+<tr class="even">
+<td><code>sim.profile(kind='loop')</code>, <code>sim.loop.plot_cpu()</code></td>
+<td>How long each call of the loop takes</td>
+<td>Runs</td>
+</tr>
+<tr class="odd">
+<td><code>sim.profile(follow=...)</code></td>
+<td>How long each line of the functions given takes</td>
+<td>Runs a copy</td>
+</tr>
+<tr class="even">
+<td><code>sim.profile(kind='function')</code></td>
+<td>How long every function the run calls takes</td>
+<td>Runs</td>
+</tr>
+<tr class="odd">
+<td><code>sim.elapsed</code></td>
+<td>The seconds the last run took</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>STARSIM_CHECK_COUNTS=1</code> (environment variable)</td>
+<td>Checks, at every step, the counts the agent engine keeps against a new count (for testing the engine)</td>
+<td>Applies to every run as agents</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="appendix-errors-and-warnings" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-errors-and-warnings">Appendix: errors and warnings</h2>
+<p>Most errors are Python’s own (<code>KeyError</code>, <code>TypeError</code>, <code>ValueError</code>); these are the ones that are classes of their own, in <code>starsim/internals/errors.py</code>, so that code can catch or filter them by kind (see <a href="../user_guide/architecture_run.html#errors-warnings-and-notes">Model execution</a> for the policy behind them):</p>
+<div id="284aae6f" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> inspect</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>pd.<span class="fu">set_option</span>(<span class="st">'display.max_colwidth'</span>, <span class="va">None</span>) <span class="co"># Show each entry in full</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, cls <span class="kw">in</span> inspect.<span class="fu">getmembers</span>(ss.errors, inspect.isclass):</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">issubclass</span>(cls, (<span class="pp">Exception</span>, <span class="pp">Warning</span>)) <span class="kw">and</span> cls.__module__ <span class="op">==</span> ss.errors.<span class="va">__name__</span>:</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        rows.<span class="fu">append</span>(<span class="bu">dict</span>(</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>            <span class="va">name</span> <span class="op">=</span> (<span class="st">'ss.'</span> <span class="cf">if</span> name <span class="kw">in</span> ss.errors.<span class="va">__all__</span> <span class="cf">else</span> <span class="st">'ss.errors.'</span>) <span class="op">+</span> name,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>            <span class="va">kind</span> <span class="op">=</span> <span class="st">'warning'</span> <span class="cf">if</span> <span class="bu">issubclass</span>(cls, <span class="pp">Warning</span>) <span class="cf">else</span> <span class="st">'error'</span>,</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>            <span class="va">subclass_of</span> <span class="op">=</span> <span class="st">', '</span>.<span class="fu">join</span>(base.<span class="va">__name__</span> <span class="cf">for</span> base <span class="kw">in</span> cls.__bases__),</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>            <span class="va">what</span> <span class="op">=</span> <span class="st">' '</span>.<span class="fu">join</span>(inspect.<span class="fu">getdoc</span>(cls).<span class="fu">split</span>()),</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>pd.<span class="fu">DataFrame</span>(rows).<span class="fu">set_index</span>(<span class="st">'name'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">kind</th>
+<th data-quarto-table-cell-role="th">subclass_of</th>
+<th data-quarto-table-cell-role="th">what</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ss.AlreadyRunError</th>
+<td>error</td>
+<td>RuntimeError</td>
+<td>A sim that has already run (or been finalized) is stepped, finalized, or added to again; `sim.run()` runs it again from the start</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ss.errors.AtBound</th>
+<td>warning</td>
+<td>RuntimeWarning</td>
+<td>A best-fit value is at or near one of its bounds</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ss.errors.BooleanOperationError</th>
+<td>error</td>
+<td>NotImplementedError</td>
+<td>A logical operation (and, or, xor, not) is applied to an array of people's values that is not Boolean, e.g. `ppl.age &amp; ppl.female`</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ss.CapabilityError</th>
+<td>error</td>
+<td>ValueError</td>
+<td>The requested solver cannot run part of the model. Three cases: there is no sensible approximation (contact tracing, transmission trees, agent-only custom code); a function or condition asked for something that exists only per agent in a compartmental run; or an approximation would be needed and `approximations="error"`. Names the part, what it asked for, and what would fix it</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ss.errors.DistNotInitializedError</th>
+<td>error</td>
+<td>RuntimeError</td>
+<td>A distribution made with `strict=True` is sampled before it is initialized (by the sim, or with `dist.init()` or `dist.mock()`)</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ss.errors.DistSeedRepeatError</th>
+<td>error</td>
+<td>RuntimeError</td>
+<td>Two distributions of a sim have the same seed, or a distribution is jumped back to a state it has passed, so that it would draw the same random numbers twice</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ss.errors.ImportIncomplete</th>
+<td>warning</td>
+<td>RuntimeWarning</td>
+<td>An import could not translate something in the source. Lists each item by name, says what to ask an AI assistant with the `convert-model` skill to finish it, and warns again when the sim is first run</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ss.errors.LossyExport</th>
+<td>warning</td>
+<td>RuntimeWarning</td>
+<td>An export to another format left something out or changed it. Lists each item</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ss.errors.NoAgentAttribute</th>
+<td>error</td>
+<td>CapabilityError, AttributeError</td>
+<td>An attribute of people that exists only per agent, asked for in a compartmental run: also an `AttributeError`, so `hasattr()` gives False</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ss.errors.NotConverged</th>
+<td>warning</td>
+<td>RuntimeWarning</td>
+<td>The chains of a posterior disagree (R-hat above 1.01), or some draws diverged</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// The sidebar's sections: "Expand all" and "Collapse all", and which sections are open, and where the sidebar is scrolled, kept from page to page.
+// Sections listed in `collapsed` start collapsed, unless the current page is in them (Quarto can only set this for all sections at once, via collapse-level)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.querySelector('#quarto-sidebar');
+  const sections = sidebar ? [...sidebar.querySelectorAll('.sidebar-item-section')] : [];
+  if (!sections.length) return;
+  const collapsed = ['Architecture'];
+  const title = (section) => section.querySelector(':scope > .sidebar-item-container .menu-text')?.textContent.trim() ?? '';
+  const path = (section) => { // Its title and those of the sections it is in, so that the same title in two sidebars is not confused
+    const titles = [];
+    for (let s = section; s; s = s.parentElement.closest('.sidebar-item-section')) titles.unshift(title(s));
+    return titles.join(' / ');
+  };
+  const key = 'starsim-sidebar:' + sections.map(title).join('|'); // One per sidebar (user guide, API, ...)
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  const setOpen = (section, open) => { // Without Bootstrap's animation
+    section.querySelector(':scope > ul.collapse')?.classList.toggle('show', open);
+    for (const toggle of section.querySelectorAll(':scope > .sidebar-item-container [data-bs-toggle="collapse"]')) {
+      toggle.classList.toggle('collapsed', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+    }
+  };
+  const isOpen = (section) => section.querySelector(':scope > ul.collapse')?.classList.contains('show') ?? false;
+  const save = (all) => { // all: true or false after "Expand all" or "Collapse all", since the current page's section stays open on screen
+    const state = {};
+    for (const section of sections) state[path(section)] = typeof all === 'boolean' ? all : isOpen(section);
+    localStorage.setItem(key, JSON.stringify(state));
+  };
+
+  // Open each section as it was left (or by default), always with the current page showing
+  for (const section of sections) {
+    const p = path(section);
+    const open = section.querySelector('.sidebar-link.active') ? true : p in saved ? saved[p] : !collapsed.includes(title(section)) && isOpen(section);
+    setOpen(section, open);
+  }
+  sidebar.addEventListener('shown.bs.collapse', () => save());
+  sidebar.addEventListener('hidden.bs.collapse', () => save());
+
+  // Expand all and collapse all
+  const bar = document.createElement('div');
+  bar.className = 'sidebar-expand-all';
+  for (const [text, open] of [['Expand all', true], ['Collapse all', false]]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = text;
+    button.addEventListener('click', () => {
+      for (const section of sections) setOpen(section, open || !!section.querySelector('.sidebar-link.active'));
+      save(open);
+    });
+    bar.append(button);
+  }
+  sidebar.querySelector('.sidebar-menu-container')?.prepend(bar);
+
+  // Where the sidebar was scrolled, if the current page is still in view there
+  const scrollKey = key + ':scroll';
+  const top = Number(sessionStorage.getItem(scrollKey));
+  if (top) {
+    sidebar.scrollTop = top;
+    const active = sidebar.querySelector('.sidebar-link.active');
+    if (active) {
+      const a = active.getBoundingClientRect(), s = sidebar.getBoundingClientRect();
+      if (a.top < s.top || a.bottom > s.bottom) active.scrollIntoView({block: 'center'});
+    }
+  }
+  window.addEventListener('pagehide', () => sessionStorage.setItem(scrollKey, sidebar.scrollTop));
+});
+</script>
+<script>
+// Tabs in a group sync by title (Python, R, Explicit), and Quarto leaves a tabset blank if it has no tab of the title chosen (e.g. Explicit in a tabset of Python and R); show its first tab instead
+function showFirstTabs() {
+  for (const tabset of document.querySelectorAll('.panel-tabset[data-group]')) {
+    const tabs = tabset.querySelectorAll(':scope > .nav-tabs > .nav-item > .nav-link');
+    if (!tabs.length || tabset.querySelector(':scope > .nav-tabs .nav-link.active')) continue;
+    tabs[0].classList.add('active');
+    document.getElementById(tabs[0].getAttribute('aria-controls'))?.classList.add('active');
+  }
+}
+window.addEventListener('pageshow', () => setTimeout(showFirstTabs, 0)); // After Quarto's own pageshow handler, which restores the saved tab (pageshow fires after load)
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.panel-tabset[data-group] .nav-link')) setTimeout(showFirstTabs, 0); // After Quarto's own handler
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/starsim\.org\/v4");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var opensNewContext = (link) => {
+        var target = (link.getAttribute("target") || "").toLowerCase();
+        return target !== "" && !["_self", "_parent", "_top"].includes(target);
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+        if (opensNewContext(link)) {
+          describeNewWindow(link);
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../user_guide/running_branching.html" class="pagination-link" aria-label="Branching and rescaling">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Branching and rescaling</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../user_guide.html#calibration" class="pagination-link" aria-label="Calibration">
+        <span class="nav-page-text">Calibration</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Docs built for Starsim v4.0.0rc4 (2026-11-12).<br>© 2023–2026, Gates Foundation. All rights reserved. <a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice">Privacy and Cookies Notice</a> | <a href="https://www.gatesfoundation.org/Terms-of-Use">Terms of Use</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/starsimhub/starsim/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/starsimhub/starsim">
+      <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="mailto:info@starsim.org">
+      <i class="bi bi-envelope-at-fill" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsimhub.slack.com">
+      <i class="bi bi-slack" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://starsim.org/">
+      <i class="bi bi-globe" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

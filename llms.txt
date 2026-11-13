@@ -1,0 +1,552 @@
+# Starsim v4.0.0rc4
+
+> A fast, flexible disease modeling framework, from compartments to agents
+
+- Starsim is a framework for modeling the spread of disease, as compartments (deterministic or stochastic, in one place or many) or as agents on dynamic transmission networks, including co-transmission of multiple diseases and the effect of interventions. A sim with `solver="auto"` (the default) runs as compartments if it can, and as agents if it needs them.
+- Everything in the core package is available from the top level: `import starsim as ss`, then e.g. `ss.Sim()`. Do not import submodules directly.
+- Example and reference modules (e.g. `ssl.Cholera`) are in the library: `import starsim.library as ssl`. They are illustrative rather than validated.
+- Signatures are as introspected from the current version; summaries are the first paragraph of each docstring.
+- Module arguments default to `None` in the signature; the actual defaults are listed as "Default pars", and can be overridden by keyword or via `pars=dict(...)`.
+- Entries marked "for extending Starsim" are for writing modules as code or extending Starsim itself (base classes, arrays, and helpers); a model declared from states and transitions does not need them.
+- Aliases are alternative names for the same object; the canonical name is the one listed, and is the one to prefer when writing new code.
+- Methods are listed under the class that defines them (e.g. `ss.Result.select()` under `ss.Result`), not under each subclass that inherits them, and only those that the documentation uses; the others are internal.
+- Any model that is not in the library (an SIRS, an SEIRS, a model with more states) is written as a declared disease: `S, I, R = ss.states(3)`, then `ss.Disease(S >> I @ beta * I, I >> R @ ss.days(7), R >> S @ ss.days(90))`. There a duration alone (`ss.days(7)`) is the mean of an exponential.
+- The library `ss.SIR`, `ss.SIS`, and `ss.SEIR` are the textbook models: a duration is the mean of an exponential, and nobody dies of the infection unless `p_death` is given. Starsim 3's versions (lognormal `dur_inf`, `p_death=0.01`) are `ssl.AgentSIR`, `ssl.AgentSIS`, and `ssl.AgentSEIR`.
+- `init_prev=` seeds the state a new infection enters (`E` in an SEIR, so nobody starts infectious); `init_n=dict(I=10)` starts people in a named state.
+- The population of a sim is `total_pop=`, under every solver. `n_agents=` is the number of agents: giving it makes `solver="auto"` run as agents, and a compartmental run uses it as `total_pop` if that is not given.
+- Many runs (`ss.parallel(sim, n_runs=10)`) give an `ss.MultiSim`, whose results have a run axis first: `msim.results.sir.infection.values` has one row per run, and `.median()` and `.quantiles()` summarize over the runs. `msim.sims` has the sim of each run.
+- A version of this file including a usage example for each function is available at llms-full.txt.
+
+This file lists all 230 public Starsim functions and classes. It is generated from the source by `python make_api.py`; do not edit it by hand.
+
+## Links
+
+- [Documentation](https://starsim.org/v4): tutorials, user guide, and API reference
+- [Source](https://github.com/starsimhub/starsim): the Starsim repository
+- [Style guide](https://github.com/starsimhub/styleguide): the Starsim style guide
+- [Sciris](https://docs.sciris.org/llms.txt): the equivalent index for Sciris (`sc`), which Starsim uses extensively
+
+## Tutorials
+
+- [T1 – Getting started](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t1_intro.qmd): Starsim is a framework for modeling the spread of disease.
+- [T2 – Building a model](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t2_model.qmd): This tutorial goes through the SIR model of Tutorial 1 in more depth, to answer a question that matters for any outbreak
+- [T3 – Building a disease](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t3_disease.qmd): The SIR model of Tutorial 1 and Tutorial 2 is over within weeks, far faster than real measles.
+- [T4 – Mixing](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t4_mixing.qmd): **Who meets whom, and why does it matter?** So far, everyone in the town mixes equally.
+- [T5 – Interventions and scenarios](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t5_interventions.qmd): **How much difference could a vaccination campaign make?** Most models are built to answer questions like this.
+- [T6 – Data and calibration](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t6_data.qmd): **How big will this outbreak get, and would a vaccination campaign now make a difference?**
+- [T7 – Stratification and co-transmission](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t7_strata.qmd): **Who is the outbreak in, and does it make other infections worse?**
+- [T8 – Custom modules](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/t8_modules.qmd): **When people hear about an outbreak, some of them go and get vaccinated.
+- [Solutions: T1 – Getting started](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t1_intro.qmd): These are solutions to the exercises at the end of T1 – Getting started.
+- [Solutions: T2 – Building a model](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t2_model.qmd): These are solutions to the exercises at the end of T2 – Building a model.
+- [Solutions: T3 – Building a disease](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t3_disease.qmd): These are solutions to the exercises at the end of T3 – Building a disease.
+- [Solutions: T4 – Mixing](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t4_mixing.qmd): These are solutions to the exercises at the end of T4 – Mixing.
+- [Solutions: T5 – Interventions and scenarios](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t5_interventions.qmd): These are solutions to the exercises of T5 – Interventions and scenarios.
+- [Solutions: T6 – Data and calibration](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t6_data.qmd): These are solutions to the exercises of T6 – Data and calibration.
+- [Solutions: T7 – Stratification and co-transmission](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t7_strata.qmd): These are solutions to the exercises of T7 – Stratification and co-transmission.
+- [Solutions: T8 – Custom modules](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions_t8_modules.qmd): These are solutions to the exercises of T8 – Custom modules.
+- [Solutions](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/tutorials/solutions.qmd): The solutions to each tutorial's exercises.
+
+## User guide
+
+- [What is Starsim?](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/intro_starsim.qmd): Starsim is a framework for modeling the spread of diseases
+- [Conceptual overview](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/intro_concepts.qmd): This page is the mental model of Starsim on one page
+- [FAQ](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/intro_faq.qmd): Short answers to common questions, each with a link to the page that covers it in full.
+- [Writing models](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_writing.qmd): A Starsim model is a sim (`ss.Sim`) that holds a population and a set of modules
+- [What can be declared](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_declared.qmd): A Starsim model is made of two kinds of part.
+- [Diseases](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_diseases.qmd): A disease in Starsim is declared the way a compartmental model is drawn
+- [Parameters](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_parameters.qmd): The parameters of a model are the numbers in it
+- [Time](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_time.qmd): Every rate in a model is per some unit of time, every duration is in some unit, and a sim runs over a span of time in steps.
+- [Stratification](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_stratification.qmd): People differ in ways that change how a disease spreads
+- [Outcomes](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_outcomes.qmd): What a model tracks is not what is observed
+- [Results and plotting](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_results.qmd): A run produces results
+- [Custom modules](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_modules.qmd): Most of a Starsim model is declared, but some parts are easier to say as code
+- [Import/export](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/building_import.qmd): A model written for another framework can be read into Starsim, and a Starsim model can be written out in formats other tools read.
+- [People and demographics](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/populations_people.qmd): Every model has a population
+- [Mixing](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/populations_mixing.qmd): A disease model says how infectious people are; the mixing says who meets whom, and how often.
+- [Places and data](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/populations_places.qmd): A model of a particular setting needs data about its people and its places
+- [Products](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/interventions_products.qmd): Vaccination, screening, and treatment programs have two parts
+- [Interventions](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/interventions_interventions.qmd): An intervention is anything done to change the course of an epidemic.
+- [Analyzers](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/interventions_analyzers.qmd): An analyzer records something during a run that the results don't keep, without changing the model.
+- [Connectors](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/interventions_connectors.qmd): A **connector** links modules
+- [Running sims](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_sim.qmd): A sim (`ss.Sim`) is one model put together with everything needed to run it
+- [Scenarios](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_scenarios.qmd): Let's be honest
+- [Solvers and backends](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_solvers.qmd): A model in Starsim says what the compartments are, how people move between them, and at what rates.
+- [Speed and scale](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_performance.qmd): Most Starsim models run fast with no help
+- [Branching and rescaling](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_branching.qmd): Many questions are about a small part of a large population
+- [Profiling and debugging](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/running_debugging.qmd): A model can go wrong in three ways
+- [Fitting a model](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/calibration_fitting.qmd): Calibration is fitting a model's parameters to data
+- [Fitting methods](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/calibration_methods.qmd): `sim.fit()` chooses a method that suits the model, so most fits don't need to name one.
+- [Fit diagnostics](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/calibration_diagnostics.qmd): `sim.fit()` always returns values.
+- [Gradients](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/calibration_gradients.qmd): For a deterministic model, run as an ODE, Starsim can work out the *gradient*
+- [Optimization](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/calibration_optimization.qmd): Calibration asks which values of a model's parameters fit the data.
+- [Diseases](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/library_diseases.qmd): The Starsim library (`import starsim.library as ssl`; see Library for what it is) has ready-made diseases
+- [Networks](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/library_networks.qmd): Core Starsim's networks (random contacts, partnerships, mother and child, mixing pools, and contact matrices), and how to write a network of your own, are on Mixing.
+- [Maternal-child health](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/library_mnch.qmd): Transmission from mother to child, and the outcomes of a pregnancy (stillbirth, preterm birth, low birth weight, neonatal death), are harder to model than a standard disease
+- [Health economics](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/library_econ.qmd): Every product in Starsim takes a `cost=`, the cost of each delivery, and each delivery then records what it spent as a result, `cost`, next to the number it delivered.
+- [Library](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/library_index.qmd): Core Starsim (`import starsim as ss`) provides the framework and its generic building blocks
+- [Array indexing](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/mechanics_indexing.qmd): When a model runs as agents, each person's properties (age, sex, the state of each disease) are kept in arrays with one value per agent.
+- [Distributions](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/mechanics_distributions.qmd): Distributions appear in a model in three ways
+- [Random numbers](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/mechanics_random.qmd): A stochastic model uses random numbers to decide what happens to each person
+- [From declaration to run](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/architecture_run.qmd): A disease written as code, as a class whose `step()` method changes arrays of agents, can be run but not read
+- [Engines and transmission](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/architecture_engines.qmd): The same declared model can be run by five solvers (`'ode'`, `'binomial'`, `'gillespie'`, `'tau'`, and `'abm'`), some with options.
+- [Architecture](https://raw.githubusercontent.com/starsimhub/starsim/v4/docs/user_guide/architecture_index.qmd): This section explains how Starsim is put together and why, for contributors and for modelers who want to know what happens when they call `sim.run()`; no model needs it.
+
+## Simulations (ss.sim)
+
+- `ss.demo(run=True, plot=True, summary=True, show=None, **kwargs)`: Create a simple demo simulation for Starsim
+- `ss.Sim(*models, label=None, people=None, demographics=None, connectors=None, networks=None, diseases=None, interventions=None, analyzers=None, modules=None, data=None, pars=None, copy_modules=True, **kwargs)`: The sim: a model, how to run it, and its results
+  - Default pars: `label=''`, `verbose=1`, `n_agents=10000.0`, `total_pop=None`, `rescale=False`, `record_people=True`, `start=None`, `stop=None`, `dur=None`, `dt=None`, `rand_seed=1`, `even_draws=False`, `keep_times=None`, `unit=None`, `solver='auto'`, `branching=False`, `approximations='note'`, `require_kernels=False`, `stratify=None`, `group_results=None`, `aging=None`, `step_order='type'`, `people=None`, `custom=ss.ndict()`, `demographics=ss.ndict()`, `connectors=ss.ndict()`, `networks=ss.ndict()`, `interventions=ss.ndict()`, `diseases=ss.ndict()`, `analyzers=ss.ndict()`, `modules=ss.ndict()`
+  - Methods: `.products()`: The products of the interventions, each once; a list, not an ndict like the other kinds […]; `.modules`: Every module of the sim, in the order they are initialized; `.new()`: A new, uninitialized sim: a copy of this one as it was when it was initialized, […]; `.fit()`: Fit every parameter that has bounds to every result that has data; `.optimize()`: Allocate spending between programs to reach a goal, keeping the total fixed; or find the […]; `.sensitivity()`: Which parameters matter: partial rank correlations of each parameter with bounds and each […]; `.check_dt()`: Rerun the sim with a smaller timestep, and report how much each result changes; `.what_modifies()`: Everything that modifies a quantity: each `ss.modify()`, and the efficacy of each […]; `.stratify()`: Stratify every module in the sim by properties of people, e.g. `sim.stratify(age=[0, 15, […]; `.describe()`: The resolved model: every state, transition, and default, with each guess marked; what […]; `.diagram()`: The state-transition diagram of every declared disease, with how they act on each other […]; `.equations()`: The ODE systems of every declared disease, with symbolic parameter names, and how the […]; `.add_module()`: Add a module to a sim that has already been initialized, and possibly run part-way; `.label`: The sim's label, which names it in plots and printouts; kept as `sim.pars.label`; `.init_results()`: Make the results of the sim itself: the people's (see `ss.People.init_results()`), and […]; `.pop_scale`: The number of people each agent stands for (with dynamic rescaling, at the end of the […]; `.set_diagnostics()`: Store detailed diagnostics information in the sim; `.advance()`: Move the time to the step about to be taken, from the time point it starts at, where […]; `.run_one_step()`: Run a single step of the sim (every module's part of it), e.g. to look at the sim between […]; `.run()`: Run the model -- the main method for running a simulation; `.branching`: For a run as a branching process (`ss.Sim(branching=True)`): what came of it, as an […]; `.gradient()`: The derivative of results, or of a function of the run sim, with respect to parameters, […]; `.log_density()`: The log of the posterior density of the fitted parameters, as a function in JAX of their […]; `.restart()`: Take a sim back to its start, optionally with new values of its parameters or a new seed, […]; `.finalize_results()`: Scale the results and remove any "unused" results; `.summarize()`: A table of each result over the whole run, by its `summarize_by`, as `msim.summarize()` […]; `.shrink()`: Make the sim much smaller, for keeping many sims in memory or saving them, by removing […]; `.to_df()`: The results as a dataframe, with a column for each (e.g. `sir_prevalence`); see […]; `.to_synthetic_data()`: Data drawn from the results of the run, as if observed: e.g. to check that a fit finds […]; `.profile()`: Profile the performance of the simulation: how long each call of the loop, each line, or […]; `.save()`: Save to disk as a gzipped pickle: the sim itself, with its results, read back by […]; `.to_json()`: Export the results and the sim's parameters as JSON; `.plot()`: Plot the results
+
+## Solvers (ss.solvers)
+
+- `ss.solvers.abm(*, step=None)`: Agents, with their options: `ss.Sim(solver=ss.solvers.abm(step='events'))`; `solver='abm'` is the same with the defaults
+- `ss.solvers.binomial(*, substeps=None)`: The chain-binomial solver (stochastic compartments: counts of people, with chance, and much faster than agents for a large population), with its options: `ss.Sim(solver=ss.solvers.binomial(substeps=1))`; `solver='binomial'` is the same with the defaults
+- `ss.solvers.gillespie(**kwargs)`: The exact stochastic solver for compartments (Gillespie's algorithm: one event at a time, with no error from the timestep, but slow for a large population), which has no options: `ss.Sim(solver='gillespie')`
+- `ss.solvers.ode(*, integrator='rk4', substeps=None, dwells='stages')`: The ODE solver (deterministic compartments: the average epidemic, with no randomness), with its options: `ss.Sim(solver=ss.solvers.ode(integrator='euler', substeps=1))`; `solver='ode'` is the same with the defaults
+- `ss.solvers.tau(**kwargs)`: Tau-leaping (stochastic compartments, in leaps short enough that the rates change little over each: close to Gillespie's exact answer, and much faster for a large population), which has no options: `ss.Sim(solver='tau')`
+
+## People (ss.people)
+
+- `ss.People(n_agents, age_data=None, extra_states=None, p_female=0.5, mock=False)`: The people in a sim: their ages, sexes, who is alive, and the states that modules add to them; also how agents are born, die, and are counted
+  - Methods: `.n`: The number of people alive now, under every solver, as `sir.I.n` counts the people in a […]; `.keys()`: The names of the people's states, including those of modules (e.g. 'sir.S'); `.init_results()`: Make the results of the people; called by `Sim.init_results()`; `.add_module()`: Add a module to the people: its states are registered, so that they grow with the agents, […]; `.add_state()`: Add a property of each person, from a module (e.g. a social determinant of health that […]; `.dead`: Whether each agent has died; `.male`: Whether each agent is male (`~people.female`; female is a state); `.request_death()`: Request that agents die at this step; how a module kills agents; `.died_of()`: The agents who died in this step of a cause (a module or a name), once each death is […]; `.record_states()`: Record the population counts at the start of the step (each `ss.BoolState`, e.g. alive, […]; `.to_df()`: Export to dataframe; 2D states have one column per value, e.g. `sus_imm_0` (or […]; `.plot()`: Plot the distribution of each of the people's states: a histogram for numbers, and a bar […]; `.plot_ages()`: Plot the age pyramid: the number or fraction of females and males in each age group; `.get_person()`: All the properties of one agent, as an `ss.people.Person`
+- `ss.population(place, year=None, n_agents=None, revision=None)`: A named population: the size, age structure, and sex ratio of a country or a US state
+
+## Modules (ss.modules)
+
+- `ss.Module(name=None, label=None, **kwargs)`: The main base class for all Starsim modules: diseases, networks, interventions, etc. [for extending Starsim]
+  - Methods: `.from_func()`: Create a module from a function; `.define_pars()`: Create or merge Pars objects; `.current_value()`: A parameter (`key` is its name) with the modifiers active on it […]; `.update_pars()`: Pull out recognized parameters and update them; raises on unrecognized keys; `.define_states()`: Define states of the module with the same attribute name as the state; `.define_results()`: Add results to the module; in `__init__()`, they are kept, and added once the sim's […]; `.init_results()`: Initialize results output; called during `init_pre()`; `.init_post()`: Initialize the values of the states, and link its schedules (`ss.schedule`) to its […]; `.step()`: Define how the module updates over time -- the key part of Starsim!!; `.advance()`: For a module with a timeline of its own: move its time to the step about to be taken (the […]; `.record_states()`: Record the results that are the state at the start of the step (stocks), at its index; by […]; `.finalize_results()`: Finalize results; `.to_json()`: The module as a reference by its type and name, for `sc.jsonify()`: e.g. a module among […]; `.shrink()`: Shrink the size of the module for saving to disk; `.plot()`: Plot the module's results
+- `ss.register_modules(*args)`: Register custom modules with Starsim so they can be referred to by string. [for extending Starsim]
+- `ss.required()`: Decorator to mark module methods as required. [for extending Starsim]
+
+## Diseases (ss.diseases)
+
+- `ss.AgentDisease(*args, **kwargs)`: A transmitted disease written as code, as agents: the plain array operations of an infection, each a method to override [for extending Starsim]
+  - Default pars: `init_prev=None`
+  - Methods: `.update_pars()`: As `ss.Module.update_pars()`, and `strains=` for `define_strains()`, so a subclass that […]; `.init_post()`: Seed `init_prev` of the people born by the start (not the fetuses of pregnancies begun […]; `.init_results()`: The counts of the states (one for each `ss.BoolState`), and the prevalence and new […]; `.step()`: Transmit (`transmit()`), and infect the new cases; `.transmit()`: Who is infected in this step: by default, from `transmissibility()` to `susceptibility()` […]; `.infect()`: Infect some agents now: those susceptible, counted in `infection` (except the seeds, […]; `.set_prognoses()`: What happens to those infected, at the end of this step: by default, they are infected […]; `.record_states()`: The counts of the states, and the prevalence, at the start of the step; `.make_naive()`: Reset agents to never having had the disease, for dynamic rescaling: every state to its […]
+- `ss.Disease(*args, **kwargs)`: A disease: states people are in and the transitions between them (declared), code, or both
+  - Methods: `.define_states()`: Define its states: declared states (`ss.State`), or for a disease written as code, arrays […]; `.define_transitions()`: Define its transitions, in its `__init__()`, after its states; `.define_results()`: Define results: for a declared disease, sums and ratios of states by name (e.g. […]; `.define_pars()`: Create or merge parameters; see `ss.Module.define_pars()`; `.stratify()`: Stratify the disease by a property of the people in it (age, risk, place, ...), in place, […]; `.abm`: Whether it runs as agents; `.transitions`: The table of declared transitions; printing it also shows the matrix of sources by […]; `.states`: Its declared states (`ss.State`) by name, e.g. `'second_line' in tb.states` or `[s for s […]; `.describe()`: The resolved model, with every guessed default marked, as text that shows itself […]; `.equations()`: The ODE system of the declared transitions, with symbolic parameter names, as text that […]; `.diagram()`: The state-transition diagram: drawn as a Matplotlib figure, or as the text of a Mermaid […]; `.R0()`: The basic reproduction number, from the next-generation matrix at the disease-free state; `.Rt()`: The reproduction number over the course of a run, as a result: the number one infectious […]; `.init_post()`: Initialize the values of the states, and set the initial conditions of the declared states; `.add_callback()`: Call `fn(uids)` at the end of each step with the agents who went through a declared […]; `.step_state()`: State changes at the start of the step, before the networks and interventions, by a […]; `.current_value()`: `rel_sus` or `rel_trans` (`key`) of each agent with the modifiers and products active on […]; `.move()`: Move people between this disease's states from code, the same way under every solver: […]; `.infect()`: Infect some agents now, from code (e.g. a strain introduced on a date): those in the […]; `.transmit()`: Who is infected in this step by transmission: by one of the disease's declared […]; `.route_betas()`: The beta of each of the sim's networks (by name), as a pair (p1 to p2, p2 to p1), that […]; `.make_naive()`: Put agents back in the first state, as if they had never had the disease; for dynamic […]; `.step()`: Take the declared transitions of the step, those that are not contact-mediated and then […]; `.record_states()`: The counts of the states at the start of the step; for a disease written as code, the […]
+- `ss.SEIR(*args, **kwargs)`: An SEIR model: as `ss.SIR`, with an exposed (latent) state before people become infectious
+  - Default pars: `beta=ss.perday(0.3)`, `dur_exp=ss.days(3)`, `dur_inf=ss.days(10)`, `p_death=0.0`, `init_prev=0.01`
+- `ss.SIR(*args, **kwargs)`: An SIR model: susceptible, infected, and recovered, optionally with deaths from infection
+  - Default pars: `beta=ss.perday(0.3)`, `dur_inf=ss.days(10)`, `p_death=0.0`, `init_prev=0.01`
+- `ss.SIS(*args, **kwargs)`: An SIS model: people recover from infection and are susceptible again
+  - Default pars: `beta=ss.perday(0.2)`, `dur_inf=ss.days(10)`, `init_prev=0.01`
+
+## Networks (ss.networks)
+
+- `ss.BreastfeedingNet(pars=None, **kwargs)`: A network from each mother to her infant while she breastfeeds, for transmission by breastfeeding
+  - Default pars: `memory=None`, `dur=None`
+- `ss.contacts(matrix=None, ages=None, dims=None, name=None, study=None, layer='all', unit=None, **by_dim)`: Mixing between groups from a contact matrix; returns `ss.networks.MixingPools`
+- `ss.DegreeNet(pars=None, n_contacts=None, dur=None, concurrency=None, max_contacts=None, match=None, acts=None, who=None, between=None, memory=None, **kwargs)`: Partnerships that form and dissolve, with a target number of partners at a time
+  - Default pars: `memory=None`, `between=None`, `n_contacts=None`, `dur=10`, `concurrency=None`, `max_contacts=None`, `match=None`, `acts=None`, `who=None`
+  - Methods: `.targeted`: Whether the number of partners people have at a time is a target (`n_contacts`), rather […]; `.active()`: The agents who can have partners, as a boolean array: alive, and with `who=`, those it […]; `.degrees()`: The number of partners each person has; `.levels()`: The level of every person in a property of people (by default, the one match= names), as […]; `.init_results()`: With a target, the partnerships formed and the realized number of partners; with match=, […]; `.init_post()`: Start at the target: give each person a number of partners, and pair them at random (with […]; `.add_pairs()`: Pair the people looking for a partner: those who look on this step, given how many […]; `.step()`: End partnerships, set the states of people (e.g. debut), and form new partnerships; `.check()`: Run the sim again, and compare the network it makes with the network's targets
+- `ss.DynamicNetwork(pars=None, edges=None, memory=None, **kwargs)`: A network where partnerships update dynamically [for extending Starsim]
+  - Default pars: `memory=None`
+  - Methods: `.step()`: Remove expired partnerships and add new ones; `.find_contacts()`: Find all contacts of the specified people (see `ss.Network.find_contacts()`), including, […]
+- `ss.MixingPool(pars=None, source=None, target=None, n_contacts=None, **kwargs)`: Mixing between two groups of people (or everyone), without edges: used in place of a network
+  - Default pars: `source=None`, `target=None`, `n_contacts=ss.constant(value=10)`
+  - Methods: `.shrink()`: Remove the people in each group, to save memory (e.g. before saving the sim); `.init_post()`: Find the diseases that transmit over it, and check its contacts; `.step()`: Update the UIDs of the source and target
+- `ss.Network(pars=None, edges=None, **kwargs)`: A network of contacts (edges) between people, over which diseases spread, and the methods for changing them. This base class has fixed edges, given by hand; the built-in networks, which make their own and change them over time, are its subclasses, e.g. `ss.RandomNet`, `ss.DegreeNet`, […] [for extending Starsim]
+  - Methods: `.p1`: The first half of a network edge (person 1); `.p2`: The second half of a network edge (person 2); `.transmit()`: The edges that transmit in a step, in each direction the network transmits in (p1 to p2, […]; `.init_results()`: Store network length by default; `.init_post()`: Add the first edges; `.remove_edges()`: Remove the specified edges from the network; `.append()`: Add edges to the network; `.to_graph()`: The network as a NetworkX `DiGraph`, e.g. to draw it or to use NetworkX's measures of […]; `.to_dict()`: The edges, as a dict of arrays by column; `.to_df()`: The edges, as a dataframe; `.from_df()`: Set the edges from a dataframe or a dict of arrays; `.shrink()`: Remove the edges, to save memory (e.g. before saving the sim); `.plot()`: Draw the network (or some of its edges), using NetworkX; `.find_contacts()`: Find all contacts of the given people, e.g. for contact tracing; `.add_pairs()`: Add new edges: nothing in this base class, whose edges are given; subclasses say how […]
+- `ss.PostnatalNet(pars=None, dur=None, **kwargs)`: A network from each mother to her infant after birth, for transmission after birth (e.g. by close contact)
+  - Default pars: `memory=None`, `dur=None`
+  - Methods: `.add_pairs()`: Add an edge from each mother to her infant
+- `ss.PrenatalNet(pars=None, edges=None, **kwargs)`: A network from each pregnant woman to her unborn child, for transmission in pregnancy
+  - Methods: `.step()`: Nothing: `ss.Pregnancy` adds and removes the edges; `.add_pairs()`: Add an edge from each mother to her unborn child; called by `ss.Pregnancy`
+- `ss.RandomNet(pars=None, n_contacts=None, dur=None, who=None, dynamic=None, method=None, remove_self_loops=None, memory=None, **kwargs)`: Random connectivity between agents
+  - Default pars: `memory=None`, `n_contacts=ss.constant(value=10)`, `dur=0`, `who=None`, `dynamic=True`, `method='fast'`, `remove_self_loops=False`
+  - Methods: `.step()`: If dynamic, replace expired edges; otherwise, do nothing; `.add_pairs()`: Add the new edges needed to bring each agent up to their number of contacts
+- `ss.SexualNet(pars=None, between=None, dur=None, debut=None, acts=None, participation=None, n_contacts=None, concurrency=None, max_contacts=None, match=None, **kwargs)`: Sexual partnerships that form and dissolve, between two groups of people: by default, men and women
+  - Default pars: `memory=None`, `between='mf'`, `n_contacts=None`, `dur=ss.lognormal(mean=ss.years(15), std=ss.years(1))`, `concurrency=None`, `max_contacts=None`, `match=None`, `acts=ss.lognormal(mean=ss.freqperyear(80), std=ss.freqperyear(30))`, `who=None`, `debut=ss.normal(mean=16, std=1.0)`, `participation=ss.bernoulli(p=0.9)`
+  - Methods: `.active()`: The agents who can have partners, as a boolean array: alive, taking part, past their […]
+
+## Demographics (ss.demographics)
+
+- `ss.Births(pars=None, birth_rate=None, rel_birth=None, min_age=None, max_age=None, rate_per=None, columns=None, **kwargs)`: Births at a crude birth rate, without modeling pregnancy: for when the number of births matters but not the pregnancies behind them (for those, use `ss.Pregnancy`)
+  - Default pars: `birth_rate=ss.peryear(0.02)`, `rel_birth=1`, `min_age=15`, `max_age=50`, `rate_per=1`
+- `ss.Deaths(pars=None, rel_death=None, death_rate=None, rate_per=None, columns=None, lifetable=None, **kwargs)`: Background deaths: deaths from causes other than the diseases modeled
+  - Default pars: `rel_death=1`, `death_rate=ss.peryear(0.01)`, `rate_per=1`
+  - Methods: `.step()`: Select people to die
+- `ss.Demographics(name=None, label=None, **kwargs)`: Base class for demographic modules. [for extending Starsim]
+- `ss.Pregnancy(*args, **kwargs)`: Pregnancy, as declared states and transitions
+  - Default pars: `fertility_rate=<bound method Pregnancy.conception_rate of Pregnancy(pars=fertility_rate, p_abor […]`, `p_abortion=0.0`, `loss_rate=ss.peryear(0)`, `loss_threshold=ss.weeks(20)`, `maternal_death_rate=ss.peryear(0)`, `infant_death_rate=ss.peryear(0)`, `dur_pregnancy=ss.choice(a=[32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42.], p=[0.001 0.002 0.005  […]`, `rel_fertility=1`, `p_infertile=ss.bernoulli(p=0)`, `min_age=15`, `max_age=50`, `rate_per=None`, `dur_breastfeed=ss.lognormal(mean=ss.years(0.75), std=ss.years(0.5))`, `p_breastfeed=ss.bernoulli(p=1)`, `children=ss.choice(a=[1 2], p=[1. 0.], replace=True)`, `p_female=ss.bernoulli(p=0.5)`, `burnin=True`, `preterm=ss.preterm(threshold=37, very_threshold=32, rel=ss.normal(mean=1, std=0.1), by_a […]`, `p_maternal_death=ss.bernoulli(p=0)`
+  - Methods: `.since_birth`: Time since the last live birth (inf if never); survives later losses; `.attr()`: A value drawn for each woman each time a transition of the pregnancy happens to her, e.g. […]; `.step()`: The pregnancy's transitions, at the start of the step, before the diseases'
+- `ss.preterm(threshold=None, very_threshold=None, rel=None, by_age=None)`: The risk of preterm birth in `ss.Pregnancy` (`preterm=ss.preterm(...)`), for the options that are rarely changed
+
+## Interventions (ss.interventions)
+
+- `ss.at_age(age, who=None)`: Who an event reaches: people as they reach an age, as its `who=`; e.g. `ss.vaccinate(who=ss.at_age(ss.months(9)))`
+- `ss.capacity(n, priority=None, queue=False)`: How many a delivery can serve, who is served first, and what happens to the rest, as its `capacity=`
+- `ss.Delivery(what=None, who=None, when=None, coverage=None, capacity=None, strain=None, increment=None, trace=None, skip_reached_within=None, disease=None, start=None, stop=None, name=None, label=None, **kwargs)`: Deliver a product to people: an `ss.Event` with what only interventions need; see `ss.vaccinate()`, `ss.screen()`, and `ss.treat()`
+- `ss.Event(what=None, who=None, when=None, n=None, p=None, strain=None, increment=None, start=None, stop=None, name=None, label=None, **kwargs)`: Something that happens to people: a move between states, on a schedule or when another event happens; see `ss.Delivery` to deliver a product
+  - Methods: `.cost`: The cost of each delivery: its product's; `.routine`: Whether each person is offered the product once, at the first step on which they are […]; `.convert()`: Convert a typed quantity to a plain number in the sim's unit; `.init_results()`: The number delivered, eligible, and covered on each step, and the cost, capacity lost, […]; `.uids()`: As agents, the UIDs of the agents selected; `.people()`: The number of people selected, whatever the results count in; `.due()`: Whether it acts on this step: within its window, on one of its rounds (if it has them), […]; `.step()`: Deliver the product to whoever it is due to in this step (at its time point, as for all […]; `.tabulated`: Whether a compartmental run can apply this delivery in the compiled kernels, for the […]; `.take()`: Choose `n` people (a number of people, not agents) from the candidates, in the order of […]; `.cure()`: Move the people treated along the transitions of the treatment (see `ss.Treatment`), and […]; `.report()`: Count the results, from the least severe (see `ss.Diagnostic.result_names`), and record […]; `.describe()`: A line saying what is delivered and how
+- `ss.Intervention(*args, who=None, **kwargs)`: Base class for interventions written as code [for extending Starsim]
+  - Methods: `.check_eligibility()`: The UIDs of the people eligible now: those alive whom `who=` holds for (evaluated as a […]
+- `ss.screen(what=None, who=None, when=None, coverage=None, capacity=None, strain=None, increment=None, trace=None, skip_reached_within=None, disease=None, start=None, stop=None, name=None, label=None, **kwargs)`: Deliver a diagnostic test; see `ss.Delivery` for the arguments
+- `ss.treat(what=None, who=None, when=None, coverage=None, capacity=None, strain=None, increment=None, trace=None, skip_reached_within=None, disease=None, start=None, stop=None, name=None, label=None, **kwargs)`: Deliver a treatment; see `ss.Delivery` for the arguments
+- `ss.vaccinate(what=None, who=None, when=None, coverage=None, capacity=None, strain=None, increment=None, trace=None, skip_reached_within=None, disease=None, start=None, stop=None, name=None, label=None, **kwargs)`: Deliver a vaccine; see `ss.Delivery` for the arguments
+
+## Products (ss.products)
+
+- `ss.boxcar(plateau, decay=None, stages=10)`: Protection that is full for a time (a plateau), then lost at once, or (with `decay=`) fading exponentially: the `waning=` of a product
+  - Methods: `.levels()`: The levels of holding the product in a compartmental run, after "False": the stages of […]
+- `ss.Diagnostic(sensitivity=1.0, specificity=1.0, outcomes=None, result_delay=None, detects=None, cost=None, name=None, label=None, **kwargs)`: A diagnostic test: what `ss.screen()` delivers
+  - Methods: `.tabulated`: A test has no step of its own (its deliveries give it), so it does not stop a whole run […]; `.diseases`: The names of the diseases whose states it is keyed by
+- `ss.Product(name=None, label=None, **kwargs)`: Generic product base class: see `ss.Vaccine`, `ss.Diagnostic`, and `ss.Treatment` [for extending Starsim]
+  - Methods: `.administer()`: The effect of a product written as code: called with the UIDs of the people a delivery […]
+- `ss.Treatment(cure=None, efficacy=None, moves=None, **kwargs)`: A treatment: what `ss.treat()` delivers
+  - Methods: `.split()`: A cure as (by state, by transition): a number or a dict by state name, or None; and a […]; `.diseases`: The names of the diseases whose transitions the treatment names (or, for one that changes […]; `.recovery()`: How a cured person leaves: the transition whose flow counts them (or None), the state […]
+- `ss.Vaccine(efficacy=None, leaky=True, **kwargs)`: A vaccine: what `ss.vaccinate()` delivers
+
+## Connectors (ss.connectors)
+
+- `ss.Connector(name=None, label=None, **kwargs)`: Base class for connectors, which link diseases (or other modules) to each other [for extending Starsim]
+- `ss.modify(target, multiply=None, add=None, set=None, efficacy=None, frac=None, network=None, who=None, when=None, until=None, start=None, stop=None, name=None, **kwargs)`: Change a named quantity while a condition holds: scale it, shift it, or set it
+  - Methods: `.target`: The target, as a path; `.init_post()`: A parameter of a module written as code with no engine of its own (an `ss.Module` or […]; `.finalize_results()`: Parameters are back to their base values after the run; `.tabulated`: Whether the engines can work out the modifier for every step before a run (see […]; `.active`: Whether the modifier applies on the current step; `.describe()`: One line saying what the modifier does; `.step()`: Nothing: a modifier acts when the quantity it changes is read (see `combine()`)
+
+## Analyzers (ss.analyzers)
+
+- `ss.Analyzer(name=None, label=None, **kwargs)`: Base class for analyzers, which record more about a sim than it records by default: for example, a state of the people on each step, read before the next step changes it. [for extending Starsim]
+  - Methods: `.step()`: Nothing by default: an analyzer usually only records results (see `record_states()` and […]
+- `ss.infection_log(**kwargs)`: Log who infected whom -- see `ss.diseases.InfectionLog` for detail
+  - Methods: `.finalize_results()`: Collect the infection logs from each of the diseases (the same logs, so several analyzers […]; `.log`: The infection log, if there is only one disease; `.to_df()`: Convert the infection log to a dataframe, if there is only one disease; `.plot()`: Plot all of the infection logs; `.animate()`: Animate the infection log -- mostly for amusement!
+
+## Time, durations, and rates (ss.time)
+
+- `ss.days(value=None, base=None, **kwargs)`: A duration in days, e.g. `ss.days(6)`
+- `ss.Duration(value=None, base=None, **kwargs)`: Base class for durations: `isinstance(x, ss.Duration)` is true for any duration
+  - Methods: `.to_dt()`: Convert this duration to a number of timesteps; see `TimePar.to_dt()`; `.days`: The duration in days: an int for a whole number of days (as for `pd.Timedelta.days`, e.g. […]; `.arange()`: Construct an array of dur instances
+- `ss.freq(value=None, unit=None, *args, **kwargs)`: Class for the number of events (rather than probability) in a specified period
+- `ss.freqperday(value=None, unit=None, *args, **kwargs)`: A number of events per day, e.g. `ss.freqperday(2)`
+- `ss.freqpermonth(value=None, unit=None, *args, **kwargs)`: A number of events per month, e.g. `ss.freqpermonth(2)`
+- `ss.freqperweek(value=None, unit=None, *args, **kwargs)`: A number of events per week, e.g. `ss.freqperweek(2)`
+- `ss.freqperyear(value=None, unit=None, *args, **kwargs)`: A number of events per year, e.g. `ss.freqperyear(2)`
+- `ss.months(value=None, base=None, **kwargs)`: A duration in months, e.g. `ss.months(6)`
+- `ss.per(value, unit=None)`: A `per` represents an instantaneous rate of an event occurring. Rates must be non-negative, but need not be less than 1.
+- `ss.peract(value=None, **directions)`: A probability per act, for a transmission over a network that defines acts (e.g. `ss.SexualNet`)
+  - Methods: `.values`: The values, one or one for each direction; `.pars`: The parameters in its values, so they can be fitted; `.check()`: A probability per act must be in [0, 1]
+- `ss.perday(value, unit=None)`: An instantaneous rate per day, e.g. `ss.perday(0.1)`
+- `ss.permonth(value, unit=None)`: An instantaneous rate per month, e.g. `ss.permonth(0.1)`
+- `ss.perweek(value, unit=None)`: An instantaneous rate per week, e.g. `ss.perweek(0.1)`
+- `ss.peryear(value, unit=None)`: An instantaneous rate per year, e.g. `ss.peryear(0.1)`
+- `ss.prob(value=None, unit=None, rate=None)`: `prob` represents the probability of an event occurring during a specified period of time.
+- `ss.probperday(value=None, unit=None, rate=None)`: A probability per day, e.g. `ss.probperday(0.1)`
+- `ss.probpermonth(value=None, unit=None, rate=None)`: A probability per month, e.g. `ss.probpermonth(0.1)`
+- `ss.probperweek(value=None, unit=None, rate=None)`: A probability per week, e.g. `ss.probperweek(0.1)`
+- `ss.probperyear(value=None, unit=None, rate=None)`: A probability per year, e.g. `ss.probperyear(0.1)`
+- `ss.Rate(value=None, unit=None, *args, **kwargs)`: A value per unit of time, e.g. 2 per day: the base class of rates, probabilities, and frequencies [for extending Starsim]
+  - Methods: `.rate`: The instantaneous rate; an alias to `self.value`, except for `ss.prob`, where it is […]; `.to_dt()`: Convert this rate to its per-timestep value; see `TimePar.to_dt()`; `.to()`: Convert this rate to one with a different denominator; `.to_prob()`: Convert from one time probability to another; `.to_events()`: Simple multiplication: calculate the number of events over the time period
+- `ss.TimePar(*args, **kwargs)`: Parent class for all TimePars -- dur, Rate, etc. [for extending Starsim]
+  - Methods: `.replace()`: Return a copy of this TimePar with a different value; `.to()`: Convert this TimePar to one of a different class; `.to_dt()`: Resolve this timepar against the timestep, returning a plain number of timesteps (for a […]
+- `ss.weeks(value=None, base=None, **kwargs)`: A duration in weeks, e.g. `ss.weeks(6)`
+- `ss.years(value=1, base=None)`: A duration in years, e.g. `ss.years(5)`; the default unit
+
+## Dates (ss.dates)
+
+- `ss.date(*args, day_round=True, allow_zero=None, **kwargs)`: Define a point in time, based on `pd.Timestamp`
+  - Methods: `.replace()`: Returns a new ss.date(); pd.Timestamp is immutable; `.years`: Return the date as a number of years; `.round()`: Round to a given interval (by default a day); `.arange()`: Construct an array of dates; `.to_json()`: Returns a JSON representation of the date
+- `ss.DateArray(arr=None, unit=None)`: Lightweight wrapper for an array of dates [for extending Starsim]
+  - Methods: `.years`: Represent the dates as floating point years
+
+## Timelines (ss.timeline)
+
+- `ss.schedule(*args, at=None, every=None, start=None, stop=None, **kwargs)`: When something is due: on a calendar cadence (e.g. every 3 months), at a list of times, whenever a function of the date is true, or at every step between a start and a stop (with neither, at every step)
+  - Methods: `.init()`: Link to a timeline (of a module or sim, or a `ss.Timeline` itself), and work out the […]; `.due()`: The number of times due in this step (or step `ti`), usually 0 or 1
+- `ss.Timeline(start=None, stop=None, dt=None, dur=None, name=None, init=None, sim=None)`: Handle time vectors and sequencing ("timelines") for both simulations and modules. [for extending Starsim]
+  - Methods: `.datevec`: Time vector as `ss.date` objects (derived lazily from tvec/yearvec); `.timevec`: Human-friendly (plotting-friendly) representation of tvec (derived lazily); `.relvec`: Time since the start of the sim, as numbers in the unit of the sim's step, `dt` (e.g. […]; `.to_dict()`: Return a dictionary of all time vectors; `.dt_year`: The timestep size in years; `.year`: The current time in years; `.now()`: Get the current simulation time: time point `ti`, the start of the current step, which is […]; `.init()`: Initialize all vectors
+
+## Distributions (ss.distributions)
+
+- `ss.bernoulli(p=0.5, **kwargs)`: Bernoulli distribution: True or False with the given probability (which can be an array, or a function of the agents)
+  - Methods: `.filter()`: The agents for whom it is True, or with both=True, those for whom it is True and those […]; `.split()`: Alias to filter(uids, both=True)
+- `ss.beta_dist(a=None, b=None, *, mean=None, std=None, force=False, **kwargs)`: Beta distribution, with values between 0 and 1, given by its shape parameters, or by its mean and standard deviation
+- `ss.binom(n=1, p=0.5, **kwargs)`: Binomial distribution: the number of successes in n trials; as a likelihood (see `sim.fit()`), the model's value is the probability and the data are counts, e.g. the positives among n tested (not their fraction)
+  - Methods: `.ppf()`: The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's above a mean of 30 […]
+- `ss.choice(a=2, p=None, replace=True, **kwargs)`: Random choice between discrete options
+  - Methods: `.ppf()`: The choice for each uniform random number, by the inverse CDF
+- `ss.choose_n(n=1, weights=None, die=False, **kwargs)`: Choose exactly n agents (without replacement) from a set of candidate UIDs
+  - Methods: `.rvs()`: Return a boolean array of whether each agent is chosen (n can be UIDs or a size), so […]; `.filter()`: Return the chosen UIDs (sorted), i.e. min(n, len(uids)) of them; if both=True, also […]; `.split()`: Alias to filter(uids, both=True)
+- `ss.constant(value=0.0, **kwargs)`: Constant (delta) distribution: every draw is the same value, e.g. for a parameter that takes a distribution but should not vary
+- `ss.erlang(k=1, mean=1.0, **kwargs)`: Erlang distribution: the sum of `k` exponential stages, given by its number of stages and its mean
+- `ss.expon(mean=1.0, **kwargs)`: Exponential distribution
+  - Methods: `.ppf()`: The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's for unusual […]
+- `ss.gamma(shape=None, scale=None, *, loc=0.0, mean=None, std=None, **kwargs)`: Gamma distribution (specifically, scipy.stats.gamma)
+- `ss.histogram(values=None, bins=None, density=False, data=None, **kwargs)`: Draws from a histogram, uniform within each bin, e.g. ages from the number of people in each age group
+  - Methods: `.ppf()`: The inverse of the CDF, which is piecewise linear
+- `ss.lognormal(mean=None, std=None, *, log_mean=None, log_std=None, **kwargs)`: Lognormal distribution, given by its own mean and standard deviation, or by those of its logarithm
+- `ss.multi_random(names, *args, crn=None, **kwargs)`: Random numbers for pairs (or larger groups) of agents, e.g. one for each edge of a network in a transmission [for extending Starsim]
+  - Methods: `.init()`: Initialize each distribution; not usually needed, since the sim does it; `.rvs()`: One random number between 0 and 1 for each pair (or group) of agents
+- `ss.nbinom(n=1, p=None, mean=None, **kwargs)`: Negative binomial distribution, given by `n` and `p`, or by `n` and the mean
+  - Methods: `.ppf()`: The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's above a mean of 30, […]
+- `ss.normal(mean=0.0, std=1.0, **kwargs)`: Normal distribution
+  - Methods: `.ppf()`: The inverse CDF: the same arithmetic as SciPy's, without its checking of the arguments, […]
+- `ss.poisson(mean=1.0, **kwargs)`: Poisson distribution
+  - Methods: `.ppf()`: Fast inverse-CDF sampling for the common-random-number (ppf) path
+- `ss.randint(*args, low=None, high=None, dtype=None, **kwargs)`: Random integer distribution, on the interval [low, high)
+- `ss.random(dtype=None, **kwargs)`: Random distribution, with values on the interval (0, 1): the raw uniform draws, for code that uses them directly
+- `ss.truncnorm(mean=0.0, std=1.0, low=-inf, high=inf, **kwargs)`: Normal distribution truncated to an interval
+  - Methods: `.ppf()`: The inverse CDF: a uniform draw between the normal's CDF at the two ends
+- `ss.uniform(low=None, high=None, **kwargs)`: Uniform distribution, values on interval (low, high); with one argument, it is the upper bound (`ss.uniform(5)` is between 0 and 5)
+- `ss.weibull(shape=1.0, scale=1.0, *, loc=0.0, **kwargs)`: Weibull distribution (specifically, scipy.stats.weibull_min)
+  - Methods: `.ppf()`: The inverse CDF, compiled (see `ss.solvers.backends.draws`); SciPy's for unusual […]
+
+## How distributions work (ss.dists)
+
+- `ss.Dist(dist=None, distname=None, name=None, unit=None, round=False, seed=None, offset=None, strict=True, sim=None, module=None, mock=False, **kwargs)`: Base class for tracking one random number generator associated with one distribution, i.e. one decision per timestep. [for extending Starsim]
+  - Methods: `.set()`: Set (change) the distribution type, or one or more parameters of the distribution; `.init()`: Calculate the starting seed and create the RNG; `.signature()`: Each parameter and what it is scaled by, if the parameters are all plain values […]; `.rand()`: Simple way to get simple random numbers; `.ppf()`: Return default random numbers for array parameters; not for the user; `.rvs()`: Get random variates -- use this!; `.streams()`: A stream of uniforms for each agent, for compiled code that needs a varying number of […]; `.to_json()`: Return a dictionary representation of the Dist; `.shrink()`: Shrink the size of the distribution for saving to disk; NB, also clears per-agent […]; `.plot_hist()`: Plot the current state of the RNG as a histogram (from a copy initialized on its own, if […]
+
+## Parameters (ss.parameters)
+
+- `ss.by(table=None, dims=None, **kwargs)`: A value for each level of one or more stratifications, or of people's own properties
+  - Methods: `.to_json()`: The value as plain data, for `sim.to_json()`; `.map()`: A new ss.by with a function applied to each value, e.g. `1/by` (with several dimensions […]; `.items`: Every value it holds; `.values`: The values, if there is one dimension; `.keys()`: How the values along one dimension are given: ('edges', array) for a table's column of […]; `.check()`: Check the values against the sim's dimensions, and that a property of people that is not […]
+- `ss.Pars(*args, **kwargs)`: Dict-like container of parameters [for extending Starsim]
+  - Methods: `.to_json`: Return an attribute of instance, which is of type owner
+- `ss.seasonal(mean=1.0, amplitude=0.0, peak=0.0, period=None)`: A value with a yearly cycle: `mean × (1 + amplitude × cos(2π(t − peak)))`, with `t` in years (or another period)
+  - Methods: `.factor()`: The value relative to the mean, at a year or an array of them
+- `ss.timeseries(data, values=None, interpolation='step', period=None)`: A value that varies in time, given at some times and interpolated between them
+  - Methods: `.map()`: A new time series with a function applied to each value, e.g. `ss.peryear(ts)`, whose […]; `.years()`: The times as years on the sim's timeline (a bare time is a year if the sim has a […]
+
+## Results (ss.results)
+
+- `ss.Result(name=None, label=None, dtype=<class 'float'>, shape=None, scale='auto', auto_plot=True, module=None, values=None, timevec=None, low=None, high=None, kind='auto', summarize_by='auto', columns=None, runs=None, groups=False, **kwargs)`: Array-like container for holding sim results.
+  - Methods: `.select()`: Select groups of a stratified result by name: keeps the given levels of each dimension, […]; `.axes()`: The dimensions of this result, whichever way they are kept, for `select()` and `by()`: […]; `.take()`: Some of the runs of a result across runs: a result of one run for a position, or across […]; `.quantiles()`: Quantiles over the runs of each scenario, for a result across the runs of a MultiSim; `.median()`: For a result across runs, the median over the runs of each scenario (as a result of one […]; `.mean()`: For a result across runs, the mean over the runs of each scenario (as a result of one […]; `.diff()`: The difference of each other scenario from the baseline, run by run (the runs are paired […]; `.by()`: Split a stratified result by one dimension, summing over the rest; returns a 2D result […]; `.summarize()`: The result over the whole run, by its `summarize_by`: the total of a flow ('sum'), the […]; `.cum`: The cumulative total of a flow over time, e.g. `sim.results.sir.infection.cum` (a stock; […]; `.resample()`: Resample the result to a longer time unit, by its `summarize_by` (which by default […]; `.to_series()`: The result as a pandas Series, with the time points as the index; `.to_df()`: The result as a dataframe, with columns for the time, value, and (if it has them) low and […]; `.plot()`: Plot the result, with one line per column for a 2D result; `.map()`: Draw the result on a map of its places: its summary over the run (as `summarize()` gives […]
+- `ss.Results(*args, **kwargs)`: The results of a module (or of the sim, whose results also hold each module's), by name; a result can be found however it is spelled (see `find()`)
+  - Methods: `.append`: Return an attribute of instance, which is of type owner; `.flatten`: Return an attribute of instance, which is of type owner; `.resample`: Return an attribute of instance, which is of type owner; `.to_df`: Return an attribute of instance, which is of type owner; `.plot`: Return an attribute of instance, which is of type owner
+- `ss.SimData(source, aliases=None, ignore_extra=False)`: Data to compare with a sim's results, matched by name: each column is named like the result it corresponds to
+  - Methods: `.load()`: The data as a dataframe: read from the file (or copied from the dataframe given), with […]
+
+## Running multiple simulations (ss.run)
+
+- `ss.MultiSim(sims=None, label=None, n_runs=None, pars=None, priors=False, inplace=True, **kwargs)`: The runs of one or more sims: every result of the sims with a run axis first, and the sims that were run
+  - Methods: `.sims`: The sim of each run, by position (`msim.sims[0]`) or by scenario (`msim.sims['Vaccine']`: […]; `.branching`: For the runs of a branching process (`ss.Sim(branching=True)`): what came of them […]; `.run()`: Run the sims, each `n_runs` times with its own seed and with each set of values of […]; `.copy()`: A deep copy of the MultiSim, its sims included; `.shrink()`: Shrink each sim, to save memory (e.g. before saving the MultiSim), keeping the results […]; `.summarize()`: A table of each result over the whole of each run, across the runs: the median, an […]; `.diff()`: The difference of each scenario from a baseline, for every result they share, run by run; `.to_df()`: Every result across the runs; see `ss.run.MultiResults.to_df()` for the arguments; `.plot()`: Plot the results across the runs: the median and a 95% interval of each scenario, or […]; `.plot_each()`: Plot each run on its own time axis, for sims with different time points (see `plot()`): […]; `.merge()`: Merge several MultiSims into one, with the runs of each, one after the other; […]; `.split()`: Split one MultiSim into several, each with some of its runs; the reverse of […]
+- `ss.parallel(*args, n_runs=None, pars=None, priors=False, **kwargs)`: Run many sims: different sims, each sim many times with its own seed, or with sets of values of its parameters
+
+## Fitting to data (ss.fitting)
+
+- `ss.fitting.abc_smc(distance, logprior, z0, samples=200, generations=8, quantile=0.5, tolerance=None, min_acceptance=0.02, rand_seed=None, verbose=True)`: Approximate Bayesian computation by sequential Monte Carlo (Beaumont et al. 2009): a posterior without a likelihood
+- `ss.fitting.compare_models(sims, data=None, holdout=0.25, folds=None, n_runs=None, **kwargs)`: Compare models by how well they predict data they were not fitted to
+- `ss.fitting.diagnose(draws)`: The R-hat (near 1 if the chains agree) and the effective sample size of each value, from draws (chains × draws × values)
+- `ss.fitting.Fit(sim, before, pars, table, trials, method, objective, objective_before, measure, samples, diagnostics, converged, why, scores, study=None, trajectories=None)`: The result of fitting a sim to its data; see `sim.fit()`
+  - Methods: `.project()`: Run the fitted model forward under each scenario, with the uncertainty in the fitted […]; `.summarize()`: Print the goodness of fit before and after, and return the estimates (a dataframe), which […]; `.to_df()`: Every evaluation: the parameter values tried, and the objective at each; `.plot()`: Plot the results that have data against it, before and after fitting; a flow with data at […]
+- `ss.fitting.fit_stages(sim, stages, verbose=None, **kwargs)`: Staged fitting: run each method in turn, each starting from the best fit of the one before; see `sim.fit()` with `method=` a list
+- `ss.fitting.loglik(sim, data=None, likelihood=None, weights=None, by_series=False)`: The log-likelihood of a sim's data (larger is better): the sum over the series, which are treated as independent
+- `ss.fitting.maximize(result, at=None)`: The goal of `sim.optimize()`: a result to make as large as possible
+- `ss.fitting.method(name, **settings)`: A fitting method and its settings, for `sim.fit(method=...)`
+  - Methods: `.options`: The settings for the method's own function
+- `ss.fitting.minimize(result, at=None)`: The goal of `sim.optimize()`: a result to make as small as possible
+- `ss.fitting.mismatch(sim, data=None, weights=None, loss=None)`: The loss of a sim against its data: the mismatch between them (smaller is better)
+- `ss.fitting.ModelComparison(fits, table, holdout, measure, splits, clear=True)`: The result of comparing models by how well they predict held-out data; see `ss.fitting.compare_models()`
+  - Methods: `.summarize()`: Print what was held out, and return the table, which is printed too in a script (see […]; `.to_df()`: The table, as a dataframe; `.plot()`: Plot each model's fit and prediction against the data, with the held-out data hollow; […]
+- `ss.fitting.nuts(logdensity, z0, draws='auto', warmup=300, chains=4, traced=False, forward=True, rand_seed=None, verbose=True, ess=400, rhat=1.01, max_draws=5000, batch=100)`: Sample from a posterior with the No-U-Turn sampler (NUTS, from BlackJAX), with Stan's warm-up of the step size and the mass matrix
+- `ss.fitting.Optimization(**kwargs)`: The result of allocating spending to maximize (or minimize) a result; see `sim.optimize()`
+  - Methods: `.summarize()`: Print the result before and after, and return the allocation before and after (a […]
+- `ss.fitting.ParticleFilter(sim, likelihood=None, weights=None)`: An estimate of the likelihood of a stochastic sim's data, from a bootstrap particle filter (see `sim.fit()` with `method='pmcmc'`)
+  - Methods: `.filter()`: The estimate of the log-likelihood of the data of one disease (or of the diseases of […]
+- `ss.fitting.pmmh(logpost, z0, draws='auto', warmup=1000, chains=4, particles=None, rand_seed=None, parallel=True, verbose=True, ess=400, rhat=1.01, max_draws=20000, batch=250)`: Sample from a posterior by particle marginal Metropolis-Hastings: a random-walk Metropolis sampler on a log-density that is estimated by a particle filter (or is exact)
+- `ss.fitting.prior_draws(sim, n, rand_seed=None)`: Values of the model's parameters drawn from their priors (`ss.par(prior=...)`, truncated to the bounds if it has them, as the samplers use it; or uniform over the bounds of one with bounds and no prior), for `ss.parallel(sim, priors=True)`
+- `ss.fitting.profile(sim, par, values=None, level=0.95, **kwargs)`: The profile likelihood of one parameter: at each of its values, the others refitted by maximum likelihood (`sim.fit(pars=...)`), and the confidence interval it gives
+- `ss.fitting.sensitivity(sim, pars=None, results=None, n=100, rand_seed=None, verbose=None)`: Which parameters matter: Latin hypercube samples over the bounds of the parameters, with the partial rank correlation of each with a summary of each result
+- `ss.fitting.split_data(data, holdout=0.25, folds=None)`: Split data into the part to fit to and the part to predict, for each fold
+- `ss.fitting.Swarm(sim, fitted, set_pars, to_x, z0, sd=0.05, cooling=0.5, n_points=1)`: The parameter values of each particle of IF2, iterated filtering, and the rates of the run that they give (see `sim.fit()` with method='if2')
+  - Methods: `.convert()`: A fitted value as the engine uses it: in the sim's unit, as […]; `.resample()`: The values of the particles drawn again
+
+## Places and movement (ss.geo)
+
+- `ss.geo.geography(data=None, names=None, populations=None, x=None, y=None, lat=None, lon=None, distances=None, adjacency=None, level=1, year=None, places=None)`: A geography: named places with populations and positions, used as the levels of a spatial stratification
+  - Methods: `.draw()`: Draw the places into axes, as shapes or as points sized by population, for `plot()` and […]; `.plot()`: Draw a map of the places, colored by a value for each place if given
+- `ss.geo.gravity(away=None, scale=None, kind=None, source_power=1.0, dest_power=1.0, distance_power=2.0)`: The gravity model of movement: the fraction of their time that a person from place `i` spends in place `j` (or, for migration, the rate at which they move there) is `scale × pop[i]^(source_power−1) × pop[j]^dest_power / distance[i,j]^distance_power`
+- `ss.geo.Mobility(matrix=None, kind=None, away=None, **kwargs)`: Movement between the levels of a spatial stratification, given as a matrix
+  - Methods: `.load()`: Read a movement register, with a blank `from` or `to` (or a blank `states`) as None
+- `ss.geo.radiation(away=None, scale=None, kind=None)`: The radiation model of movement (Simini et al. 2012), which has no parameters to fit: of the people from place `i` who travel, the fraction who go to place `j` is `pop[i] × pop[j] / ((pop[i] + s) × (pop[i] + pop[j] + s))`, where `s` is the population of the other places nearer to `i` than `j` is
+- `ss.geo.register(data)`: A movement register: a table of moves between places on given dates, e.g. livestock sales between farms
+
+## Data by place (ss.data)
+
+- `ss.data.age(place='world', year=None)`: The ages of a place's people, as the `age_data` of `ss.People`: counts by 5-year age group
+- `ss.data.age_edges(labels)`: The lower edge of each age group from its label ('0-4', '75+', or '3'), as floats: the inverse of `age_labels()`
+- `ss.data.age_labels(edges)`: The label of each age group from its lower edge, as a stratification by age labels them, e.g. '0-4', '5-9', and '75+' (a single year is '3')
+- `ss.data.age_split(edges, ages, counts)`: The fraction of people in each age group, from counts by 5-year age group, with ages uniform within each
+- `ss.data.contacts(place, study=None, layer='all')`: A contact matrix by age for a named place, for `ss.contacts('Kenya')`
+- `ss.data.geography(place, level=1, year=None, places=None)`: The administrative units of a place, for `ss.geo.geography('Kenya', level=1)`
+- `ss.data.population(place, year=None, revision=None)`: The population of a named place by age and sex, for `ss.population('Kenya', year=2024)`
+- `ss.data.rates(place, which, revision=None)`: The UN World Population Prospects birth, death, fertility, or net migration rates of a named place, for `ss.Births(birth_rate='Kenya')`, `ss.Deaths(death_rate='Kenya')`, and `ss.Pregnancy(fertility_rate='Kenya')`
+- `ss.data.starsim_data()`: The `starsim_data` package, which has the data by place, imported when it is first used
+
+## Arrays and agent indexing (ss.arrays)
+
+- `ss.Arr(name=None, dtype=None, default=None, nan=None, label=None, raw=None, skip_init=False, people=None, mock=None, columns=None, shared=False)`: Store a state of the agents (e.g. age, infection status, etc.) as an array. [for extending Starsim]
+  - Methods: `.isin()`: Return a `BoolArr` that is True wherever the array's value is in `values`; `.auids`: Link to the indices of active agents -- sim.people.auids; `.count()`: Count the number of nonzero (truthy) values among active agents (for 2D arrays, use […]; `.values`: Return the values of the active agents; `.set()`: Set the values for the specified UIDs; `.notnan`: Return BoolArr for non-NaN values; `.convert()`: Check if an object is an array-like, and convert it to this array's type if so; `.astype()`: Convert the Arr type, e.g. `arr.astype(ss.IntArr)`; other types (e.g. `int`) return a […]; `.true()`: Efficiently convert truthy values to UIDs; `.false()`: Reverse of true(); return UIDs of falsy values; `.col()`: Return column `v` of a 2D array as a 1D `Arr`, e.g. `(imm.col(2) > 0.5).uids` or […]; `.to_json()`: Export to JSON
+- `ss.BoolArr(name=None, **kwargs)`: Subclass of `ss.Arr` with defaults for booleans. [for extending Starsim]
+  - Methods: `.n`: The number of people it is True for now, each counted by their weight and the sim's […]; `.frac`: The fraction of the people alive it is True for now (`n` over `people.n`), as `(sir.I | […]; `.notnan`: Always True for BoolArr (booleans cannot be NaN); `.uids`: Alias to Arr.true; `.split()`: Return UIDs of values that are true and false as separate arrays
+- `ss.BoolState(name=None, **kwargs)`: A boolean array being used as a state. [for extending Starsim]
+  - Methods: `.n`: The number of people in the state: its agents, each counted by the people it stands for […]; `.time_in`: For a state of a declared disease run as agents: the time each person in it (or leaving […]; `.stays`: For a state of a declared disease run as agents: how long each person who has been […]; `.set()`: Set the values for the specified UIDs, telling whatever keeps count of the state (see […]
+- `ss.CatArr(name=None, categories=None, default=None, **kwargs)`: A categorical state: one of a list of categories for each agent (e.g. a district, or a wealth quintile), read, compared and set by category [for extending Starsim]
+  - Methods: `.code()`: The code of a category, or the codes of an array of them; integers (codes, or integer […]
+- `ss.FloatArr(name=None, **kwargs)`: Subclass of `ss.Arr` with defaults for floats. [for extending Starsim]
+- `ss.IntArr(name=None, **kwargs)`: Subclass of `ss.Arr` with defaults for ints. [for extending Starsim]
+- `ss.TimeArr(name=None, **kwargs)`: Times, as step numbers of the module's timeline: when something happened or is due for each agent, e.g. a declared disease's `ti_X` (when each entered state X) and `ti_exit_X`, as agents, and `people.ti_dead` [for extending Starsim]
+  - Methods: `.due()`: Whose time has come by the current step, as a boolean array (e.g. `mask = self.exposed & […]; `.isclose()`: Whose time is taken at step `other` (e.g. `self.ti_infectious.isclose(self.ti)`, those […]; `.years`: The values as years (e.g. 2020.5), with NaN where not set
+- `ss.uids(arr=None)`: Class to specify that integers should be interpreted as UIDs. [for extending Starsim]
+  - Methods: `.concatenate()`: Concatenate uids into a single instance; `.remove()`: Remove provided UIDs from current array; `.intersect()`: Keep only UIDs that are also present in the other array; `.union()`: Return all UIDs present in either array, sorted, without repeats (as np.union1d() gives […]; `.to_numpy()`: Return a view as a standard NumPy array
+
+## Utilities (ss.utils)
+
+- `ss.load(filename, **kwargs)`: Alias to Sciris `sc.loadany()`, for Starsim's own objects
+- `ss.ndict(*args, type=None, **kwargs)`: A dictionary of named items, such as a sim's modules (`sim.diseases`), which can also be called for its values (`sim.diseases()`) [for extending Starsim]
+  - Methods: `.append`: Return an attribute of instance, which is of type owner; `.get`: Return an attribute of instance, which is of type owner; `.merge`: Return an attribute of instance, which is of type owner; `.copy`: Return an attribute of instance, which is of type owner
+- `ss.plot_args(kwargs=None, _debug=False, **defaults)`: Split the keywords given to `sim.plot()` and other plotting functions among the parts of the plot they are for (the figure, the lines, the data, and so on) [for extending Starsim]
+- `ss.return_fig(fig, given=False, **kwargs)`: Do postprocessing on the figure: save it, show it, and return it; not for the user, but its arguments can be given to any plot of results [for extending Starsim]
+- `ss.save(filename, obj, **kwargs)`: Alias to Sciris `sc.save()`
+- `ss.show(**kwargs)`: Show the figures made so far (`plt.show()`), e.g. at the end of a script that makes plots with `ss.options.show = False`
+- `ss.warn(msg, category=None, verbose=None, die=None)`: Show a warning, as `ss.options.warnings` says: as a Python warning (default), printed, raised as an error, or not at all [for extending Starsim]
+
+## Settings (ss.settings)
+
+- `ss.options(key=None, value=None, **kwargs)`: The options for Starsim, as `ss.options`: settings for everything in a session that aren't part of a model, such as how much to print and how to treat warnings
+- `ss.style(style=None, **kwargs)`: Set the plotting style for a `with` block
+
+## Other
+
+- `ss.AlreadyRunError(*args)`: A sim that has already run (or been finalized) is stepped, finalized, or added to again; `sim.run()` runs it again from the start [for extending Starsim]
+- `ss.attr(value, when=None, combine='last', init=None, name=None, label=None, **kwargs)`: A value for each person: drawn at an event, recorded at an event, drawn once when the person is made (a trait), or derived
+  - Methods: `.default`: The value before any event, as a number (one drawn for each person, `init_value`, is NaN, […]
+- `ss.birth(state=None, rate=None, when=None, children=1, p_female=None, name=None, label=None, **kwargs)`: An inflow of people: at a crude (per-person) birth rate, e.g. `ss.birth(S, rate=ss.peryear(0.02))`; or driven by a flow, e.g. `ss.birth(NP, when=preg.delivery, children=2)`, `children` for each person who goes through the transition
+- `ss.CapabilityError(...)`: The requested solver cannot run part of the model. Three cases: there is no sensible approximation (contact tracing, transmission trees, agent-only custom code); a function or condition asked for something that exists only per agent in a compartmental run; or an approximation would be needed and […] [for extending Starsim]
+- `ss.compile(verbose=True)`: Compile the kernels now (those of the compartmental solvers, the passes over the agents and the rest of what sims with agents use), so that no run waits for them: e.g. after installing Starsim (as `starsim init compile` does), in a Docker image, in CI, or before a calibration [for extending Starsim]
+- `ss.death(state=None, rate=None, dur=None, lifetable=None, name=None, label=None, **kwargs)`: An outflow of people, e.g. `ss.death(I, rate=ss.peryear(0.1))`
+- `ss.emigration(state=None, rate=None, dur=None, name=None, label=None)`: People leaving the population, e.g. `ss.emigration(rate=ss.peryear(0.01))`
+- `ss.export_to(sim, format, filename=None, verbose=None)`: Write a sim in another format (`sim.save()` and `ss.save()` write Starsim's own, a gzipped pickle that `ss.load()` reads)
+- `ss.immigration(state=None, n=None, name=None, label=None, **kwargs)`: People arriving from outside the population, e.g. `ss.immigration(S, n=ss.peryear(100))`: a number of people per unit time
+- `ss.immunity(*args, due_to=None, protection=None, combine='max')`: Protection between strains: what having (or having had) one strain does against each strain
+  - Methods: `.source`: What protects, in words: the names of the states; `.names`: The names of the states that protect, from what due_to= was given: states, their names, […]
+- `ss.import_from(source, format=None, **kwargs)`: Read another framework's model into a sim, e.g. `ss.import_from('workbook.xlsx')`
+- `ss.jit(func=None, *, nopython=True)`: Make a function fast, by compiling it with Numba or JAX, with no change in what it does [for extending Starsim]
+- `ss.levels(levels, states=None, who=None, kind=None, mobility=None, fractions=None)`: The levels of a stratification, with the options that are needed less often; for `stratify()`
+- `ss.lifelong(func)`: Mark a function of the agents as giving each person a value that stays the same for life, so a run as agents works it out once for each person rather than at each step
+- `ss.lifetable(ages, deaths)`: A life table: how many die at each age, which `ss.death(lifetable=)` and `ss.Deaths(lifetable=)` take as a death rate for each age band (see `hazards()`); as agents, `ss.death(lifetable=)` draws each person's age at death once from those rates (see `draw()`), which is the same model
+  - Methods: `.draw()`: The age at death of people of some ages, from uniform random numbers, at the death rate […]
+- `ss.migration(rate=None, rate_per=None, name=None)`: Net migration of everyone, at a rate per person of either sign: arrivals less departures, as the UN gives it, e.g. `ss.migration(rate='Albania')`
+- `ss.mother(x, include_born=False)`: A condition or expression evaluated on each unborn agent's mother (1/0 for a condition, or its value), and 0 for anyone born, unless include_born=True
+- `ss.move(*args, p=None, n=None, uids=None, who=None)`: Move people between states of a declared disease from code, the same way under every solver
+- `ss.note(msg, sim=None, verbose=None)`: Say something that was assumed or approximated, in one line [for extending Starsim]
+- `ss.on(x, delay=None)`: A trigger, as the driver of a transition: people move as soon as a condition holds, or when an event happens to them
+  - Methods: `.outcome`: Whether it is an outcome of a delivery or a product (e.g. `drug.failed`), which moves the […]
+- `ss.outcome(source, delay=None, dur=None, likelihood=None, name=None, label=None, **kwargs)`: A reported quantity: a flow worked out from other flows, which moves nobody
+- `ss.par(value=None, bounds=None, prior=None, source=None, doc=None, name=None, label=None)`: A named parameter with bounds, a prior, and provenance
+  - Methods: `.raw`: The current value (the module holds this parameter itself, so a value set there is this […]; `.merge()`: Take what another parameter gives (its value, bounds, prior, and description), keeping […]
+- `ss.pars(defaults, **kwargs)`: Create several parameters at once, from defaults and the values given, as a class's declared parameters are made
+- `ss.ref(path)`: A reference to a state or transition of a module by its path, resolved when the sim is initialized: for a module made before the others exist
+- `ss.SimPars(pars=None, create=True, **kwargs)`: The settings of a sim, as `sim.pars`; each is described in `ss.Sim` [for extending Starsim]
+- `ss.State(label=None, init=None, init_n=None, people=None, rel_sus=1.0, rel_trans=1.0, infected=False, keep_time=False, name=None, **kwargs)`: Something a person can be in, or a count of something that is not people
+  - Methods: `.time_in`: Time since this person last entered the state, in the sim's unit (NaN outside it); `.progress`: The fraction of the scheduled dwell time in this state that has elapsed, from 0 to 1 (NaN […]; `.enter`: The event of entering this state: for `when=` (or `ss.on()`), or `.uids`; `.exit`: The event of leaving this state; `.total`: The number in these states in the whole population: in a model with places, in every […]
+- `ss.states(arg=None, infected=False, include_sum=False, **kwargs)`: Create several states at once
+- `ss.Strains(strains, immunity=None, max_strains=None, transmit='one', fractions=None, name='strain', label=None, **values)`: The strains of a disease: `ss.Disease(..., strains=ss.Strains(...))`, which is then `dis.strains`
+  - Methods: `.immunity`: The protection between the strains, a list of `ss.immunity`; it can be set after the […]; `.describe()`: The strains of a disease, as rows of its description (`out`, an […]
+- `ss.transfer(move=None, rate=None, dur=None, p=None, states=None, name=None, label=None, increment=None, **kwargs)`: Movement between the levels of a stratification, without a change of disease state
+- `ss.Transition(source=None, dest=None, rate=None, dur=None, p=not given, stages=None, name=None, label=None, who=None, when=None, move=None, increment=None, min_stay=None, noise=None, acquisition=None, per_strain=False)`: A movement between states
+  - Methods: `.incidence()`: A condition on how many go through the transition: the number over the last `over`, as a […]; `.hazard()`: In a running sim, as agents: the current rate of the transition for some agents, with its […]; `.to()`: The event of taking one branch of this transition, e.g. `precin.to(S)`: for `when=` (or […]; `.uids`: The agents who went through this transition, from the moment they moved until the same […]; `.ever`: Whether each person has gone through this transition, as a condition (agents only), e.g. […]; `.n_times`: How many times each person has gone through this transition (agents only), e.g. […]; `.since`: The time since each person last went through this transition (infinite if never; agents […]; `.p`: The branch probabilities, one for each destination (or None); `.dur`: The dwell time, as a parameter (or None, if the transition has a rate)
+
+## Library: diseases (ssl.diseases)
+
+- `ssl.AgentSEIR(*args, **kwargs)`: An SEIR model written as agent-based code rather than declared: Starsim 3's `ss.SEIR` (see `ssl.AgentSIR`), with its lognormal `dur_exp` and `dur_inf` and `p_death=0.01`.
+  - Default pars: `init_prev=ss.bernoulli(p=0.01)`, `beta=ss.peryear(0.1)`, `dur_inf=ss.lognormal(mean=ss.years(6), std=1.0)`, `p_death=ss.bernoulli(p=0.01)`, `dur_exp=ss.lognormal(mean=ss.years(0.5), std=1.0)`
+  - Methods: `.set_progression()`: Schedule recovery or death, relative to the end of the latent period; `.step_state()`: Progress exposed -> infectious, then the usual SIR transitions
+- `ssl.AgentSIR(*args, **kwargs)`: An SIR model written as code: Starsim 3's `ss.SIR`
+  - Default pars: `init_prev=ss.bernoulli(p=0.01)`, `beta=ss.peryear(0.1)`, `dur_inf=ss.lognormal(mean=ss.years(6), std=1.0)`, `p_death=ss.bernoulli(p=0.01)`
+  - Methods: `.set_prognoses()`: Infect the agents, then schedule what happens to them; `.set_progression()`: Schedule recovery or death, relative to when each agent becomes infectious; `.plot()`: Default plot for SIR model
+- `ssl.AgentSIS(*args, **kwargs)`: An SIS model with waning immunity, written as code: Starsim 3's `ss.SIS` (see `ssl.AgentSIR`), with its lognormal `dur_inf`
+  - Default pars: `init_prev=ss.bernoulli(p=0.01)`, `beta=ss.peryear(0.05)`, `dur_inf=ss.lognormal(mean=ss.years(10), std=1.0)`, `waning=ss.peryear(0.05)`, `imm_boost=1.0`
+  - Methods: `.init_results()`: As for `ss.AgentDisease`, and the mean susceptibility; `.step_state()`: Progress infectious -> recovered; `.make_naive()`: Reset agents to never having had the disease, for dynamic rescaling: every state to its […]; `.set_prognoses()`: Infect the agents, at the end of this step, and schedule their recovery; `.record_states()`: As for `ss.AgentDisease`, and the population immunity (susceptibility), at the start of […]; `.plot()`: Default plot for SIS model
+- `ssl.ART(coverage=1.0, who=None, when=None, art_delay=years(1), name=None, **kwargs)`: Antiretroviral therapy, delivered as `ss.treat()` delivers a treatment
+- `ssl.CD4_analyzer(**kwargs)`: Record the CD4 count of every agent at every timestep.
+- `ssl.Cholera(*args, **kwargs)`: Cholera, with both direct and environmental (waterborne) transmission
+  - Default pars: `beta=ss.perday(0.05)`, `asymp_trans=0.01`, `beta_env=ss.perday(0.5)`, `half_sat_rate=1000000`, `shedding_rate=ss.freqperday(10)`, `decay_rate=ss.perday(0.033)`, `dur_exp=ss.lognormal(mean=ss.days(2.772), std=ss.days(4.737))`, `dur_asymp2rec=ss.uniform(low=ss.days(1), high=ss.days(10))`, `dur_symp2rec=ss.lognormal(mean=ss.days(5), std=ss.days(1.8))`, `dur_symp2dead=ss.lognormal(mean=ss.days(1), std=ss.days(0.5))`, `p_symp=0.5`, `p_death=0.005`, `init_prev=0.005`
+- `ssl.COVID(*args, **kwargs)`: COVID-19, as a SECIR model by age: a chain of increasingly severe states, each of which some people leave by recovering
+  - Default pars: `beta=ss.perday(1)`, `rel_sus=ss.by(age=[0.5, 1, 1, 1, 1.5, 2.9])`, `rel_ins=1.0`, `rel_sym=0.2`, `dur_exp=ss.days(3.3)`, `dur_ins=ss.days(1.9)`, `dur_sym=ss.by(age=[days(7), days(7), days(7.1), days(6.9), days(6.8), days(6.8)])`, `dur_sev=ss.by(age=[days(5), days(5), days(5.9), days(7.6), days(8.5), days(11)])`, `dur_crit=ss.by(age=[days(7), days(7), days(6.9), days(17.4), days(17.1), days(11.6)])`, `p_sym=ss.by(age=[0.75, 0.75, 0.8, 0.8, 0.8, 0.8])`, `p_sev=ss.by(age=[0.0075, 0.0075, 0.019, 0.0615, 0.165, 0.225])`, `p_crit=ss.by(age=[0.075, 0.075, 0.075, 0.15, 0.3, 0.4])`, `p_death=ss.by(age=[0.05, 0.05, 0.14, 0.14, 0.4, 0.6])`, `init_prev=0.01`
+- `ssl.Dengue(n_serotypes=4, cross=0.3, init_prev=0.001, **kwargs)`: Dengue: several serotypes, each passed on by mosquitoes, with partial cross-protection between them
+- `ssl.DengueSerotype(*args, **kwargs)`: One dengue serotype: people are susceptible, infectious, or recovered, with mosquitoes of its own
+  - Default pars: `a=ss.perday(0.5)`, `b=0.5`, `c=0.5`, `m=2.0`, `dur_inf=ss.days(6)`, `eip=ss.days(10)`, `mu_v=ss.perday(0.1)`, `init_prev=0.01`
+- `ssl.Ebola(*args, **kwargs)`: Ebola, including severe disease and transmission from unburied bodies
+  - Default pars: `beta=ss.perday(0.1)`, `sev_factor=2.2`, `unburied_factor=2.1`, `dur_exp=ss.lognormal(mean=ss.days(12.7), std=ss.days(1))`, `dur_symp2sev=ss.lognormal(mean=ss.days(6), std=ss.days(1))`, `dur_symp2rec=ss.lognormal(mean=ss.days(10), std=ss.days(1))`, `dur_sev2dead=ss.lognormal(mean=ss.days(1.5), std=ss.days(1))`, `dur_sev2rec=ss.lognormal(mean=ss.days(10.4), std=ss.days(1))`, `dur_dead2buried=ss.lognormal(mean=ss.days(2), std=ss.days(1))`, `p_sev=0.7`, `p_death=0.55`, `p_safe_bury=0.25`, `init_prev=0.005`
+- `ssl.Gonorrhea(*args, **kwargs)`: Gonorrhea, as an SIS model on a sexual network
+  - Default pars: `beta=ss.peract(m2f=0.06, f2m=0.03)`, `dur_inf=ss.months(6)`
+- `ssl.HIV(*args, **kwargs)`: Simple HIV model with CD4 count dynamics and ART.
+  - Default pars: `init_prev=ss.bernoulli(p=0.05)`, `beta=0.0`, `cd4_min=100`, `cd4_max=500`, `cd4_rate=5`, `art_efficacy=0.96`, `death_dist=ss.bernoulli(p=<function HIV.death_prob_func>)`, `death_rate=ss.peryear(0.05)`
+  - Methods: `.step_state()`: Update CD4; `.init_results()`: Initialize results
+- `ssl.Influenza(*args, **kwargs)`: Seasonal influenza, as a SEIRS model with a yearly cycle in transmission
+  - Default pars: `beta=ss.seasonal(mean=0.26, amplitude=0.3, peak='January')`, `dur_exp=ss.days(2)`, `dur_inf=ss.days(5)`, `dur_imm=ss.years(1)`, `birth_rate=ss.peryear(0.02)`
+- `ssl.Malaria(*args, **kwargs)`: Malaria as the Ross-Macdonald model of humans and mosquitoes
+  - Default pars: `a=ss.perday(0.5)`, `b=0.5`, `c=0.8`, `m=10.09`, `gamma=ss.perday(0.033)`, `mu_h=ss.perday(5.5e-05)`, `mu_v=ss.perday(0.143)`
+- `ssl.MalariaImmunity(*args, **kwargs)`: Malaria with immunity, as the Garki model
+  - Default pars: `C=0.1`, `g=0.097`, `r1=ss.perday(0.0023)`, `ratio=10.0`, `alpha1=ss.perday(0.002)`, `alpha2=ss.perday(0.00019)`, `delta=ss.perday(0.0001)`, `dur_inc=ss.days(15)`, `q3=0.7`, `dur_x2=ss.constant(value=par(days(15), doc='Incubation period in people'))`, `dur_x4=ss.constant(value=par(days(15), doc='Incubation period in people'))`
+- `ssl.Measles(*args, **kwargs)`: Measles, as an SEIR model with deaths
+  - Default pars: `beta=ss.perday(1.4)`, `dur_exp=ss.normal(mean=ss.days(8), std=ss.days(2))`, `dur_inf=ss.normal(mean=ss.days(11), std=ss.days(1.5))`, `p_death=0.005`, `init_prev=0.005`
+- `ssl.NCD(*args, **kwargs)`: Example non-communicable disease
+  - Default pars: `initial_risk=ss.bernoulli(p=0.3)`, `dur_risk=ss.expon(mean=ss.years(10))`, `prognosis=ss.weibull(shape=2, scale=ss.years(5), loc=0.0)`
+  - Methods: `.init_post()`: Set initial values for states; `.init_results()`: Initialize results
+- `ssl.Pertussis(*args, **kwargs)`: Pertussis (whooping cough), as a SEIRS model with slowly waning immunity
+  - Default pars: `beta=ss.perday(0.866667)`, `dur_exp=ss.days(8)`, `dur_inf=ss.days(15)`, `dur_imm=ss.years(30)`, `birth_rate=ss.peryear(0.02)`
+- `ssl.Polio(*args, **kwargs)`: Poliovirus, with a paralytic fraction
+  - Default pars: `beta=ss.perday(0.3)`, `dur_exp=ss.days(3)`, `dur_inf=ss.days(20)`, `p_paralysis=0.005`, `birth_rate=ss.peryear(0.03)`
+- `ssl.RSV(*args, **kwargs)`: Respiratory syncytial virus (RSV), as a seasonal MSEIRS model
+  - Default pars: `beta=ss.seasonal(mean=0.2, amplitude=0.35, peak='January')`, `dur_mat=ss.months(4)`, `dur_exp=ss.days(5)`, `dur_inf=ss.days(10)`, `dur_imm=ss.years(1)`, `birth_rate=ss.peryear(0.02)`
+- `ssl.Syphilis(*args, **kwargs)`: Syphilis, as a staged infection, wholly declared
+  - Default pars: `beta=ss.peract(m2f=0.1, f2m=0.05)`, `dur_exp=ss.days(50)`, `dur_primary=ss.weeks(6)`, `dur_secondary=ss.months(3.6)`, `dur_early=ss.months(23)`, `dur_late=ss.years(10)`, `p_reactivate=0.35`, `p_tertiary=0.35`, `death_rate=ss.peryear(0.05)`, `latent_half_life=ss.years(1)`
+- `ssl.TB(*args, **kwargs)`: Tuberculosis, as the LSHTM model of the spectrum of TB disease
+  - Default pars: `beta=ss.peryear(9)`, `trans_asymp=0.82`, `rr_reinfect_cleared=1.0`, `rr_reinfect_rec=0.21`, `inf_cle=ss.peryear(1.9)`, `inf_non=ss.peryear(0.16)`, `inf_asy=ss.peryear(0.06)`, `non_rec=ss.peryear(0.18)`, `non_asy=ss.peryear(0.25)`, `asy_non=ss.peryear(1.66)`, `asy_sym=ss.peryear(0.88)`, `sym_asy=ss.peryear(0.54)`, `sym_dead=ss.peryear(0.34)`, `mu=ss.peryear(0.0142857)`
+- `ssl.Typhoid(*args, **kwargs)`: Typhoid fever, with chronic carriers
+  - Default pars: `beta=ss.perday(0.072)`, `rel_carrier=0.01`, `p_carrier=0.05`, `dur_inf=ss.weeks(4)`, `dur_imm=ss.years(1000)`, `birth_rate=ss.peryear(0.0166667)`
+
+## Library: health economics (ssl.econ)
+
+- `ssl.Costs(unit_costs=None, fixed=None, start=None, deliveries=True, **kwargs)`: The costs of a sim, from its results, with their total
+  - Methods: `.step()`: The costs so far, for what runs during the sim, such as `ssl.ICER`; the results are final […]
+- `ssl.DALYs(weights=None, life_lost=None, deaths=None, **kwargs)`: The disability-adjusted life years of a sim: the years lived with disability, plus the years of life lost
+  - Methods: `.step()`: The years of life lost by those who died in this step, and the results so far, for what […]
+- `ssl.discount(values, rate, start=None, t=None)`: Discount values over time at a yearly rate
+- `ssl.ICER(sims=None, outcome='dalys.dalys', cost='costs.total', baseline=None, discount=0, discount_start=None, window=None, **kwargs)`: Compare the costs and effects of scenarios: incremental cost-effectiveness ratios
+  - Methods: `.step()`: Count this sim as a scenario, as it stands; `.df`: The table of the scenarios (see the class docstring); `.best()`: The scenario with the highest mean net benefit at a willingness to pay; `.plot()`: Plot the cost-effectiveness plane: each scenario's cost against the outcome it averts, […]; `.plot_ceac()`: Plot the cost-effectiveness acceptability curve: the fraction of runs in which each […]
+
+## Library: maternal, newborn, and child health (ssl.mnch)
+
+- `ssl.CongenitalDisease(*args, **kwargs)`: Simple disease with congenital outcomes, scheduled around delivery
+  - Default pars: `init_prev=ss.bernoulli(p=0.01)`, `beta=ss.peryear(0.1)`, `dur_inf=ss.lognormal(mean=ss.years(6), std=1.0)`, `p_death=ss.bernoulli(p=0.01)`, `birth_outcome_keys=['stillborn', 'congenital', 'normal']`, `birth_outcomes=sc.obj(default=ss.choice(a=3, p=[0.3 0.4 0.3], replace=True))`
+- `ssl.fetal_infection(pars=None, **kwargs)`: Connect a disease to fetal health outcomes during pregnancy.
+  - Default pars: `timing_shift=ss.lognormal(mean=3.0, std=1.0)`, `growth_penalty=0.15`
+  - Methods: `.init_post()`: Register a callback so we can apply damage at conception for women who are already […]; `.step()`: Each timestep, check for new infections in pregnant women and apply damage
+- `ssl.FetalHealth(pars=None, **kwargs)`: Track fetal health outcomes during pregnancy.
+  - Default pars: `weight_by_ga=array([[ 24., 600.], [ 25., 700.], [ 26., 800.], [ 27., 900.], [ 28., 1000.], [  […]`, `interp_fn=<function interp>`, `sga_ratio=0.87`, `lbw_threshold=2500`, `vlbw_threshold=1500`, `min_ga=ss.weeks(24)`, `percentile_dist=ss.normal(mean=1.0, std=0.1)`
+- `ssl.NeonatalSepsis(*args, **kwargs)`: Minimal neonatal sepsis model.
+  - Default pars: `init_prev=ss.bernoulli(p=0)`, `beta=ss.peryear(0)`, `dur_inf=ss.lognormal(mean=ss.days(7), std=ss.days(3))`, `p_death=ss.bernoulli(p=0.5)`, `p_at_birth=ss.bernoulli(p=0.3)`
+  - Methods: `.init_post()`: Exempt the initial population from being treated as newborns; `.step()`: Infect newly born agents; `.set_prognoses()`: Set prognoses — only apply lethal outcomes to neonates (age < 28 days)
+- `ssl.PregnancyTreatment(delivery, **kwargs)`: What `treat_pregnant` delivers: a cure of the infection, and a partial reversal of the fetal damage
+- `ssl.treat_pregnant(disease='sir', coverage=0.9, who=None, when=None, growth_reversal=0.7, timing_reversal=0.7, name=None, **kwargs)`: Treat infected pregnant women and partially reverse fetal damage.
+
+## Library: networks (ssl.networks)
+
+- `ssl.ClusterNet(pars=None, cluster_size=None, who=None, dynamic=None, **kwargs)`: Fully connected clusters of agents, e.g. households, schools, or workplaces
+  - Default pars: `cluster_size=ss.poisson(mean=4)`, `who=None`, `dynamic=False`
+  - Methods: `.step()`: If dynamic, recreate the clusters; otherwise, do nothing; `.add_pairs()`: Assign agents to clusters, and connect every pair of agents within each cluster
+- `ssl.DiskNet(pars=None, **kwargs)`: Disk graph in which edges are made between agents located within a user-defined radius.
+  - Default pars: `r=0.1`, `v=ss.freqperday(0.05)`
+  - Methods: `.add_pairs()`: Generate contacts
+- `ssl.GeoNet(places='Kenya', level=1, local=0.9, c=2.0, pars=None, **kwargs)`: Random contacts between real places
+  - Default pars: `memory=None`, `n_contacts=ss.constant(value=10)`, `dur=0`, `who=None`, `dynamic=True`, `method='fast'`, `remove_self_loops=False`
+- `ssl.GridNet(diagonal=False, periodic=False, pars=None, **kwargs)`: Agents on a square grid, in contact with their neighbors
+  - Default pars: `diagonal=False`, `periodic=False`
+- `ssl.HouseholdNet(pars=None, dhs_data=None, dynamic=None, prob_move_out=None, **kwargs)`: A household contact network built from DHS-style survey data.
+  - Methods: `.init_post()`: Add the first edges, and add a random fraction of a year to each age; `.add_pairs()`: Generate contacts by assigning agents to households sampled from the data; `.load_dhs()`: Load a DHS Household Recode (HR) Stata file and return a dataframe suitable for use with […]
+- `ssl.HybridNet(pars=None, household_size=None, n_contacts=None, school_ages=None, work_ages=None, dynamic=None, method=None, clustered=None, **kwargs)`: Covasim v3's "hybrid" population: households, schools, workplaces, and community
+  - Default pars: `household_size=ss.poisson(mean=2.0)`, `n_contacts={'s': ss.poisson(mean=20), 'w': ss.poisson(mean=16), 'c': ss.poisson(mean=20)}`, `school_ages=[6, 22]`, `work_ages=[22, 65]`, `dynamic=False`, `method='fast'`, `clustered=True`
+  - Methods: `.betas()`: The beta of a disease on each layer, by name: its beta per contact times the layer's […]; `.step()`: Not used, since the networks returned by expand() are used instead
+- `ssl.NullNet(n_people=None, **kwargs)`: A convenience class for a network of size n that only has self-connections with a weight of 0. This network can be useful for debugging purposes or as a placeholder network during development for conditions that require more complex network mechanisms.
+  - Methods: `.step()`: Not used for NullNet
+- `ssl.ScaleFreeNet(n_contacts=4, pars=None, **kwargs)`: A scale-free (Barabási-Albert) network: a few agents have many contacts, and most have few
+  - Default pars: `n_contacts=4`
+- `ssl.SmallWorldNet(n_contacts=4, rewire=0.1, pars=None, **kwargs)`: A small-world (Watts-Strogatz) network: mostly local contacts, with a few long-range ones
+  - Default pars: `n_contacts=4`, `rewire=0.1`
+- `ssl.StaticNet(graph=None, pars=None, **kwargs)`: A network class of static partnerships converted from a networkx graph. There's no formation of new partnerships and initialized partnerships only end when one of the partners dies. The networkx graph can be created outside Starsim if population size is known. Or the graph can be created by passing […]
+  - Default pars: `seed=True`, `p=None`, `n_contacts=10`
+
+<!-- Generated by `python make_api.py` for Starsim v4.0.0rc4: llms.txt -->
